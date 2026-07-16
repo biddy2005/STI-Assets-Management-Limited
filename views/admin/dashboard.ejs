@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1>Dashboard</h1>
+    <p>Welcome, <%= admin.email %>.</p>
+    <div class="card-grid">
+      <div class="card"><h3><a href="/admin/news">Manage News &amp; Articles</a></h3></div>
+      <div class="card"><h3><a href="/admin/downloads">Manage Downloads</a></h3></div>
+      <div class="card"><h3><a href="/admin/jobs">Manage Job Postings</a></h3></div>
+      <div class="card"><h3><a href="/admin/faqs">Manage FAQs</a></h3></div>
+      <div class="card"><h3><a href="/admin/team">Manage Team Members</a></h3></div>
+      <div class="card"><h3><a href="/admin/contact-submissions">View Contact Messages</a></h3></div>
+      <div class="card"><h3><a href="/admin/applications">View Job Applications</a></h3></div>
+    </div>
+  </section>
+</body>
+</html>

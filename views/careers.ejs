@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+<section class="section">
+  <h1>Careers</h1>
+  <p>Placeholder — open JobPosting records will be listed here with an "Apply" form.</p>
+  <% if (typeof error !== 'undefined' && error) { %><p class="form-error"><%= error %></p><% } %>
+  <form action="/api/careers/apply" method="POST" enctype="multipart/form-data" class="form">
+    <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    <label>Full Name<input type="text" name="applicantName" required /></label>
+    <label>Email<input type="email" name="email" required /></label>
+    <label>Job<select name="jobId" required><option value="">Select an open role</option><% jobs.forEach((job) => { %><option value="<%= job.id %>"><%= job.title %> — <%= job.location %></option><% }) %></select></label>
+    <label>Resume<input type="file" name="resume" accept=".pdf,.doc,.docx" required /></label>
+    <button type="submit" class="btn-primary">Submit Application</button>
+  </form>
+</section>
+<%- include('partials/footer') %>
