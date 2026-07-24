@@ -1,6 +1,41 @@
 <%- include('../partials/header') %>
-<section class="section">
-  <h1>News &amp; Articles</h1>
-  <p>Placeholder — will loop over published NewsArticle records.</p>
+
+<section class="inner-page-hero digest-hero">
+  <div class="inner-page-hero-inner">
+    <span class="hero-eyebrow">Resources</span>
+    <h1>News &amp; Articles</h1>
+    <p>Stay up to date with company announcements, market commentary, and firm news.</p>
+  </div>
 </section>
+
+<section class="news-insights-section">
+  <div class="news-insights-inner">
+
+    <% if (articles.length === 0) { %>
+      <p class="news-empty">No articles published yet. Check back soon.</p>
+    <% } else { %>
+      <div class="news-grid">
+        <% articles.forEach(function (article) { %>
+          <a class="news-card" href="/resources/news/<%= article.slug %>">
+            <div class="news-card-image-wrap">
+              <% if (article.coverImage) { %>
+                <img class="news-card-cover" src="<%= article.coverImage %>" alt="<%= article.title %>" />
+              <% } %>
+            </div>
+            <div class="news-card-body">
+              <% if (article.formattedDate) { %>
+                <span class="news-card-date"><%= article.formattedDate %></span>
+              <% } %>
+              <h3 class="news-card-title"><%= article.title %></h3>
+              <p class="news-card-excerpt"><%= article.excerpt %></p>
+              <span class="news-card-cta">Read More <span class="news-card-arrow">&rarr;</span></span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } %>
+
+  </div>
+</section>
+
 <%- include('../partials/footer') %>

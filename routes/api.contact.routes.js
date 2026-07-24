@@ -6,13 +6,15 @@ const { cleanText, isHoneypotTriggered, isValidEmail } = require('../middleware/
 router.post('/', async (req, res) => {
   if (isHoneypotTriggered(req)) return res.redirect('/contact?success=1');
 
-  const name = cleanText(req.body.name, 100);
+ const firstName = cleanText(req.body.firstName, 100);
+  const lastName = cleanText(req.body.lastName, 100);
+  const name = `${firstName} ${lastName}`.trim();
   const email = cleanText(req.body.email, 254).toLowerCase();
   const phone = cleanText(req.body.phone, 30) || null;
   const subject = cleanText(req.body.subject, 200) || null;
   const message = cleanText(req.body.message, 5000);
 
-  if (!name || !isValidEmail(email) || !message) {
+  if (!firstName || !lastName || !isValidEmail(email) || !message) {
     return res.status(400).render('contact', {
       title: 'Contact Us',
       error: 'Please provide a name, valid email address, and message.'

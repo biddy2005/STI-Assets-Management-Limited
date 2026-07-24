@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Submissions</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1>Contact Submissions</h1>
+
+    <div class="card-grid">
+      <% submissions.forEach(function(sub) { %>
+        <div class="card">
+          <h3><%= sub.name %></h3>
+          <p><a href="mailto:<%= sub.email %>"><%= sub.email %></a><% if (sub.phone) { %> · <%= sub.phone %><% } %></p>
+          <% if (sub.subject) { %><p><strong>Subject:</strong> <%= sub.subject %></p><% } %>
+          <p><%= sub.message %></p>
+          <p><small>Submitted: <%= sub.submittedAt.toLocaleString() %></small></p>
+          <form action="/admin/contact-submissions/<%= sub.id %>/delete" method="POST" onsubmit="return confirm('Delete this submission?');">
+            <button type="submit" class="btn-outline">Delete</button>
+          </form>
+        </div>
+      <% }) %>
+      <% if (submissions.length === 0) { %>
+        <p>No contact submissions yet.</p>
+      <% } %>
+    </div>
+  </section>
+</body>
+</html>

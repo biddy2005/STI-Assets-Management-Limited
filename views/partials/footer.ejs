@@ -1,15 +1,84 @@
-  </main>
+</main>
+
+  <div class="footer-cta-banner">
+    <div class="footer-cta-inner">
+      <h2>Ready to Grow Your Wealth?</h2>
+      <p>Let our experienced investment professionals help you achieve your financial goals.</p>
+      <div class="footer-cta-bar"></div>
+      <div class="footer-cta-actions">
+        <a href="/contact" class="btn-primary">Get Started</a>
+        <a href="/contact" class="btn-outline btn-outline-light">Contact Us</a>
+      </div>
+    </div>
+  </div>
+
+<div class="footer-newsletter-wrap">
+    <div class="footer-newsletter-card">
+      <div class="footer-newsletter-text">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#033669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+          <path d="M2 7l10 6 10-6"></path>
+        </svg>
+        <h3>Stay Updated</h3>
+      </div>
+      <% if (typeof newsletterSuccess !== 'undefined' && newsletterSuccess) { %>
+        <p class="footer-newsletter-message footer-newsletter-message-success">Thanks for subscribing!</p>
+      <% } else if (typeof newsletterError !== 'undefined' && newsletterError) { %>
+        <p class="footer-newsletter-message footer-newsletter-message-error">Please enter a valid email address.</p>
+      <% } else { %>
+        <form action="/api/newsletter" method="POST" class="footer-newsletter-form">
+          <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          <input type="email" name="email" placeholder="Enter your email address" required>
+          <button type="submit">Subscribe Now</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
 
   <footer class="site-footer">
     <div class="footer-wrap">
-      <div class="footer-col">
-        <h3>AssetCo</h3>
-        <p>Trusted asset management and investment advisory services.</p>
+      <div class="footer-col footer-col-brand">
+        <div class="logo-placeholder logo-placeholder-footer"><!-- Company Logo Here --></div>
+        <p>STI Assets Management Limited — trusted investment advisory and asset management services grounded in expertise and transparency.</p>
+        <div class="footer-social-row">
+          <a href="#" class="social-icon" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="9" width="4" height="12"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+              <path d="M10 9v12"></path>
+              <path d="M10 13a4 4 0 0 1 8 0v8"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-icon" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-icon" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+              <circle cx="12" cy="12" r="4"></circle>
+              <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"></circle>
+            </svg>
+          </a>
+          <a href="#" class="social-icon" aria-label="X">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4l16 16"></path>
+              <path d="M20 4L4 20"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-icon" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="4"></rect>
+              <path d="M10 9l5 3-5 3z"></path>
+            </svg>
+          </a>
+        </div>
       </div>
 
       <div class="footer-col">
         <h4>Quick Links</h4>
-        <ul>
+        <ul class="footer-arrow-list">
           <li><a href="/who-we-are">Who We Are</a></li>
           <li><a href="/services">Services</a></li>
           <li><a href="/products">Products</a></li>
@@ -19,7 +88,7 @@
 
       <div class="footer-col">
         <h4>Resources</h4>
-        <ul>
+        <ul class="footer-arrow-list">
           <li><a href="/resources/faqs">FAQs</a></li>
           <li><a href="/resources/downloads">Downloads</a></li>
           <li><a href="/resources/news">News &amp; Articles</a></li>
@@ -28,16 +97,47 @@
 
       <div class="footer-col">
         <h4>Contact</h4>
-        <ul>
-          <li>123 Finance Avenue, Lagos, NG</li>
-          <li>info@assetco.com</li>
-          <li>+234 000 000 0000</li>
+        <ul class="footer-contact-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>Plot 169b Moshood Olugbani Street, Victoria Island, Lagos.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <span><a href="tel:09165439544">09165439544</a> / <a href="tel:08033230987">08033230987</a></span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="M2 7l10 6 10-6"></path>
+            </svg>
+            <span><a href="mailto:info@stiassetmgt.com">info@stiassetmgt.com</a></span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 7v5l3 3"></path>
+            </svg>
+            <span>Mon – Fri: 8:00am – 5:00pm</span>
+          </li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <p>&copy; <%= new Date().getFullYear() %> AssetCo. All rights reserved.</p>
+      <p>&copy; <%= new Date().getFullYear() %> STI Assets Management Limited. All Rights Reserved.</p>
+      <p class="footer-legal-links">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <span>|</span>
+        <a href="/terms-and-conditions">Terms &amp; Conditions</a>
+        <span>|</span>
+        <a href="/cookie-policy">Cookie Policy</a>
+      </p>
     </div>
   </footer>
 </body>

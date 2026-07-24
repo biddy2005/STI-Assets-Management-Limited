@@ -1,12 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const prisma = require('../config/db');
+const { getActiveWeekRange, buildWeekMap, getOrdinalDate } = require('../utils/digestWeek');
 
-// NOTE: for now these render static placeholder EJS files.
-// Later, swap in real data by fetching from Prisma before res.render(),
-// e.g. const articles = await prisma.newsArticle.findMany({ where: { published: true } });
+router.get('/', async (req, res, next) => {
+  try {
+    const articles = await prisma.newsArticle.findMany({
+      where: { published: true },
+      orderBy: { publishedAt: 'desc' },
+      take: 3
+    });
 
-router.get('/', (req, res) => res.render('home', { title: 'Home' }));
+    const cards = articles.map((article) => ({
+      ...article,
+      formattedDate: article.publishedAt ? getOrdinalDate(article.publishedAt) : null,
+      excerpt: article.body.length > 140 ? `${article.body.slice(0, 140)}…` : article.body
+    }));
+
+    res.render('home', { title: 'Home', articles: cards });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Who We Are
 router.get('/who-we-are', (req, res) => res.render('who-we-are/index', { title: 'Who We Are' }));
@@ -16,6 +31,8 @@ router.get('/who-we-are/board-of-directors', (req, res) =>
 router.get('/who-we-are/management-team', (req, res) =>
   res.render('who-we-are/management-team', { title: 'Management Team' })
 );
+
+router.get('/our-team', (req, res) => res.render('our-team', { title: 'Our Team' }));
 
 // Services
 router.get('/services', (req, res) => res.render('services/index', { title: 'Services' }));
@@ -38,8 +55,71 @@ router.get('/products', (req, res) => res.render('products', { title: 'Products'
 // Resources
 router.get('/resources', (req, res) => res.redirect('/resources/news'));
 router.get('/resources/faqs', (req, res) => res.render('resources/faqs', { title: 'FAQs' }));
-router.get('/resources/downloads', (req, res) => res.render('resources/downloads', { title: 'Downloads' }));
-router.get('/resources/news', (req, res) => res.render('resources/news', { title: 'News & Articles' }));
+
+router.get('/resources/downloads', async (req, res, next) => {
+  try {
+    const { weekStart, weekEnd } = getActiveWeekRange();
+
+    const digests = await prisma.dailyDigest.findMany({
+      where: {
+        publishDate: {
+          gte: weekStart,
+          lte: weekEnd
+        }
+      },
+      orderBy: { publishDate: 'asc' }
+    });
+
+    const weekDigests = buildWeekMap(digests, weekStart);
+
+    res.render('resources/downloads', {
+      title: 'Downloads',
+      weekDigests
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/resources/news', async (req, res, next) => {
+  try {
+    const articles = await prisma.newsArticle.findMany({
+      where: { published: true },
+      orderBy: { publishedAt: 'desc' }
+    });
+
+    const cards = articles.map((article) => ({
+      ...article,
+      formattedDate: article.publishedAt ? getOrdinalDate(article.publishedAt) : null,
+      excerpt: article.body.length > 180 ? `${article.body.slice(0, 180)}…` : article.body
+    }));
+
+    res.render('resources/news', { title: 'News & Articles', articles: cards });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/resources/news/:slug', async (req, res, next) => {
+  try {
+    const article = await prisma.newsArticle.findFirst({
+      where: { slug: req.params.slug, published: true },
+      include: { images: { orderBy: { order: 'asc' } } }
+    });
+
+    if (!article) {
+      return res.status(404).render('404', { title: 'Article Not Found' });
+    }
+
+    res.render('resources/news-article', {
+      title: article.title,
+      article,
+      formattedDate: article.publishedAt ? getOrdinalDate(article.publishedAt) : null
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Careers
 router.get('/careers', async (req, res, next) => {
@@ -48,13 +128,27 @@ router.get('/careers', async (req, res, next) => {
       where: { status: 'open' },
       orderBy: { createdAt: 'desc' }
     });
-    return res.render('careers', { title: 'Careers', jobs, error: null });
+    return res.render('careers', {
+      title: 'Careers',
+      jobs,
+      error: null,
+      applied: req.query.applied === '1'
+    });
   } catch (err) {
     return next(err);
   }
 });
 
+// Legal
+router.get('/privacy-policy', (req, res) => res.render('privacy-policy', { title: 'Privacy Policy' }));
+
 // Contact
-router.get('/contact', (req, res) => res.render('contact', { title: 'Contact Us' }));
+router.get('/contact', (req, res) =>
+  res.render('contact', {
+    title: 'Contact Us',
+    error: null,
+    success: req.query.success === '1'
+  })
+);
 
 module.exports = router;

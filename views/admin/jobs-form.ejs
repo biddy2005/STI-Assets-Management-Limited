@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= job ? 'Edit Job Posting' : 'New Job Posting' %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1><%= job ? 'Edit Job Posting' : 'New Job Posting' %></h1>
+    <% if (error) { %><p class="form-error"><%= error %></p><% } %>
+
+    <form action="<%= job ? '/admin/jobs/' + job.id : '/admin/jobs' %>" method="POST" class="form">
+      <label>Title
+        <input type="text" name="title" value="<%= job ? job.title : '' %>" required>
+      </label>
+      <label>Department
+        <input type="text" name="department" value="<%= job ? job.department : '' %>" required>
+      </label>
+      <label>Location
+        <input type="text" name="location" value="<%= job ? job.location : '' %>" required>
+      </label>
+      <label>Description
+        <textarea name="description" rows="6" required><%= job ? job.description : '' %></textarea>
+      </label>
+      <label>Application Deadline
+        <input type="date" name="deadline" value="<%= job && job.deadline ? job.deadline.toISOString().slice(0,10) : '' %>">
+      </label>
+      <label>Status
+        <select name="status">
+          <option value="open" <%= job && job.status === 'open' ? 'selected' : '' %>>Open</option>
+          <option value="closed" <%= job && job.status === 'closed' ? 'selected' : '' %>>Closed</option>
+        </select>
+      </label>
+      <button type="submit" class="btn-primary"><%= job ? 'Save Changes' : 'Create Job Posting' %></button>
+    </form>
+  </section>
+</body>
+</html>

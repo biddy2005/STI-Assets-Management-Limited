@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Job Postings</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1>Job Postings</h1>
+    <p><a href="/admin/jobs/new" class="btn-primary">+ New Job Posting</a></p>
+
+    <div class="card-grid">
+      <% jobs.forEach(function(job) { %>
+        <div class="card">
+          <h3><%= job.title %></h3>
+          <p><%= job.department %> — <%= job.location %></p>
+          <p>Status: <strong><%= job.status %></strong></p>
+          <p>
+            <a href="/admin/jobs/<%= job.id %>/edit">Edit</a> |
+            <a href="/admin/applications?jobId=<%= job.id %>">View Applications</a>
+          </p>
+          <form action="/admin/jobs/<%= job.id %>/delete" method="POST" onsubmit="return confirm('Delete this job posting?');">
+            <button type="submit" class="btn-outline">Delete</button>
+          </form>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+</body>
+</html>

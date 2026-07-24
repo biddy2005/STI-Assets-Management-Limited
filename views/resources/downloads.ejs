@@ -1,6 +1,48 @@
 <%- include('../partials/header') %>
-<section class="section">
-  <h1>Downloads</h1>
-  <p>Placeholder — will loop over Download records with file links.</p>
+
+<section class="inner-page-hero digest-hero">
+  <div class="inner-page-hero-inner">
+    <span class="hero-eyebrow">Resources</span>
+    <h1>STIAM Daily Market Digest</h1>
+    <p>Introducing the STIAM Daily Market Digest, your ultimate guide to navigating the world of business and finance! Our team of expert analysts has scoured the markets to bring you the most relevant and up-to-date news and insights on a daily basis. From stock market updates and earnings reports to industry trends and economic indicators, the STIAM Daily Market Digest has got you covered.</p>
+  </div>
 </section>
+
+<section class="section digest-section">
+  <div class="digest-week-header">
+    <h2>This Week's Digests</h2>
+  </div>
+
+  <div class="digest-grid this-weeks-digests">
+    <% weekDigests.forEach(function (day) { %>
+      <div class="digest-card <%= day.digest ? 'is-available' : 'is-unavailable' %>">
+        <div class="digest-card-day"><%= day.label %></div>
+
+        <% if (day.digest) { %>
+          <div class="digest-card-body">
+            <svg class="digest-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v10.5m0 0 4-4m-4 4-4-4M5 17.5h14a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1Z"
+                fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="digest-card-title"><%= day.digest.title %></p>
+            <p class="digest-card-date"><%= day.formattedDate %></p>
+          </div>
+          <a class="digest-btn" href="<%= day.digest.filePath %>" download target="_blank" rel="noopener">
+            Download PDF
+          </a>
+        <% } else { %>
+          <div class="digest-card-body">
+            <svg class="digest-icon digest-icon-muted" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" />
+              <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="digest-card-date"><%= day.formattedDate %></p>
+          </div>
+          <span class="digest-btn digest-btn-disabled" aria-disabled="true">Digest unavailable</span>
+        <% } %>
+      </div>
+    <% }); %>
+  </div>
+</section>
+
 <%- include('../partials/footer') %>

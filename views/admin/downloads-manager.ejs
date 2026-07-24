@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Downloads | Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1>Manage Daily Digests</h1>
+    <p><a href="/admin/dashboard">&larr; Back to Dashboard</a></p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <p style="color:red;"><%= error %></p>
+    <% } %>
+
+    <div class="card-grid">
+      <% days.forEach(function (day) { %>
+        <div class="card">
+          <h3><%= day.label %></h3>
+          <% if (day.digest) { %>
+            <p>Uploaded: <a href="<%= day.digest.filePath %>" target="_blank" rel="noopener">View current PDF</a></p>
+            <form action="/admin/downloads/<%= day.digest.id %>/delete" method="POST" style="margin-bottom:12px;">
+              <button type="submit" class="btn-nav">Remove</button>
+            </form>
+          <% } else { %>
+            <p>No digest uploaded yet.</p>
+          <% } %>
+
+          <form action="/admin/downloads" method="POST" enctype="multipart/form-data" class="form">
+            <input type="hidden" name="dayOfWeek" value="<%= day.key %>" />
+            <label>
+              Upload PDF <%= day.digest ? '(replace)' : '' %>
+              <input type="file" name="digestFile" accept="application/pdf" required />
+            </label>
+            <button type="submit" class="btn-primary"><%= day.digest ? 'Replace' : 'Upload' %></button>
+          </form>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Gallery | Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1>Gallery: <%= article.title %></h1>
+    <p><a href="/admin/news">&larr; Back to News List</a></p>
+
+    <form action="/admin/news/<%= article.id %>/images" method="POST" enctype="multipart/form-data" class="form">
+      <label>
+        Add Images (you can select multiple)
+        <input type="file" name="galleryImages" accept="image/*" multiple required />
+      </label>
+      <button type="submit" class="btn-primary">Upload</button>
+    </form>
+
+    <div class="card-grid" style="margin-top:24px;">
+      <% article.images.forEach(function (img) { %>
+        <div class="card">
+          <img src="<%= img.imageUrl %>" alt="" style="width:100%;border-radius:var(--radius);margin-bottom:8px;" />
+          <form action="/admin/news/<%= article.id %>/images/<%= img.id %>/delete" method="POST">
+            <button type="submit" class="btn-nav">Delete</button>
+          </form>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+</body>
+</html>

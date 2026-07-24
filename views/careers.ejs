@@ -1,15 +1,80 @@
 <%- include('partials/header') %>
-<section class="section">
-  <h1>Careers</h1>
-  <p>Placeholder — open JobPosting records will be listed here with an "Apply" form.</p>
-  <% if (typeof error !== 'undefined' && error) { %><p class="form-error"><%= error %></p><% } %>
-  <form action="/api/careers/apply" method="POST" enctype="multipart/form-data" class="form">
-    <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
-    <label>Full Name<input type="text" name="applicantName" required /></label>
-    <label>Email<input type="email" name="email" required /></label>
-    <label>Job<select name="jobId" required><option value="">Select an open role</option><% jobs.forEach((job) => { %><option value="<%= job.id %>"><%= job.title %> — <%= job.location %></option><% }) %></select></label>
-    <label>Resume<input type="file" name="resume" accept=".pdf,.doc,.docx" required /></label>
-    <button type="submit" class="btn-primary">Submit Application</button>
-  </form>
+
+<section class="inner-page-hero digest-hero">
+  <div class="inner-page-hero-inner">
+    <span class="hero-eyebrow">Join Our Team</span>
+    <h1>Careers at STIAM</h1>
+    <p>Build a meaningful career in asset management. Explore our open opportunities and help us deliver disciplined, research-driven wealth solutions for our clients.</p>
+  </div>
 </section>
+
+<section class="section careers-section">
+  <% if (typeof applied !== 'undefined' && applied) { %>
+    <div class="careers-success-banner">
+      <p>Your application was submitted successfully. Our team will be in touch shortly.</p>
+    </div>
+  <% } %>
+
+  <div class="careers-split">
+    <div class="careers-jobs-column">
+      <h2>Open Roles</h2>
+      <% if (jobs.length === 0) { %>
+        <p class="careers-empty">There are no open positions at this time. Please check back soon.</p>
+      <% } else { %>
+        <% jobs.forEach(function(job) { %>
+          <div class="job-card">
+            <span class="job-department-tag"><%= job.department %></span>
+            <h3><%= job.title %></h3>
+            <div class="job-meta">
+              <span class="job-meta-item">📍 <%= job.location %></span>
+              <% if (job.deadline) { %>
+                <span class="job-meta-item">🗓 Apply by <%= job.deadline.toDateString() %></span>
+              <% } %>
+            </div>
+            <p class="job-description"><%= job.description %></p>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+
+    <div class="careers-form-column">
+      <div class="careers-form-card">
+        <h2>Apply Now</h2>
+        <% if (typeof error !== 'undefined' && error) { %>
+          <p class="form-error"><%= error %></p>
+        <% } %>
+        <form action="/api/careers/apply" method="POST" enctype="multipart/form-data" class="careers-form">
+          <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+
+          <label>Full Name
+            <input type="text" name="applicantName" required>
+          </label>
+          <label>Email
+            <input type="email" name="email" required>
+          </label>
+          <label>Phone
+            <input type="tel" name="phone">
+          </label>
+          <label>Job
+            <select name="jobId" required>
+              <option value="">Select an open role</option>
+              <% jobs.forEach(function(job) { %>
+                <option value="<%= job.id %>"><%= job.title %> — <%= job.location %></option>
+              <% }) %>
+            </select>
+          </label>
+          <label>Cover Note
+            <textarea name="coverNote" rows="4"></textarea>
+          </label>
+          <label>Resume
+            <input type="file" name="resume" accept=".pdf,.doc,.docx" required>
+          </label>
+
+          <button type="submit" class="btn-careers-submit">Submit Application</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
 <%- include('partials/footer') %>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage News | Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1>Manage News &amp; Articles</h1>
+    <p><a href="/admin/dashboard">&larr; Back to Dashboard</a></p>
+    <p><a href="/admin/news/new" class="btn-primary">+ New Article</a></p>
+
+    <div class="card-grid">
+      <% articles.forEach(function (article) { %>
+        <div class="card">
+          <h3><%= article.title %></h3>
+          <p><%= article.published ? 'Published' : 'Draft' %></p>
+          <p>
+            <a href="/admin/news/<%= article.id %>/edit">Edit</a> ·
+            <a href="/admin/news/<%= article.id %>/images">Manage Images</a>
+          </p>
+          <form action="/admin/news/<%= article.id %>/delete" method="POST">
+            <button type="submit" class="btn-nav">Delete</button>
+          </form>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+</body>
+</html>

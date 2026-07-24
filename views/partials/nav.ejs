@@ -1,37 +1,19 @@
-<header class="site-header">
+<header class="site-header" id="siteHeader">
   <div class="nav-wrap">
-    <a href="/" class="logo">AssetCo</a>
+    <a href="/" class="logo-placeholder" aria-label="STI Assets Management Home">
+      <img src="https://stiassetmgt.com/wp-content/uploads/2023/09/Group-46603.png" alt="STI Assets Management Logo" />
+    </a>
 
-    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-
-    <nav id="mainNav" class="main-nav">
+    <nav class="primary-nav">
       <ul>
-        <li><a href="/">Home</a></li>
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/who-we-are" class="nav-link">Who We Are</a></li>
+        <li><a href="/our-team" class="nav-link">Our Team</a></li>
+        <li><a href="/services" class="nav-link">Services</a></li>
+        <li><a href="/products" class="nav-link">Products</a></li>
 
         <li class="has-dropdown">
-          <a href="/who-we-are">Who We Are</a>
-          <ul class="dropdown">
-            <li><a href="/who-we-are/board-of-directors">Board of Directors</a></li>
-            <li><a href="/who-we-are/management-team">Management Team</a></li>
-          </ul>
-        </li>
-
-        <li class="has-dropdown">
-          <a href="/services">Services</a>
-          <ul class="dropdown">
-            <li><a href="/services/financial-advisory">Financial Advisory</a></li>
-            <li><a href="/services/market-research">Market Research</a></li>
-            <li><a href="/services/portfolio-fund-management">Portfolio &amp; Fund Management</a></li>
-            <li><a href="/services/corporate-investment-schemes">Corporate Investment Schemes</a></li>
-          </ul>
-        </li>
-
-        <li><a href="/products">Products</a></li>
-
-        <li class="has-dropdown">
-          <a href="/resources">Resources</a>
+          <a href="/resources" class="nav-link">Resources <span class="nav-caret"></span></a>
           <ul class="dropdown">
             <li><a href="/resources/faqs">FAQs</a></li>
             <li><a href="/resources/downloads">Downloads</a></li>
@@ -39,11 +21,53 @@
           </ul>
         </li>
 
-        <li><a href="/careers">Careers</a></li>
-        <li><a href="/contact" class="btn-nav">Contact Us</a></li>
+        <li><a href="/careers" class="nav-link">Careers</a></li>
       </ul>
     </nav>
+
+    <div class="nav-actions">
+      <a href="/contact" class="btn-contact-cta">Contact Us</a>
+    </div>
+
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
+
+<div id="navOverlay" class="nav-overlay"></div>
+
+<aside id="mobileDrawer" class="mobile-drawer">
+  <div class="mobile-drawer-header">
+    <a href="/" class="logo-placeholder" aria-label="STI Assets Management Home">
+      <img src="https://stiassetmgt.com/wp-content/uploads/2023/09/Group-46603.png" alt="STI Assets Management Logo" />
+    </a>
+    <button id="drawerClose" class="drawer-close" aria-label="Close navigation">&times;</button>
+  </div>
+  <nav class="mobile-drawer-nav">
+    <ul>
+      <li><a href="/">Home</a></li>
+
+<li><a href="/who-we-are">Who We Are</a></li>
+      <li><a href="/services">Services</a></li>
+      <li><a href="/our-team">Our Team</a></li>
+      <li><a href="/products">Products</a></li>
+
+      <li class="has-dropdown">
+        <a href="/resources">Resources <span class="nav-caret"></span></a>
+        <ul class="dropdown">
+          <li><a href="/resources/faqs">FAQs</a></li>
+          <li><a href="/resources/downloads">Downloads</a></li>
+          <li><a href="/resources/news">News &amp; Articles</a></li>
+        </ul>
+      </li>
+
+     <li><a href="/careers">Careers</a></li>
+    </ul>
+    <div class="mobile-drawer-actions">
+      <a href="/contact" class="btn-contact-cta">Contact Us</a>
+    </div>
+  </nav>
+</aside>
 
 <script src="/js/nav.js"></script>

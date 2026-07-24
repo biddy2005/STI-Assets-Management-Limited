@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= article ? 'Edit Article' : 'New Article' %> | Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section" style="max-width:640px;">
+    <h1><%= article ? 'Edit Article' : 'New Article' %></h1>
+    <p><a href="/admin/news">&larr; Back to News List</a></p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <p style="color:red;"><%= error %></p>
+    <% } %>
+
+    <form action="<%= article ? '/admin/news/' + article.id : '/admin/news' %>" method="POST" enctype="multipart/form-data" class="form">
+      <label>
+        Title
+        <input type="text" name="title" value="<%= article ? article.title : '' %>" required />
+      </label>
+
+      <label>
+        Body
+        <textarea name="body" rows="10" required><%= article ? article.body : '' %></textarea>
+      </label>
+
+      <label>
+        Cover Image <%= article && article.coverImage ? '(leave blank to keep current)' : '' %>
+        <input type="file" name="coverImage" accept="image/*" />
+      </label>
+
+      <% if (article && article.coverImage) { %>
+        <img src="<%= article.coverImage %>" alt="Current cover" style="max-width:200px;display:block;margin-bottom:12px;" />
+      <% } %>
+
+      <label>
+        <input type="checkbox" name="published" <%= article && article.published ? 'checked' : '' %> />
+        Published
+      </label>
+
+      <button type="submit" class="btn-primary"><%= article ? 'Save Changes' : 'Create Article' %></button>
+    </form>
+  </section>
+</body>
+</html>

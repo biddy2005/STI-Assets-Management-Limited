@@ -44,6 +44,7 @@ cp .env.example .env
 ```
 
 Open `.env` and fill in:
+
 - `DATABASE_URL` — your real Postgres connection string
 - `SESSION_SECRET` — any long random string
 - SMTP fields — leave blank for now, needed later for email notifications
@@ -87,21 +88,21 @@ Visit **http://localhost:3000**. `nodemon` restarts the server automatically whe
 
 ## 5. What's already built
 
-| Feature | Status |
-|---|---|
-| All 7 pages + 9 subpages, routed and rendering | ✅ Done (placeholder content) |
-| Shared header/nav/footer via EJS partials | ✅ Done |
-| Responsive nav (hamburger on mobile, dropdowns on desktop) | ✅ Done |
-| Mobile-first responsive CSS | ✅ Done |
-| Contact form → saves to database | ✅ Done |
-| Careers "Apply" form → file upload + saves to database | ✅ Done |
-| Database schema (Prisma) for all content types | ✅ Done |
-| Admin login/logout with hashed passwords + sessions | ✅ Done |
-| Admin dashboard shell | ✅ Done (links only, no CRUD screens yet) |
-| Admin CRUD screens (add/edit/delete news, jobs, FAQs, etc.) | 🔲 Next phase |
-| Real content on every page | 🔲 Waiting on you |
-| Email notifications on form submit | 🔲 Next phase (nodemailer is installed, not wired up) |
-| SEO (meta tags, sitemap.xml) | 🔲 Deferred, as agreed |
+| Feature                                                     | Status                                                |
+| ----------------------------------------------------------- | ----------------------------------------------------- |
+| All 7 pages + 9 subpages, routed and rendering              | ✅ Done (placeholder content)                         |
+| Shared header/nav/footer via EJS partials                   | ✅ Done                                               |
+| Responsive nav (hamburger on mobile, dropdowns on desktop)  | ✅ Done                                               |
+| Mobile-first responsive CSS                                 | ✅ Done                                               |
+| Contact form → saves to database                            | ✅ Done                                               |
+| Careers "Apply" form → file upload + saves to database      | ✅ Done                                               |
+| Database schema (Prisma) for all content types              | ✅ Done                                               |
+| Admin login/logout with hashed passwords + sessions         | ✅ Done                                               |
+| Admin dashboard shell                                       | ✅ Done (links only, no CRUD screens yet)             |
+| Admin CRUD screens (add/edit/delete news, jobs, FAQs, etc.) | 🔲 Next phase                                         |
+| Real content on every page                                  | 🔲 Waiting on you                                     |
+| Email notifications on form submit                          | 🔲 Next phase (nodemailer is installed, not wired up) |
+| SEO (meta tags, sitemap.xml)                                | 🔲 Deferred, as agreed                                |
 
 ---
 
@@ -143,4 +144,63 @@ prisma/seed.js    → creates your first admin login
 - Move resume/file uploads to cloud storage (S3, Cloudinary) before production — local disk
   storage (`public/uploads/`) is fine for development only.
 - Add rate-limiting to `/auth/login` and the public form routes before launch (e.g.
+
   `express-rate-limit`) to prevent brute-force and spam.
+
+## Changing the Admin Username or Password
+
+The admin account is stored in the `Admin` table, with the password saved as a bcrypt hash (never plain text). There's currently no in-app "change password" screen, so updates are done with a small script.
+
+### Option A: Update via script (recommended)
+
+1. Create a file `scripts/update-admin.js` in your project root with the following:
+
+```javascript
+const bcrypt = require("bcrypt");
+const prisma = require("../config/db");
+
+async function main() {
+  const currentEmail = "admin@assetco.com"; // the account you're updating
+  const newEmail = "your-new-email@example.com";
+  const newPassword = "YourNewStrongPassword!";
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
+  await prisma.admin.update({
+    where: { email: currentEmail },
+    data: {
+      email: newEmail,
+      passwordHash,
+    },
+  });
+
+  console.log("Admin credentials updated.");
+}
+
+main()
+  .catch((e) => console.error(e))
+  .finally(() => prisma.$disconnect());
+```
+
+2. Edit the three values at the top (`currentEmail`, `newEmail`, `newPassword`).
+3. Run it once from your project root:
+
+```bash
+   node scripts/update-admin.js
+```
+
+4. Delete or move `scripts/update-admin.js` afterward — don't leave real credentials sitting in a script file in your repo.
+5. Log in at `/admin/login` with the new email and password to confirm.
+
+### Option B: Update directly in pgAdmin
+
+Only do this if you already have a bcrypt hash ready (e.g. generated with `bcrypt.hashSync('YourNewPassword', 10)` in a quick Node REPL) — pgAdmin can't hash the password for you.
+
+1. Open pgAdmin → `asset_mgmt_db` → Schemas → public → Tables → `admin`.
+2. Right-click → View/Edit Data → All Rows.
+3. Edit the `email` and `passwordHash` columns directly, then save.
+
+### Notes
+
+- Never store a plain-text password in the database — always hash it with `bcrypt` first, as shown above.
+- The default seeded account (`admin@assetco.com` / `ChangeMe123!`) should be changed before deploying this site anywhere public.

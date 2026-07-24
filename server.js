@@ -8,6 +8,7 @@ const adminRoutes = require('./routes/admin.routes');
 const authRoutes = require('./routes/auth.routes');
 const contactRoutes = require('./routes/api.contact.routes');
 const careersRoutes = require('./routes/api.careers.routes');
+const newsletterRoutes = require('./routes/api.newsletter.routes');
 
 const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
@@ -42,12 +43,19 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.locals.newsletterSuccess = req.query.subscribed === '1';
+  res.locals.newsletterError = req.query.newsletterError === '1';
+  next();
+});
+
 // ---- Routes ----
 app.use('/', pageRoutes);
 app.use('/admin', adminRoutes);
 app.use('/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/careers', careersRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // ---- 404 handler ----
 app.use((req, res) => {

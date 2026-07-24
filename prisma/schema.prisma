@@ -7,7 +7,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Admin {
@@ -19,25 +18,41 @@ model Admin {
 }
 
 model TeamMember {
-  id       Int      @id @default(autoincrement())
-  name     String
-  role     String
-  bio      String
-  photoUrl String?
-  category String   // "board" | "management"
-  order    Int      @default(0)
+  id        Int      @id @default(autoincrement())
+  name      String
+  role      String
+  bio       String
+  photoUrl  String?
+  category  String // "board" | "management"
+  order     Int      @default(0)
   createdAt DateTime @default(now())
 }
 
 model NewsArticle {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
-  slug        String   @unique
+  slug        String    @unique
   body        String
   coverImage  String?
-  published   Boolean  @default(false)
+  category    String?
+  published   Boolean   @default(false)
   publishedAt DateTime?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
+
+  images NewsImage[]
+}
+
+model NewsImage {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  newsArticleId Int
+  newsArticle   NewsArticle @relation(fields: [newsArticleId], references: [id], onDelete: Cascade)
+
+  @@index([newsArticleId])
 }
 
 model Download {
@@ -49,20 +64,20 @@ model Download {
 }
 
 model JobPosting {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   department  String
   location    String
   description String
   deadline    DateTime?
-  status      String   @default("open") // "open" | "closed"
-  createdAt   DateTime @default(now())
+  status      String    @default("open") // "open" | "closed"
+  createdAt   DateTime  @default(now())
 
   applications JobApplication[]
 }
 
 model JobApplication {
-  id            Int      @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   jobId         Int
   job           JobPosting @relation(fields: [jobId], references: [id])
   applicantName String
@@ -70,7 +85,7 @@ model JobApplication {
   phone         String?
   resumeUrl     String
   coverNote     String?
-  submittedAt   DateTime @default(now())
+  submittedAt   DateTime   @default(now())
 }
 
 model FAQ {
@@ -89,4 +104,30 @@ model ContactSubmission {
   subject     String?
   message     String
   submittedAt DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+}
+
+model DailyDigest {
+  id          Int       @id @default(autoincrement())
+  title       String    @default("STIAM Daily Market Digest")
+  filePath    String
+  publishDate DateTime
+  dayOfWeek   DayOfWeek
+  createdAt   DateTime  @default(now())
+
+  @@index([publishDate])
+  @@index([dayOfWeek, publishDate])
 }

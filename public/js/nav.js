@@ -1,29 +1,60 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const header = document.getElementById('siteHeader');
   const toggle = document.getElementById('navToggle');
-  const nav = document.getElementById('mainNav');
+  const drawer = document.getElementById('mobileDrawer');
+  const drawerClose = document.getElementById('drawerClose');
+  const overlay = document.getElementById('navOverlay');
 
-  toggle.addEventListener('click', () => {
-    const isOpen = nav.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', isOpen);
+  // Sticky header shadow on scroll
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      header.classList.add('is-scrolling');
+    } else {
+      header.classList.remove('is-scrolling');
+    }
   });
 
-  // On mobile, tapping a "has-dropdown" link toggles its submenu
-  // instead of navigating immediately (hover handles this on desktop via CSS).
-  document.querySelectorAll('.has-dropdown > a').forEach((link) => {
+  function openDrawer() {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    toggle.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('nav-open-lock');
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('nav-open-lock');
+    drawer.querySelectorAll('.has-dropdown.open').forEach((item) => item.classList.remove('open'));
+  }
+
+  toggle.addEventListener('click', openDrawer);
+  drawerClose.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) {
+      closeDrawer();
+    }
+  });
+
+  // Inside the drawer, tapping a "has-dropdown" link expands its submenu
+  drawer.querySelectorAll('.has-dropdown > a').forEach((link) => {
     link.addEventListener('click', (e) => {
-      if (window.innerWidth < 768) {
-        e.preventDefault();
-        link.parentElement.classList.toggle('open');
-      }
+      e.preventDefault();
+      link.parentElement.classList.toggle('open');
     });
   });
 
-  // A menu opened on mobile must not remain expanded after resizing to desktop.
+  // Tapping a plain drawer link closes the drawer so navigation feels immediate
+  drawer.querySelectorAll('.mobile-drawer-nav > ul > li:not(.has-dropdown) > a, .dropdown a').forEach((link) => {
+    link.addEventListener('click', closeDrawer);
+  });
+
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) {
-      nav.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-      document.querySelectorAll('.has-dropdown.open').forEach((item) => item.classList.remove('open'));
+    if (window.innerWidth >= 1024) {
+      closeDrawer();
     }
   });
 });

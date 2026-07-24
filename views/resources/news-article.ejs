@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+<section class="inner-page-hero digest-hero news-article-hero">
+  <div class="inner-page-hero-inner">
+    <span class="hero-eyebrow">Resources</span>
+    <h1><%= article.title %></h1>
+    <% if (formattedDate) { %>
+      <p class="news-article-date"><%= formattedDate %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section news-article-section">
+  <div class="news-article-container">
+    <% if (article.coverImage) { %>
+      <div class="news-article-cover-wrapper">
+        <img class="news-article-cover-img" src="<%= article.coverImage %>" alt="<%= article.title %>" />
+      </div>
+    <% } %>
+
+    <div class="news-article-body"><%= article.body %></div>
+
+    <% if (article.images && article.images.length > 0) { %>
+      <h2>Gallery</h2>
+      <div class="news-gallery-grid">
+        <% article.images.forEach(function (img) { %>
+          <img class="news-gallery-img" src="<%= img.imageUrl %>" alt="<%= img.caption || article.title %>" />
+        <% }); %>
+      </div>
+    <% } %>
+
+    <p><a href="/resources/news" class="news-article-back-link">&larr; Back to News &amp; Articles</a></p>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

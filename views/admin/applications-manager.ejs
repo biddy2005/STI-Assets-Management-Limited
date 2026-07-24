@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Applications</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
+      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1>Job Applications</h1>
+
+    <form method="GET" action="/admin/applications" class="form" style="flex-direction: row; align-items: center; gap: 12px;">
+      <label style="flex-direction: row; gap: 8px; align-items: center;">
+        Filter by job:
+        <select name="jobId" onchange="this.form.submit()">
+          <option value="">All jobs</option>
+          <% jobs.forEach(function(job) { %>
+            <option value="<%= job.id %>" <%= jobIdFilter === job.id ? 'selected' : '' %>><%= job.title %></option>
+          <% }) %>
+        </select>
+      </label>
+    </form>
+
+    <div class="card-grid">
+      <% applications.forEach(function(app) { %>
+        <div class="card">
+          <h3><%= app.applicantName %></h3>
+          <p><%= app.job.title %></p>
+          <p><%= app.email %><% if (app.phone) { %> · <%= app.phone %><% } %></p>
+          <p>Submitted: <%= app.submittedAt.toDateString() %></p>
+          <% if (app.coverNote) { %><p><%= app.coverNote %></p><% } %>
+          <p><a href="<%= app.resumeUrl %>" target="_blank" rel="noopener">View Resume</a></p>
+          <form action="/admin/applications/<%= app.id %>/delete" method="POST" onsubmit="return confirm('Delete this application?');">
+            <button type="submit" class="btn-outline">Delete</button>
+          </form>
+        </div>
+      <% }) %>
+      <% if (applications.length === 0) { %>
+        <p>No applications found.</p>
+      <% } %>
+    </div>
+  </section>
+</body>
+</html>
