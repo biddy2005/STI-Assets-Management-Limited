@@ -3,6 +3,9 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
 const pageRoutes = require('./routes/pages.routes');
 const adminRoutes = require('./routes/admin.routes');
 const authRoutes = require('./routes/auth.routes');
@@ -11,6 +14,17 @@ const careersRoutes = require('./routes/api.careers.routes');
 const newsletterRoutes = require('./routes/api.newsletter.routes');
 
 const app = express();
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'img-src': ["'self'", 'data:', 'https://images.unsplash.com', 'https://stiassetmgt.com'],
+        'frame-src': ["'self'", 'https://www.google.com']
+      }
+    }
+  })
+);
 const isProduction = process.env.NODE_ENV === 'production';
 
 if (!process.env.SESSION_SECRET) {
@@ -48,6 +62,14 @@ app.use((req, res, next) => {
   res.locals.newsletterError = req.query.newsletterError === '1';
   next();
 });
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,                  // 10 attempts per IP per window
+  message: 'Too many login attempts. Please try again later.'
+});
+app.use('/auth/login', loginLimiter);
+
 
 // ---- Routes ----
 app.use('/', pageRoutes);

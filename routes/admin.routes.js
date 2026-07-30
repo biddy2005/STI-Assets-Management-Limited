@@ -25,6 +25,7 @@ const digestStorage = multer.diskStorage({
 
 const uploadDigest = multer({
   storage: digestStorage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
   fileFilter: (req, file, cb) => {
     if (file.mimetype !== 'application/pdf') {
       return cb(new Error('Only PDF files are allowed'));
@@ -113,8 +114,8 @@ const imageFileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-const uploadCoverImage = multer({ storage: newsStorage, fileFilter: imageFileFilter });
-const uploadGalleryImages = multer({ storage: newsStorage, fileFilter: imageFileFilter });
+const uploadCoverImage = multer({ storage: newsStorage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: imageFileFilter });
+const uploadGalleryImages = multer({ storage: newsStorage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: imageFileFilter });
 
 router.get('/news', async (req, res) => {
   const articles = await prisma.newsArticle.findMany({ orderBy: { createdAt: 'desc' } });

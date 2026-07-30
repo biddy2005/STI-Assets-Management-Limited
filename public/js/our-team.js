@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const role = card.getAttribute('data-role');
       const bio = card.getAttribute('data-bio');
 
-      modalName.innerHTML = name;
-      modalRole.innerHTML = role;
-      modalBio.innerHTML = bio;
+          modalName.textContent = name;
+          modalRole.textContent = role;
+          modalBio.textContent = bio;
 
       modal.classList.add('active');
       document.body.style.overflow = 'hidden'; // Prevents background body window scrolling
