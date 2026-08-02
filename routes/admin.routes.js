@@ -2,8 +2,15 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { requireAuth } = require('../middleware/auth.middleware');
+const fs = require('fs/promises');
+const {
+  requireAuth,
+  requireRole
+} = require('../middleware/auth.middleware');
 const prisma = require('../config/db');
+const {
+  resumeDirectory
+} = require('../config/storage');
 const { DAY_ORDER, DAY_LABELS, getActiveWeekRange, getDateForDay } = require('../utils/digestWeek');
 const { slugify } = require('../utils/slugify');
 
@@ -12,6 +19,22 @@ router.get('/login', (req, res) => res.render('admin/login', { error: null }));
 
 // Everything below this line requires a logged-in admin
 router.use(requireAuth);
+
+/*
+ * Content editors can create and update public website content.
+ */
+const contentManagerOnly = requireRole(
+  'superadmin',
+  'editor'
+);
+
+/*
+ * Sensitive data and permanent deletion are restricted
+ * to superadmins.
+ */
+const superAdminOnly = requireRole(
+  'superadmin'
+);
 
 router.get('/dashboard', (req, res) => {
   res.render('admin/dashboard', { admin: { email: req.session.adminEmail } });
@@ -92,7 +115,10 @@ router.post('/downloads', uploadDigest.single('digestFile'), async (req, res) =>
   }
 });
 
-router.post('/downloads/:id/delete', async (req, res) => {
+router.post(
+  '/downloads/:id/delete',
+  requireRole('superadmin'),
+  async (req, res, next) => {
   try {
     await prisma.dailyDigest.delete({ where: { id: Number(req.params.id) } });
   } catch (err) {
@@ -190,7 +216,10 @@ router.post('/news/:id', uploadCoverImage.single('coverImage'), async (req, res)
   }
 });
 
-router.post('/news/:id/delete', async (req, res) => {
+router.post(
+  '/news/:id/delete',
+  requireRole('superadmin'),
+  async (req, res, next) => {
   try {
     await prisma.newsArticle.delete({ where: { id: Number(req.params.id) } });
   } catch (err) {
@@ -238,7 +267,10 @@ router.post('/news/:id/images', uploadGalleryImages.array('galleryImages', 10), 
   }
 });
 
-router.post('/news/:id/images/:imageId/delete', async (req, res) => {
+router.post(
+  '/news/:id/images/:imageId/delete',
+  requireRole('superadmin'),
+  async (req, res, next) => {
   try {
     await prisma.newsImage.delete({ where: { id: Number(req.params.imageId) } });
   } catch (err) {
@@ -309,7 +341,10 @@ router.post('/jobs/:id', async (req, res) => {
   }
 });
 
-router.post('/jobs/:id/delete', async (req, res) => {
+router.post(
+  '/jobs/:id/delete',
+  requireRole('superadmin'),
+  async (req, res, next) => {
   try {
     await prisma.jobPosting.delete({ where: { id: Number(req.params.id) } });
   } catch (err) {
@@ -319,62 +354,390 @@ router.post('/jobs/:id/delete', async (req, res) => {
 });
 
 // --- Job Applications (read-only, tied to Job Postings) ---
-router.get('/applications', async (req, res) => {
-  const jobIdFilter = req.query.jobId ? Number(req.query.jobId) : null;
+router.get(
+  '/applications',
+  requireRole('superadmin'),
+  async (req, res, next) => {
+    try {
+      const jobIdFilter =
+        req.query.jobId
+          ? Number(req.query.jobId)
+          : null;
 
-  const applications = await prisma.jobApplication.findMany({
-    where: jobIdFilter ? { jobId: jobIdFilter } : {},
-    include: { job: true },
-    orderBy: { submittedAt: 'desc' }
-  });
+      const applications =
+        await prisma.jobApplication.findMany({
+          where: jobIdFilter
+            ? {
+                jobId: jobIdFilter
+              }
+            : {},
 
-  const jobs = await prisma.jobPosting.findMany({ orderBy: { createdAt: 'desc' } });
+          include: {
+            job: true
+          },
 
-  res.render('admin/applications-manager', { applications, jobs, jobIdFilter });
-});
+          orderBy: {
+            submittedAt: 'desc'
+          }
+        });
 
-router.post('/applications/:id/delete', async (req, res) => {
-  try {
-    await prisma.jobApplication.delete({ where: { id: Number(req.params.id) } });
-  } catch (err) {
-    console.error(err);
+      const jobs =
+        await prisma.jobPosting.findMany({
+          orderBy: {
+            createdAt: 'desc'
+          }
+        });
+
+      return res.render(
+        'admin/applications-manager',
+        {
+          applications,
+          jobs,
+          jobIdFilter
+        }
+      );
+    } catch (error) {
+      return next(error);
+    }
   }
-  res.redirect('/admin/applications');
-});
+);
+
+/*
+ * Download an applicant's résumé.
+ *
+ * Everything in admin.routes.js after router.use(requireAuth)
+ * already requires an authenticated administrator.
+ */
+router.get(
+  '/applications/:id/resume',
+  requireRole('superadmin'),
+  async (req, res, next) => {
+    try {
+      const applicationId =
+        Number(req.params.id);
+
+      if (
+        !Number.isInteger(applicationId) ||
+        applicationId < 1
+      ) {
+        return res.status(400).send(
+          'Invalid application ID.'
+        );
+      }
+
+      const application =
+        await prisma.jobApplication.findUnique({
+          where: {
+            id: applicationId
+          }
+        });
+
+      if (!application) {
+        return res.status(404).render(
+          '404',
+          {
+            title:
+              'Application Not Found'
+          }
+        );
+      }
+
+      /*
+       * path.basename removes any directory path and keeps only
+       * the filename.
+       *
+       * This prevents a stored value such as ../../secret.txt
+       * from being used to read files outside the résumé folder.
+       */
+      const safeStorageName =
+        path.basename(
+          application.resumeStorageKey
+        );
+
+      const resumePath = path.join(
+        resumeDirectory,
+        safeStorageName
+      );
+
+      /*
+       * Check that the file exists before trying to download it.
+       */
+      try {
+        await fs.access(resumePath);
+      } catch (error) {
+        return res.status(404).send(
+          'The résumé file could not be found.'
+        );
+      }
+
+      /*
+       * Do not allow the browser or an intermediary cache to
+       * retain the résumé.
+       */
+      res.setHeader(
+        'Cache-Control',
+        'private, no-store, max-age=0'
+      );
+
+      res.setHeader(
+        'Pragma',
+        'no-cache'
+      );
+
+      res.setHeader(
+        'X-Content-Type-Options',
+        'nosniff'
+      );
+
+      /*
+       * res.download() forces a file download and uses the
+       * applicant's original filename.
+       */
+      return res.download(
+        resumePath,
+        application.resumeOriginalName,
+        (error) => {
+          if (
+            error &&
+            !res.headersSent
+          ) {
+            return next(error);
+          }
+        }
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
+
+router.post(
+  '/applications/:id/delete',
+
+  /*
+   * Only administrators whose role is SUPERADMIN
+   * can continue to the deletion code below.
+   */
+  requireRole('superadmin'),
+
+  async (req, res, next) => {
+    const applicationId =
+      Number(req.params.id);
+
+    /*
+     * Make sure the application ID is a valid positive number.
+     */
+    if (
+      !Number.isInteger(applicationId) ||
+      applicationId < 1
+    ) {
+      return res.status(400).send(
+        'Invalid application ID.'
+      );
+    }
+
+    try {
+      /*
+       * Find the application before deleting it.
+       *
+       * We need resumeStorageKey so that we can also delete
+       * the résumé from storage/private/resumes.
+       */
+      const application =
+        await prisma.jobApplication.findUnique({
+          where: {
+            id: applicationId
+          }
+        });
+
+      /*
+       * Stop when the application does not exist.
+       */
+      if (!application) {
+        return res.status(404).send(
+          'Application not found.'
+        );
+      }
+
+      /*
+       * Delete the database record.
+       */
+      await prisma.jobApplication.delete({
+        where: {
+          id: applicationId
+        }
+      });
+
+      /*
+       * Get only the safe filename.
+       *
+       * For example:
+       * 1722345678901-random-id.pdf
+       */
+      const safeStorageName =
+        path.basename(
+          application.resumeStorageKey
+        );
+
+      /*
+       * Build the complete private résumé path.
+       */
+      const resumePath = path.join(
+        resumeDirectory,
+        safeStorageName
+      );
+
+      /*
+       * Delete the résumé file.
+       */
+      try {
+        await fs.unlink(resumePath);
+      } catch (fileError) {
+        /*
+         * ENOENT means the résumé file was already missing.
+         * That should not crash the application.
+         */
+        if (fileError.code !== 'ENOENT') {
+          console.error(
+            'Application deleted, but résumé cleanup failed:',
+            {
+              applicationId,
+              resumePath,
+              error: fileError
+            }
+          );
+        }
+      }
+
+      /*
+       * Return to the application manager after deletion.
+       */
+      return res.redirect(
+        '/admin/applications'
+      );
+    } catch (error) {
+      /*
+       * Send unexpected errors to your main Express
+       * error-handling middleware.
+       */
+      return next(error);
+    }
+  }
+);
 
 // --- Contact Submissions (read-only) ---
-router.get('/contact-submissions', async (req, res) => {
-  const submissions = await prisma.contactSubmission.findMany({
-    orderBy: { submittedAt: 'desc' }
-  });
-  res.render('admin/contact-submissions', { submissions });
-});
+router.get(
+  '/contact-submissions',
+  requireRole('superadmin'),
+  async (req, res, next) => {
+    try {
+      const submissions =
+        await prisma.contactSubmission.findMany({
+          orderBy: {
+            submittedAt: 'desc'
+          }
+        });
 
-router.post('/contact-submissions/:id/delete', async (req, res) => {
-  try {
-    await prisma.contactSubmission.delete({ where: { id: Number(req.params.id) } });
-  } catch (err) {
-    console.error(err);
+      return res.render(
+        'admin/contact-submissions',
+        {
+          submissions
+        }
+      );
+    } catch (error) {
+      return next(error);
+    }
   }
-  res.redirect('/admin/contact-submissions');
-});
+);
+
+router.post(
+  '/contact-submissions/:id/delete',
+  requireRole('superadmin'),
+  async (req, res, next) => {
+    const submissionId =
+      Number(req.params.id);
+
+    if (
+      !Number.isInteger(submissionId) ||
+      submissionId < 1
+    ) {
+      return res.status(400).send(
+        'Invalid contact submission ID.'
+      );
+    }
+
+    try {
+      await prisma.contactSubmission.delete({
+        where: {
+          id: submissionId
+        }
+      });
+
+      return res.redirect(
+        '/admin/contact-submissions'
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
 
 // --- Newsletter Subscribers (read-only) ---
-router.get('/newsletter', async (req, res) => {
-  const subscribers = await prisma.newsletterSubscriber.findMany({
-    orderBy: { subscribedAt: 'desc' }
-  });
-  res.render('admin/newsletter-manager', { subscribers });
-});
+router.get(
+  '/newsletter',
+  requireRole('superadmin'),
+  async (req, res, next) => {
+    try {
+      const subscribers =
+        await prisma.newsletterSubscriber.findMany({
+          orderBy: {
+            subscribedAt: 'desc'
+          }
+        });
 
-router.post('/newsletter/:id/delete', async (req, res) => {
-  try {
-    await prisma.newsletterSubscriber.delete({ where: { id: Number(req.params.id) } });
-  } catch (err) {
-    console.error(err);
+      return res.render(
+        'admin/newsletter-manager',
+        {
+          subscribers
+        }
+      );
+    } catch (error) {
+      return next(error);
+    }
   }
-  res.redirect('/admin/newsletter');
-});
+);
+
+router.post(
+  '/newsletter/:id/delete',
+  requireRole('superadmin'),
+  async (req, res, next) => {
+    const subscriberId =
+      Number(req.params.id);
+
+    if (
+      !Number.isInteger(subscriberId) ||
+      subscriberId < 1
+    ) {
+      return res.status(400).send(
+        'Invalid newsletter subscriber ID.'
+      );
+    }
+
+    try {
+      await prisma.newsletterSubscriber.delete({
+        where: {
+          id: subscriberId
+        }
+      });
+
+      return res.redirect(
+        '/admin/newsletter'
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
 
 // --- CRUD route stubs ---
 // Remaining resources still to build out: jobs, faqs, team.

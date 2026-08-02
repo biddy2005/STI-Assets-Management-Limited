@@ -23,9 +23,18 @@
         <div class="card">
           <h3><%= sub.email %></h3>
           <p><small>Subscribed: <%= sub.subscribedAt.toLocaleString() %></small></p>
-          <form action="/admin/newsletter/<%= sub.id %>/delete" method="POST" onsubmit="return confirm('Remove this subscriber?');">
-            <button type="submit" class="btn-outline">Remove</button>
-          </form>
+            <form
+              action="/admin/newsletter/<%= sub.id %>/delete"
+              method="POST"
+              data-confirm="Remove this subscriber from the newsletter?"
+            >
+              <button
+                type="submit"
+                class="btn-outline"
+              >
+                Remove
+              </button>
+            </form>
         </div>
       <% }) %>
       <% if (subscribers.length === 0) { %>
@@ -33,5 +42,6 @@
       <% } %>
     </div>
   </section>
+  <script src="/js/admin-confirm.js"></script>
 </body>
 </html>

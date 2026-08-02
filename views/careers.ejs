@@ -66,9 +66,32 @@
           <label>Cover Note
             <textarea name="coverNote" rows="4"></textarea>
           </label>
-          <label>Resume
-            <input type="file" name="resume" accept=".pdf,.doc,.docx" required>
+         <label>
+            Résumé
+            <input
+              type="file"
+              name="resume"
+              accept=".pdf,application/pdf" 
+              required
+            >
+            <small>
+              PDF only. Maximum file size: 5 MB.
+            </small>
           </label>
+                  <label class="privacy-consent">
+                  <input
+                    type="checkbox"
+                    name="privacyAcknowledgement"
+                    value="yes"
+                    required
+                  >
+
+                  <span>
+                    I acknowledge that my information and résumé
+                    will be processed for recruitment purposes in
+                    accordance with the Privacy Policy.
+                  </span>
+                </label>
 
           <button type="submit" class="btn-careers-submit">Submit Application</button>
         </form>

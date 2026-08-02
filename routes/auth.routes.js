@@ -4,13 +4,26 @@ const router = express.Router();
 const prisma = require('../config/db');
 
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+ const email =
+  typeof req.body.email === 'string'
+    ? req.body.email.trim().toLowerCase()
+    : '';
+
+const password =
+  typeof req.body.password === 'string'
+    ? req.body.password
+    : '';
 
   try {
     const admin = await prisma.admin.findUnique({ where: { email } });
 
     if (!admin) {
-      return res.render('admin/login', { error: 'Invalid credentials' });
+          return res.status(401).render(
+      'admin/login',
+      {
+        error: 'Invalid credentials'
+      }
+);
     }
 
     const match = await bcrypt.compare(password, admin.passwordHash);
@@ -25,6 +38,7 @@ router.post('/login', async (req, res) => {
       }
       req.session.adminId = admin.id;
       req.session.adminEmail = admin.email;
+      req.session.adminRole = admin.role;
       return res.redirect('/admin/dashboard');
     });
   } catch (err) {

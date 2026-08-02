@@ -1,0 +1,58 @@
+<%- include('partials/header') %>
+
+<section
+  class="section rate-limit-page"
+  style="text-align:center;padding:80px 20px;"
+>
+  <h1>Too Many Requests</h1>
+
+  <p>
+    <%= message %>
+  </p>
+
+  <% if (
+    typeof retryAfterSeconds !== 'undefined' &&
+    retryAfterSeconds
+  ) { %>
+    <% const retryMinutes =
+      Math.max(
+        1,
+        Math.ceil(retryAfterSeconds / 60)
+      );
+    %>
+
+    <p>
+      You can try again in approximately
+      <strong>
+        <%= retryMinutes %>
+        minute<%= retryMinutes === 1 ? '' : 's' %>
+      </strong>.
+    </p>
+  <% } %>
+
+  <div
+    style="
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:12px;
+      margin-top:24px;
+    "
+  >
+    <a
+      href="/"
+      class="btn-primary"
+    >
+      Back Home
+    </a>
+
+    <a
+      href="/contact"
+      class="btn-outline"
+    >
+      Contact Page
+    </a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

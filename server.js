@@ -1,10 +1,15 @@
+const env = require('./config/env');
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+
+const pgSession =
+  require('connect-pg-simple')(session);
+
+
+
 
 const pageRoutes = require('./routes/pages.routes');
 const adminRoutes = require('./routes/admin.routes');
@@ -13,7 +18,17 @@ const contactRoutes = require('./routes/api.contact.routes');
 const careersRoutes = require('./routes/api.careers.routes');
 const newsletterRoutes = require('./routes/api.newsletter.routes');
 
+const {
+  contactLimiter,
+  newsletterLimiter,
+  careersLimiter,
+  loginLimiter
+} = require(
+  './middleware/rateLimit.middleware'
+);
+
 const app = express();
+if (env.isProduction) app.set('trust proxy', 1);
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -25,13 +40,9 @@ app.use(
     }
   })
 );
-const isProduction = process.env.NODE_ENV === 'production';
 
-if (!process.env.SESSION_SECRET) {
-  throw new Error('SESSION_SECRET must be set. Add a long, random value to .env.');
-}
 
-if (isProduction) app.set('trust proxy', 1);
+
 
 // ---- View engine ----
 app.set('view engine', 'ejs');
@@ -45,13 +56,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
     name: 'assetco.sid',
-    secret: process.env.SESSION_SECRET,
+
+    store: new pgSession({
+      conString: env.databaseUrl,
+      schemaName: 'sessions',
+      tableName: 'session',
+      createTableIfMissing: true
+    }),
+
+    secret: env.sessionSecret,
+
     resave: false,
     saveUninitialized: false,
+    rolling: true,
+
     cookie: {
       httpOnly: true,
+      secure: env.isProduction,
       sameSite: 'lax',
-      secure: isProduction,
       maxAge: 1000 * 60 * 60 * 2
     }
   })
@@ -63,21 +85,108 @@ app.use((req, res, next) => {
   next();
 });
 
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,                  // 10 attempts per IP per window
-  message: 'Too many login attempts. Please try again later.'
+
+// ============================================================
+// RATE-LIMITED FORM SUBMISSIONS
+// ============================================================
+
+/*
+ * Protect only the login POST request.
+ *
+ * A normal visit to a login page should not count against
+ * the limit. Only submitting the form counts.
+ */
+app.post(
+  '/auth/login',
+  loginLimiter
+);
+
+/*
+ * Protect only contact form submissions.
+ */
+app.post(
+  '/api/contact',
+  contactLimiter
+);
+
+/*
+ * Protect only career application submissions.
+ *
+ * IMPORTANT:
+ * This line must appear before careersRoutes is mounted.
+ *
+ * That ensures the limiter runs before Multer processes and
+ * saves the résumé file.
+ */
+app.post(
+  '/api/careers/apply',
+  careersLimiter
+);
+
+/*
+ * Protect only newsletter form submissions.
+ */
+app.post(
+  '/api/newsletter',
+  newsletterLimiter
+);
+
+// ============================================================
+// ROUTES
+// ============================================================
+
+app.use(
+  '/',
+  pageRoutes
+);
+
+app.use(
+  '/admin',
+  adminRoutes
+);
+
+app.use(
+  '/auth',
+  authRoutes
+);
+
+app.use(
+  '/api/contact',
+  contactRoutes
+);
+
+app.use(
+  '/api/careers',
+  careersRoutes
+);
+
+app.use(
+  '/api/newsletter',
+  newsletterRoutes
+);
+
+const prisma = require('./config/db');
+
+app.get('/healthz', (req, res) => {
+  return res.status(200).json({
+    status: 'ok'
+  });
 });
-app.use('/auth/login', loginLimiter);
 
+app.get('/readyz', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
 
-// ---- Routes ----
-app.use('/', pageRoutes);
-app.use('/admin', adminRoutes);
-app.use('/auth', authRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/careers', careersRoutes);
-app.use('/api/newsletter', newsletterRoutes);
+    return res.status(200).json({
+      status: 'ready'
+    });
+  } catch (error) {
+    return res.status(503).json({
+      status: 'not-ready'
+    });
+  }
+});
+
 
 // ---- 404 handler ----
 app.use((req, res) => {
@@ -85,12 +194,56 @@ app.use((req, res) => {
 });
 
 // ---- Error handler ----
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).render('500', { title: 'Server Error' });
+app.use((error, req, res, next) => {
+  /*
+   * This is important when an error happens after Express has
+   * already started sending a file or response.
+   */
+  if (res.headersSent) {
+    return next(error);
+  }
+
+  console.error(
+    'Unhandled application error:',
+    error
+  );
+
+  return res.status(500).render(
+    '500',
+    {
+      title: 'Server Error'
+    }
+  );
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+const PORT = env.port;
+const server = app.listen(PORT, () => {
+  console.log(
+    `Server listening on port ${PORT}`
+  );
 });
+
+async function shutdown(signal) {
+  console.log(
+    `${signal} received. Closing server.`
+  );
+
+  server.close(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
+  });
+
+  setTimeout(() => {
+    process.exit(1);
+  }, 10000).unref();
+}
+
+process.on(
+  'SIGTERM',
+  () => shutdown('SIGTERM')
+);
+
+process.on(
+  'SIGINT',
+  () => shutdown('SIGINT')
+);

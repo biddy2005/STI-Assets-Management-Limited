@@ -139,6 +139,32 @@ router.get('/careers', async (req, res, next) => {
   }
 });
 
+router.get(
+  '/terms-and-conditions',
+  (req, res) => {
+    return res.render(
+      'terms-and-conditions',
+      {
+        title:
+          'Terms and Conditions'
+      }
+    );
+  }
+);
+
+router.get(
+  '/cookie-policy',
+  (req, res) => {
+    return res.render(
+      'cookie-policy',
+      {
+        title: 'Cookie Policy'
+      }
+    );
+  }
+);
+
+
 // Legal
 router.get('/privacy-policy', (req, res) => res.render('privacy-policy', { title: 'Privacy Policy' }));
 

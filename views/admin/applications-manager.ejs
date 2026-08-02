@@ -20,7 +20,10 @@
     <form method="GET" action="/admin/applications" class="form" style="flex-direction: row; align-items: center; gap: 12px;">
       <label style="flex-direction: row; gap: 8px; align-items: center;">
         Filter by job:
-        <select name="jobId" onchange="this.form.submit()">
+            <select
+              name="jobId"
+              data-auto-submit
+            >
           <option value="">All jobs</option>
           <% jobs.forEach(function(job) { %>
             <option value="<%= job.id %>" <%= jobIdFilter === job.id ? 'selected' : '' %>><%= job.title %></option>
@@ -37,10 +40,70 @@
           <p><%= app.email %><% if (app.phone) { %> · <%= app.phone %><% } %></p>
           <p>Submitted: <%= app.submittedAt.toDateString() %></p>
           <% if (app.coverNote) { %><p><%= app.coverNote %></p><% } %>
-          <p><a href="<%= app.resumeUrl %>" target="_blank" rel="noopener">View Resume</a></p>
-          <form action="/admin/applications/<%= app.id %>/delete" method="POST" onsubmit="return confirm('Delete this application?');">
-            <button type="submit" class="btn-outline">Delete</button>
-          </form>
+          <p>
+  <a
+    href="/admin/applications/<%= app.id %>/resume"
+    class="btn-text"
+  >
+    Download résumé
+  </a>
+</p>
+
+<p>
+  <small>
+    Original file:
+    <%= app.resumeOriginalName %>
+  </small>
+</p>
+
+<p>
+  <small>
+    File size:
+    <%= (
+      app.resumeFileSize /
+      (1024 * 1024)
+    ).toFixed(2) %> MB
+  </small>
+</p>
+
+<p>
+  <strong>Privacy notice:</strong>
+
+  <% if (app.privacyAcknowledged) { %>
+    Acknowledged
+  <% } else { %>
+    Not recorded
+  <% } %>
+</p>
+
+<% if (app.privacyAcknowledgedAt) { %>
+  <p>
+    <strong>Acknowledged on:</strong>
+
+    <%= new Date(
+      app.privacyAcknowledgedAt
+    ).toLocaleString('en-NG') %>
+  </p>
+<% } %>
+
+<% if (app.privacyNoticeVersion) { %>
+  <p>
+    <strong>Notice version:</strong>
+    <%= app.privacyNoticeVersion %>
+  </p>
+<% } %>
+        <form
+          action="/admin/applications/<%= app.id %>/delete"
+          method="POST"
+          data-confirm="Delete this application and its résumé?"
+        >
+          <button
+            type="submit"
+            class="btn-outline"
+          >
+            Delete
+          </button>
+        </form>
         </div>
       <% }) %>
       <% if (applications.length === 0) { %>
@@ -48,5 +111,6 @@
       <% } %>
     </div>
   </section>
+  <script src="/js/admin-confirm.js"></script>
 </body>
 </html>

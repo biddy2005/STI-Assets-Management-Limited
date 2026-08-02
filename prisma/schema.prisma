@@ -77,15 +77,51 @@ model JobPosting {
 }
 
 model JobApplication {
-  id            Int        @id @default(autoincrement())
-  jobId         Int
-  job           JobPosting @relation(fields: [jobId], references: [id])
+  id    Int        @id @default(autoincrement())
+  jobId Int
+  job   JobPosting @relation(fields: [jobId], references: [id])
+
   applicantName String
   email         String
   phone         String?
-  resumeUrl     String
   coverNote     String?
-  submittedAt   DateTime   @default(now())
+
+  /**
+   * The generated filename or cloud object key.
+   * Local example:
+   * 1722345678901-uuid.pdf
+   * Future cloud example:
+   * resumes/2026/uuid.pdf
+   */
+  resumeStorageKey String
+
+  /**
+   * The applicant's original filename.
+   * Example:
+   * Odunayo-Ajisebutu-CV.pdf
+   */
+  resumeOriginalName String
+
+  /**
+   * The detected upload type.
+   * Example:
+   * application/pdf
+   */
+  resumeMimeType String
+
+  /**
+   * The file size in bytes.
+   */
+  resumeFileSize Int
+
+  privacyAcknowledged   Boolean   @default(false)
+  privacyAcknowledgedAt DateTime?
+  privacyNoticeVersion  String?
+
+  submittedAt DateTime @default(now())
+
+  @@index([jobId])
+  @@index([submittedAt])
 }
 
 model FAQ {

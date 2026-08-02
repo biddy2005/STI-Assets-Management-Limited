@@ -1,6 +1,32 @@
+# Installed packages
 node_modules/
+
+# Private environment files
 .env
+.env.*
+!.env.example
+
+# User uploads
 public/uploads/
+uploads/
+
+storage/private/
+
+# Logs
 *.log
-.DS_Store
+logs/
+
+# Test output
+coverage/
+
+# Build output
 dist/
+build/
+
+# Editor files
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
