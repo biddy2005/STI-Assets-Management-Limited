@@ -3,25 +3,58 @@ const router = express.Router();
 const prisma = require('../config/db');
 const { getActiveWeekRange, buildWeekMap, getOrdinalDate } = require('../utils/digestWeek');
 
-router.get('/', async (req, res, next) => {
-  try {
-    const articles = await prisma.newsArticle.findMany({
-      where: { published: true },
-      orderBy: { publishedAt: 'desc' },
-      take: 3
-    });
+const {
+  asyncHandler
+} = require(
+  '../utils/asyncHandler'
+);
 
-    const cards = articles.map((article) => ({
-      ...article,
-      formattedDate: article.publishedAt ? getOrdinalDate(article.publishedAt) : null,
-      excerpt: article.body.length > 140 ? `${article.body.slice(0, 140)}…` : article.body
-    }));
+router.get(
+  '/',
 
-    res.render('home', { title: 'Home', articles: cards });
-  } catch (err) {
-    next(err);
-  }
-});
+  asyncHandler(async (req, res) => {
+    const articles =
+      await prisma.newsArticle.findMany({
+        where: {
+          published: true
+        },
+
+        orderBy: {
+          publishedAt: 'desc'
+        },
+
+        take: 3
+      });
+
+    const cards =
+      articles.map((article) => ({
+        ...article,
+
+        formattedDate:
+          article.publishedAt
+            ? getOrdinalDate(
+                article.publishedAt
+              )
+            : null,
+
+        excerpt:
+          article.body.length > 140
+            ? `${article.body.slice(
+                0,
+                140
+              )}…`
+            : article.body
+      }));
+
+    return res.render(
+      'home',
+      {
+        title: 'Home',
+        articles: cards
+      }
+    );
+  })
+);
 
 // Who We Are
 router.get('/who-we-are', (req, res) => res.render('who-we-are/index', { title: 'Who We Are' }));
@@ -56,88 +89,166 @@ router.get('/products', (req, res) => res.render('products', { title: 'Products'
 router.get('/resources', (req, res) => res.redirect('/resources/news'));
 router.get('/resources/faqs', (req, res) => res.render('resources/faqs', { title: 'FAQs' }));
 
-router.get('/resources/downloads', async (req, res, next) => {
-  try {
-    const { weekStart, weekEnd } = getActiveWeekRange();
+router.get(
+  '/resources/downloads',
 
-    const digests = await prisma.dailyDigest.findMany({
-      where: {
-        publishDate: {
-          gte: weekStart,
-          lte: weekEnd
+  asyncHandler(async (req, res) => {
+    const {
+      weekStart,
+      weekEnd
+    } = getActiveWeekRange();
+
+    const digests =
+      await prisma.dailyDigest.findMany({
+        where: {
+          publishDate: {
+            gte: weekStart,
+            lte: weekEnd
+          }
+        },
+
+        orderBy: {
+          publishDate: 'asc'
         }
-      },
-      orderBy: { publishDate: 'asc' }
-    });
+      });
 
-    const weekDigests = buildWeekMap(digests, weekStart);
+    const weekDigests =
+      buildWeekMap(
+        digests,
+        weekStart
+      );
 
-    res.render('resources/downloads', {
-      title: 'Downloads',
-      weekDigests
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+    return res.render(
+      'resources/downloads',
+      {
+        title: 'Downloads',
+        weekDigests
+      }
+    );
+  })
+);
 
-router.get('/resources/news', async (req, res, next) => {
-  try {
-    const articles = await prisma.newsArticle.findMany({
-      where: { published: true },
-      orderBy: { publishedAt: 'desc' }
-    });
+router.get(
+  '/resources/news',
 
-    const cards = articles.map((article) => ({
-      ...article,
-      formattedDate: article.publishedAt ? getOrdinalDate(article.publishedAt) : null,
-      excerpt: article.body.length > 180 ? `${article.body.slice(0, 180)}…` : article.body
-    }));
+  asyncHandler(async (req, res) => {
+    const articles =
+      await prisma.newsArticle.findMany({
+        where: {
+          published: true
+        },
 
-    res.render('resources/news', { title: 'News & Articles', articles: cards });
-  } catch (err) {
-    next(err);
-  }
-});
+        orderBy: {
+          publishedAt: 'desc'
+        }
+      });
 
-router.get('/resources/news/:slug', async (req, res, next) => {
-  try {
-    const article = await prisma.newsArticle.findFirst({
-      where: { slug: req.params.slug, published: true },
-      include: { images: { orderBy: { order: 'asc' } } }
-    });
+    const cards =
+      articles.map((article) => ({
+        ...article,
+
+        formattedDate:
+          article.publishedAt
+            ? getOrdinalDate(
+                article.publishedAt
+              )
+            : null,
+
+        excerpt:
+          article.body.length > 180
+            ? `${article.body.slice(
+                0,
+                180
+              )}…`
+            : article.body
+      }));
+
+    return res.render(
+      'resources/news',
+      {
+        title: 'News & Articles',
+        articles: cards
+      }
+    );
+  })
+);
+
+router.get(
+  '/resources/news/:slug',
+
+  asyncHandler(async (req, res) => {
+    const article =
+      await prisma.newsArticle.findFirst({
+        where: {
+          slug: req.params.slug,
+          published: true
+        },
+
+        include: {
+          images: {
+            orderBy: {
+              order: 'asc'
+            }
+          }
+        }
+      });
 
     if (!article) {
-      return res.status(404).render('404', { title: 'Article Not Found' });
+      return res.status(404).render(
+        '404',
+        {
+          title:
+            'Article Not Found'
+        }
+      );
     }
 
-    res.render('resources/news-article', {
-      title: article.title,
-      article,
-      formattedDate: article.publishedAt ? getOrdinalDate(article.publishedAt) : null
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+    return res.render(
+      'resources/news-article',
+      {
+        title: article.title,
+        article,
+
+        formattedDate:
+          article.publishedAt
+            ? getOrdinalDate(
+                article.publishedAt
+              )
+            : null
+      }
+    );
+  })
+);
 
 // Careers
-router.get('/careers', async (req, res, next) => {
-  try {
-    const jobs = await prisma.jobPosting.findMany({
-      where: { status: 'open' },
-      orderBy: { createdAt: 'desc' }
-    });
-    return res.render('careers', {
-      title: 'Careers',
-      jobs,
-      error: null,
-      applied: req.query.applied === '1'
-    });
-  } catch (err) {
-    return next(err);
-  }
-});
+router.get(
+  '/careers',
+
+  asyncHandler(async (req, res) => {
+    const jobs =
+      await prisma.jobPosting.findMany({
+        where: {
+          status: 'open'
+        },
+
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+    return res.render(
+      'careers',
+      {
+        title: 'Careers',
+        jobs,
+        error: null,
+
+        applied:
+          req.query.applied === '1'
+      }
+    );
+  })
+);
 
 router.get(
   '/terms-and-conditions',

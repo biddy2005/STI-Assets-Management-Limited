@@ -100,6 +100,11 @@
       <div class="contact-form-card">
         <% if (typeof error !== 'undefined' && error) { %><p class="form-error"><%= error %></p><% } %>
         <form action="/api/contact" method="POST" class="contact-form">
+          <input
+            type="hidden"
+            name="_csrf"
+            value="<%= csrfToken %>"
+          >
           <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
 
           <div class="contact-form-row">

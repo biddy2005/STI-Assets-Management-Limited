@@ -10,7 +10,13 @@
   <header class="site-header">
     <div class="nav-wrap">
       <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
-      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+      <form action="/auth/logout" method="POST">
+          <input
+              type="hidden"
+              name="_csrf"
+              value="<%= csrfToken %>"
+            >
+        <button class="btn-nav" type="submit">Log Out</button></form>
     </div>
   </header>
 
@@ -92,18 +98,91 @@
     <%= app.privacyNoticeVersion %>
   </p>
 <% } %>
-        <form
-          action="/admin/applications/<%= app.id %>/delete"
-          method="POST"
-          data-confirm="Delete this application and its résumé?"
-        >
-          <button
-            type="submit"
-            class="btn-outline"
-          >
-            Delete
-          </button>
-        </form>
+
+<!-- Application status update form -->
+<form
+  action="/admin/applications/<%= app.id %>/status"
+  method="POST"
+  class="application-status-form"
+>
+  <input
+    type="hidden"
+    name="_csrf"
+    value="<%= csrfToken %>"
+  >
+
+  <label>
+    Application status
+
+    <select
+      name="status"
+      required
+    >
+      <option
+        value="NEW"
+        <%= app.status === 'NEW' ? 'selected' : '' %>
+      >
+        New
+      </option>
+
+      <option
+        value="REVIEWING"
+        <%= app.status === 'REVIEWING' ? 'selected' : '' %>
+      >
+        Reviewing
+      </option>
+
+      <option
+        value="SHORTLISTED"
+        <%= app.status === 'SHORTLISTED' ? 'selected' : '' %>
+      >
+        Shortlisted
+      </option>
+
+      <option
+        value="REJECTED"
+        <%= app.status === 'REJECTED' ? 'selected' : '' %>
+      >
+        Rejected
+      </option>
+
+      <option
+        value="HIRED"
+        <%= app.status === 'HIRED' ? 'selected' : '' %>
+      >
+        Hired
+      </option>
+    </select>
+  </label>
+
+  <button
+    type="submit"
+    class="btn-primary"
+  >
+    Update Status
+  </button>
+</form>
+
+<!-- Application deletion form -->
+<form
+  action="/admin/applications/<%= app.id %>/delete"
+  method="POST"
+  data-confirm="Delete this application and its résumé?"
+>
+  <input
+    type="hidden"
+    name="_csrf"
+    value="<%= csrfToken %>"
+  >
+
+  <button
+    type="submit"
+    class="btn-outline"
+  >
+    Delete
+  </button>
+</form>
+
         </div>
       <% }) %>
       <% if (applications.length === 0) { %>

@@ -10,7 +10,13 @@
   <header class="site-header">
     <div class="nav-wrap">
       <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
-      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+      <form action="/auth/logout" method="POST">
+          <input
+              type="hidden"
+              name="_csrf"
+              value="<%= csrfToken %>"
+            >
+        <button class="btn-nav" type="submit">Log Out</button></form>
     </div>
   </header>
 
@@ -18,30 +24,127 @@
     <h1>Contact Submissions</h1>
 
     <div class="card-grid">
-      <% submissions.forEach(function(sub) { %>
-        <div class="card">
-          <h3><%= sub.name %></h3>
-          <p><a href="mailto:<%= sub.email %>"><%= sub.email %></a><% if (sub.phone) { %> · <%= sub.phone %><% } %></p>
-          <% if (sub.subject) { %><p><strong>Subject:</strong> <%= sub.subject %></p><% } %>
-          <p><%= sub.message %></p>
-          <p><small>Submitted: <%= sub.submittedAt.toLocaleString() %></small></p>
-              <form
-                action="/admin/contact-submissions/<%= sub.id %>/delete"
-                method="POST"
-                data-confirm="Delete this contact submission?"
-              >
-                <button
-                  type="submit"
-                  class="btn-outline"
-                >
-                  Delete
-                </button>
-              </form>
-        </div>
-      <% }) %>
-      <% if (submissions.length === 0) { %>
-        <p>No contact submissions yet.</p>
+<% submissions.forEach(function(sub) { %>
+  <div class="card">
+    <h3>
+      <%= sub.name %>
+    </h3>
+
+    <p>
+      <a href="mailto:<%= sub.email %>">
+        <%= sub.email %>
+      </a>
+
+      <% if (sub.phone) { %>
+        · <%= sub.phone %>
       <% } %>
+    </p>
+
+    <% if (sub.subject) { %>
+      <p>
+        <strong>Subject:</strong>
+        <%= sub.subject %>
+      </p>
+    <% } %>
+
+    <p>
+      <%= sub.message %>
+    </p>
+
+    <p>
+      <small>
+        Submitted:
+        <%= sub.submittedAt.toLocaleString() %>
+      </small>
+    </p>
+
+    <!-- Display the current contact status -->
+    <p>
+      <strong>Current status:</strong>
+
+      <span class="contact-status">
+        <%= sub.status.replace('_', ' ') %>
+      </span>
+    </p>
+
+    <!-- Contact status update form -->
+    <form
+      action="/admin/contact-submissions/<%= sub.id %>/status"
+      method="POST"
+      class="contact-status-form"
+    >
+      <input
+        type="hidden"
+        name="_csrf"
+        value="<%= csrfToken %>"
+      >
+
+      <label>
+        Update status
+
+        <select
+          name="status"
+          required
+        >
+          <option
+            value="NEW"
+            <%= sub.status === 'NEW' ? 'selected' : '' %>
+          >
+            New
+          </option>
+
+          <option
+            value="IN_PROGRESS"
+            <%= sub.status === 'IN_PROGRESS' ? 'selected' : '' %>
+          >
+            In Progress
+          </option>
+
+          <option
+            value="RESOLVED"
+            <%= sub.status === 'RESOLVED' ? 'selected' : '' %>
+          >
+            Resolved
+          </option>
+
+          <option
+            value="ARCHIVED"
+            <%= sub.status === 'ARCHIVED' ? 'selected' : '' %>
+          >
+            Archived
+          </option>
+        </select>
+      </label>
+
+      <button
+        type="submit"
+        class="btn-primary"
+      >
+        Update Status
+      </button>
+    </form>
+
+    <!-- Contact deletion form -->
+    <form
+      action="/admin/contact-submissions/<%= sub.id %>/delete"
+      method="POST"
+      data-confirm="Delete this contact submission?"
+    >
+      <input
+        type="hidden"
+        name="_csrf"
+        value="<%= csrfToken %>"
+      >
+
+      <button
+        type="submit"
+        class="btn-outline"
+      >
+        Delete
+      </button>
+    </form>
+  </div>
+<% }) %>
     </div>
   </section>
   <script src="/js/admin-confirm.js"></script>

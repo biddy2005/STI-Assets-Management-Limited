@@ -3,7 +3,16 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const prisma = require('../config/db');
 
-router.post('/login', async (req, res) => {
+const {
+  csrfSynchronisedProtection
+} = require(
+  '../middleware/csrf.middleware'
+);
+
+router.post(
+  '/login',
+  csrfSynchronisedProtection,
+  async (req, res) => {
  const email =
   typeof req.body.email === 'string'
     ? req.body.email.trim().toLowerCase()
@@ -47,7 +56,10 @@ const password =
   }
 });
 
-router.post('/logout', (req, res) => {
+router.post(
+  '/logout',
+  csrfSynchronisedProtection,
+  (req, res) => {
   req.session.destroy(() => {
     res.clearCookie('assetco.sid');
     res.redirect('/admin/login');

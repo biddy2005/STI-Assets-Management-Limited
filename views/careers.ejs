@@ -44,6 +44,11 @@
           <p class="form-error"><%= error %></p>
         <% } %>
         <form action="/api/careers/apply" method="POST" enctype="multipart/form-data" class="careers-form">
+          <input
+            type="hidden"
+            name="_csrf"
+            value="<%= csrfToken %>"
+          >
           <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
 
           <label>Full Name

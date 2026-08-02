@@ -10,7 +10,13 @@
   <header class="site-header">
     <div class="nav-wrap">
       <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
-      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+      <form action="/auth/logout" method="POST">
+          <input
+              type="hidden"
+              name="_csrf"
+              value="<%= csrfToken %>"
+            >
+        <button class="btn-nav" type="submit">Log Out</button></form>
     </div>
   </header>
 
@@ -19,6 +25,11 @@
     <p><a href="/admin/news">&larr; Back to News List</a></p>
 
     <form action="/admin/news/<%= article.id %>/images" method="POST" enctype="multipart/form-data" class="form">
+         <input
+          type="hidden"
+          name="_csrf"
+          value="<%= csrfToken %>"
+        > 
       <label>
         Add Images (you can select multiple)
         <input type="file" name="galleryImages" accept="image/*" multiple required />
@@ -31,6 +42,11 @@
         <div class="card">
           <img src="<%= img.imageUrl %>" alt="" style="width:100%;border-radius:var(--radius);margin-bottom:8px;" />
           <form action="/admin/news/<%= article.id %>/images/<%= img.id %>/delete" method="POST">
+              <input
+                type="hidden"
+                name="_csrf"
+                value="<%= csrfToken %>"
+              >
             <button type="submit" class="btn-nav">Delete</button>
           </form>
         </div>

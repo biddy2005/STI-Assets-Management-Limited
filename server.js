@@ -9,7 +9,11 @@ const pgSession =
   require('connect-pg-simple')(session);
 
 
-
+const {
+  exposeCsrfToken
+} = require(
+  './middleware/csrf.middleware'
+);
 
 const pageRoutes = require('./routes/pages.routes');
 const adminRoutes = require('./routes/admin.routes');
@@ -78,6 +82,11 @@ app.use(
     }
   })
 );
+
+/*
+ * CSRF tokens depend on req.session,
+ */
+app.use(exposeCsrfToken);
 
 app.use((req, res, next) => {
   res.locals.newsletterSuccess = req.query.subscribed === '1';
@@ -191,6 +200,27 @@ app.get('/readyz', async (req, res) => {
 // ---- 404 handler ----
 app.use((req, res) => {
   res.status(404).render('404', { title: 'Page Not Found' });
+});
+
+/*
+ * CSRF error handler.
+ */
+app.use((error, req, res, next) => {
+  if (
+    error.code !==
+    'EBADCSRFTOKEN'
+  ) {
+    return next(error);
+  }
+
+  return res.status(403).render(
+    '403',
+    {
+      title: 'Request Rejected',
+      message:
+        'Your form session expired or the request could not be verified.'
+    }
+  );
 });
 
 // ---- Error handler ----

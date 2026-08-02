@@ -5,6 +5,12 @@ const router = express.Router();
 const prisma = require('../config/db');
 
 const {
+  csrfSynchronisedProtection
+} = require(
+  '../middleware/csrf.middleware'
+);
+
+const {
   cleanText,
   isHoneypotTriggered,
   isValidEmail
@@ -52,7 +58,10 @@ function safeRedirectBack(
   );
 }
 
-router.post('/', async (req, res, next) => {
+router.post(
+  '/',
+  csrfSynchronisedProtection,
+  async (req, res, next) => {
   try {
     /*
      * Ignore automated submissions that filled the honeypot.

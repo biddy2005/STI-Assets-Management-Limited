@@ -3,7 +3,16 @@ const router = express.Router();
 const prisma = require('../config/db');
 const { cleanText, isHoneypotTriggered, isValidEmail } = require('../middleware/validation.middleware');
 
-router.post('/', async (req, res) => {
+const {
+  csrfSynchronisedProtection
+} = require(
+  '../middleware/csrf.middleware'
+);
+
+router.post(
+  '/',
+  csrfSynchronisedProtection,
+  async (req, res) => {
   if (isHoneypotTriggered(req)) return res.redirect('/contact?success=1');
 
  const firstName = cleanText(req.body.firstName, 100);

@@ -38,6 +38,7 @@ model NewsArticle {
   published   Boolean   @default(false)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
   images NewsImage[]
 }
@@ -72,6 +73,7 @@ model JobPosting {
   deadline    DateTime?
   status      String    @default("open") // "open" | "closed"
   createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
   applications JobApplication[]
 }
@@ -118,10 +120,28 @@ model JobApplication {
   privacyAcknowledgedAt DateTime?
   privacyNoticeVersion  String?
 
-  submittedAt DateTime @default(now())
+  status      ApplicationStatus @default(NEW)
+  submittedAt DateTime          @default(now())
+  updatedAt   DateTime          @default(now()) @updatedAt
 
   @@index([jobId])
+  @@index([status])
   @@index([submittedAt])
+}
+
+enum ApplicationStatus {
+  NEW
+  REVIEWING
+  SHORTLISTED
+  REJECTED
+  HIRED
+}
+
+enum ContactStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  ARCHIVED
 }
 
 model FAQ {
@@ -133,13 +153,19 @@ model FAQ {
 }
 
 model ContactSubmission {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String
-  phone       String?
-  subject     String?
-  message     String
-  submittedAt DateTime @default(now())
+  id      Int     @id @default(autoincrement())
+  name    String
+  email   String
+  phone   String?
+  subject String?
+  message String
+
+  status      ContactStatus @default(NEW)
+  submittedAt DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+
+  @@index([status])
+  @@index([submittedAt])
 }
 
 model NewsletterSubscriber {

@@ -10,7 +10,13 @@
   <header class="site-header">
     <div class="nav-wrap">
       <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
-      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+      <form action="/auth/logout" method="POST">
+            <input
+              type="hidden"
+              name="_csrf"
+              value="<%= csrfToken %>"
+            >
+        <button class="btn-nav" type="submit">Log Out</button></form>
     </div>
   </header>
 
@@ -29,6 +35,11 @@
             <a href="/admin/news/<%= article.id %>/images">Manage Images</a>
           </p>
           <form action="/admin/news/<%= article.id %>/delete" method="POST">
+            <input
+              type="hidden"
+              name="_csrf"
+              value="<%= csrfToken %>"
+            >
             <button type="submit" class="btn-nav">Delete</button>
           </form>
         </div>

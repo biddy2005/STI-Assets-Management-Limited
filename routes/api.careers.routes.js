@@ -6,6 +6,12 @@ const fs = require('fs/promises');
 
 const router = express.Router();
 
+const {
+  csrfAfterUpload
+} = require(
+  '../middleware/csrf.middleware'
+);
+
 const prisma = require('../config/db');
 const {
   resumeDirectory
@@ -194,7 +200,18 @@ fileFilter: (req, file, callback) => {
 
 router.post(
   '/apply',
+
+  /*
+   * Multer first parses multipart fields and stores the PDF.
+   */
   upload.single('resume'),
+
+  /*
+   * CSRF can now read req.body._csrf.
+   * It removes the PDF if verification fails.
+   */
+  csrfAfterUpload,
+
   async (req, res) => {
     if (isHoneypotTriggered(req)) {
       if (req.file) {

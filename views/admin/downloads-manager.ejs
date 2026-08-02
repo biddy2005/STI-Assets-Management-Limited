@@ -10,7 +10,13 @@
   <header class="site-header">
     <div class="nav-wrap">
       <a href="/admin/dashboard" class="logo">AssetCo Admin</a>
-      <form action="/auth/logout" method="POST"><button class="btn-nav" type="submit">Log Out</button></form>
+      <form action="/auth/logout" method="POST">
+          <input
+              type="hidden"
+              name="_csrf"
+              value="<%= csrfToken %>"
+            >
+        <button class="btn-nav" type="submit">Log Out</button></form>
     </div>
   </header>
 
@@ -29,6 +35,11 @@
           <% if (day.digest) { %>
             <p>Uploaded: <a href="<%= day.digest.filePath %>" target="_blank" rel="noopener">View current PDF</a></p>
             <form action="/admin/downloads/<%= day.digest.id %>/delete" method="POST" style="margin-bottom:12px;">
+              <input
+                  type="hidden"
+                  name="_csrf"
+                  value="<%= csrfToken %>"
+              >
               <button type="submit" class="btn-nav">Remove</button>
             </form>
           <% } else { %>
@@ -36,6 +47,11 @@
           <% } %>
 
           <form action="/admin/downloads" method="POST" enctype="multipart/form-data" class="form">
+            <input
+              type="hidden"
+              name="_csrf"
+              value="<%= csrfToken %>"
+            >
             <input type="hidden" name="dayOfWeek" value="<%= day.key %>" />
             <label>
               Upload PDF <%= day.digest ? '(replace)' : '' %>

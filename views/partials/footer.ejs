@@ -27,6 +27,11 @@
         <p class="footer-newsletter-message footer-newsletter-message-error">Please enter a valid email address.</p>
       <% } else { %>
         <form action="/api/newsletter" method="POST" class="footer-newsletter-form">
+          <input
+            type="hidden"
+            name="_csrf"
+            value="<%= csrfToken %>"
+          >
           <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
           <input type="email" name="email" placeholder="Enter your email address" required>
           <button type="submit">Subscribe Now</button>
