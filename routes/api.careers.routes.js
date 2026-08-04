@@ -12,6 +12,18 @@ const {
   '../middleware/csrf.middleware'
 );
 
+const {
+  asyncHandler
+} = require(
+  '../utils/asyncHandler'
+);
+
+const {
+  sendJobApplicationNotification
+} = require(
+  '../services/email.service'
+);
+
 const prisma = require('../config/db');
 const {
   resumeDirectory
@@ -22,6 +34,8 @@ const {
   isHoneypotTriggered,
   isValidEmail
 } = require('../middleware/validation.middleware');
+
+
 
 /*
  * Change this value whenever the recruitment section of the
@@ -40,11 +54,20 @@ const allowedMimeTypes = new Set([
   'application/pdf'
 ]);
 
-async function hasValidPdfSignature(filePath) {
+async function hasValidPdfSignature(
+  filePath
+) {
   let fileHandle;
 
+  let selectedJob;
+  let createdApplication;
+
   try {
-    fileHandle = await fs.open(filePath, 'r');
+    fileHandle =
+      await fs.open(
+        filePath,
+        'r'
+      );
 
     /*
      * Real PDF documents normally begin with:
@@ -53,7 +76,8 @@ async function hasValidPdfSignature(filePath) {
      *
      * That is five bytes.
      */
-    const headerBuffer = Buffer.alloc(5);
+    const headerBuffer =
+      Buffer.alloc(5);
 
     const {
       bytesRead
@@ -69,7 +93,9 @@ async function hasValidPdfSignature(filePath) {
     }
 
     const header =
-      headerBuffer.toString('ascii');
+      headerBuffer.toString(
+        'ascii'
+      );
 
     return header === '%PDF-';
   } catch (error) {
@@ -81,7 +107,14 @@ async function hasValidPdfSignature(filePath) {
     return false;
   } finally {
     if (fileHandle) {
-      await fileHandle.close();
+      try {
+        await fileHandle.close();
+      } catch (closeError) {
+        console.error(
+          'Could not close uploaded PDF:',
+          closeError
+        );
+      }
     }
   }
 }
@@ -89,23 +122,43 @@ async function hasValidPdfSignature(filePath) {
 /*
  * Reload the careers page with an error message.
  */
-async function renderCareerError(res, error) {
-  const jobs = await prisma.jobPosting
-    .findMany({
-      where: {
-        status: 'open'
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-    .catch(() => []);
+async function renderCareerError(
+  res,
+  errorMessage
+) {
+  const jobs =
+    await prisma.jobPosting
+      .findMany({
+        where: {
+          status: 'open'
+        },
 
-  return res.status(400).render('careers', {
-    title: 'Careers',
-    jobs,
-    error
-  });
+        orderBy: {
+          createdAt: 'desc'
+        }
+      })
+      .catch((error) => {
+        /*
+         * The form error should still display even when the
+         * job list cannot be reloaded.
+         */
+        console.error(
+          'Could not reload jobs while displaying a careers form error:',
+          error
+        );
+
+        return [];
+      });
+
+  return res.status(400).render(
+    'careers',
+    {
+      title: 'Careers',
+      jobs,
+      error: errorMessage,
+      applied: false
+    }
+  );
 }
 
 /*
@@ -160,87 +213,112 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({
-  storage,
+const upload =
+  multer({
+    storage,
 
-  limits: {
-    /*
-     * Maximum file size: 5 MB.
-     */
-    fileSize: 5 * 1024 * 1024,
+    limits: {
+      /*
+       * Maximum file size: 5 MB.
+       */
+      fileSize:
+        5 * 1024 * 1024,
 
-    /*
-     * Only one résumé may be uploaded per request.
-     */
-    files: 1
-  },
+      /*
+       * Only one résumé may be uploaded per request.
+       */
+      files: 1
+    },
 
-fileFilter: (req, file, callback) => {
-  const extension = path
-    .extname(file.originalname)
-    .toLowerCase();
+    fileFilter: (
+      req,
+      file,
+      callback
+    ) => {
+      const extension =
+        path
+          .extname(
+            file.originalname
+          )
+          .toLowerCase();
 
-  const hasValidExtension =
-    extension === '.pdf';
+      const hasValidExtension =
+        extension === '.pdf';
 
-  const hasValidMimeType =
-    allowedMimeTypes.has(file.mimetype);
+      const hasValidMimeType =
+        allowedMimeTypes.has(
+          file.mimetype
+        );
 
-  if (!hasValidExtension || !hasValidMimeType) {
-    return callback(
-      new Error(
-        'Please upload your résumé as a valid PDF file.'
-      )
-    );
-  }
+      if (
+        !hasValidExtension ||
+        !hasValidMimeType
+      ) {
+        return callback(
+          new Error(
+            'Please upload your résumé as a valid PDF file.'
+          )
+        );
+      }
 
-  return callback(null, true);
-}
-});
+      return callback(
+        null,
+        true
+      );
+    }
+  });
 
 router.post(
   '/apply',
 
   /*
-   * Multer first parses multipart fields and stores the PDF.
+   * Multer parses the multipart form and saves the résumé.
    */
-  upload.single('resume'),
-
-  /*
-   * CSRF can now read req.body._csrf.
-   * It removes the PDF if verification fails.
-   */
+  upload.single(
+    'resume'
+  ),
   csrfAfterUpload,
-
-  async (req, res) => {
-    if (isHoneypotTriggered(req)) {
-      if (req.file) {
-        await deleteUploadedFile(
-          req.file.path
-        );
-      }
+  asyncHandler(async (req, res) => {
+    /*
+     * The honeypot is a hidden field intended to catch bots.
+     *
+     * Pretend the request succeeded, but remove any résumé and
+     * do not create a database record.
+     */
+    if (
+      isHoneypotTriggered(req)
+    ) {
+      await deleteUploadedFile(
+        req.file?.path
+      );
 
       return res.redirect(
         '/careers?applied=1'
       );
     }
 
+    /*
+     * The privacy checkbox must submit the value "yes".
+     */
     const privacyAcknowledged =
-      req.body.privacyAcknowledgement === 'yes';
+      req.body
+        .privacyAcknowledgement ===
+      'yes';
 
-      if (!privacyAcknowledged) {
-  if (req.file) {
-    await deleteUploadedFile(
-      req.file.path
-    );
-  }
+    if (!privacyAcknowledged) {
+      await deleteUploadedFile(
+        req.file?.path
+      );
 
-  return renderCareerError(
-    res,
-    'You must acknowledge the Privacy Policy before submitting your application.'
-  );
-}
+      return renderCareerError(
+        res,
+        'You must acknowledge the Privacy Policy before submitting your application.'
+      );
+    }
 
+    /*
+     * A résumé is required.
+     */
     if (!req.file) {
       return renderCareerError(
         res,
@@ -248,22 +326,9 @@ router.post(
       );
     }
 
-    const isRealPdf =
-      await hasValidPdfSignature(
-        req.file.path
-      );
-
-    if (!isRealPdf) {
-      await deleteUploadedFile(
-        req.file.path
-      );
-
-      return renderCareerError(
-        res,
-        'The uploaded file is not a valid PDF document.'
-      );
-    }
-
+    /*
+     * Clean and normalise the submitted text.
+     */
     const applicantName =
       cleanText(
         req.body.applicantName,
@@ -304,20 +369,58 @@ router.post(
 
       return renderCareerError(
         res,
-        'Please select a job and provide your name, email and résumé.'
+        'Please select a job and provide your name, a valid email address and your résumé.'
       );
     }
 
-    try {
-      const job =
-        await prisma.jobPosting.findFirst({
-          where: {
-            id: jobId,
-            status: 'open'
-          }
-        });
+    /*
+     * Multer already checked the filename extension and MIME
+     * type.
+     *
+     * Now inspect the file contents to confirm that it starts
+     * with the PDF signature: %PDF-
+     */
+    const isRealPdf =
+      await hasValidPdfSignature(
+        req.file.path
+      );
 
-      if (!job) {
+    if (!isRealPdf) {
+      await deleteUploadedFile(
+        req.file.path
+      );
+
+      return renderCareerError(
+        res,
+        'The uploaded file is not a valid PDF document.'
+      );
+    }
+
+    /*
+     * The résumé now exists on disk.
+     *
+     * Keep this local try/catch because the résumé must be
+     * removed when a database operation fails.
+     */
+    try {
+      /*
+       * Confirm that the selected job still exists and is
+       * accepting applications.
+       */
+        selectedJob =
+          await prisma.jobPosting.findFirst({
+            where: {
+              id: jobId,
+              status: 'open'
+            },
+
+            select: {
+              id: true,
+              title: true
+            }
+          });
+
+      if (!selectedJob) {
         await deleteUploadedFile(
           req.file.path
         );
@@ -328,117 +431,200 @@ router.post(
         );
       }
 
-          await prisma.jobApplication.create({
-            data: {
-              applicantName,
-              email,
-              phone,
-              coverNote,
-              jobId,
+      createdApplication =
+      await prisma.jobApplication.create({
+        data: {
+          applicantName,
+          email,
+          phone,
+          coverNote,
+          jobId,
 
-              resumeStorageKey:
-                req.file.filename,
+          /*
+           * Store only the generated private filename.
+           */
+          resumeStorageKey:
+            req.file.filename,
 
-              resumeOriginalName:
-                path.basename(
-                  req.file.originalname
-                ),
+          /*
+           * Keep a safe version of the applicant's original
+           * filename for downloads.
+           */
+          resumeOriginalName:
+            path.basename(
+              req.file.originalname
+            ),
 
-              resumeMimeType:
-                req.file.mimetype,
+          resumeMimeType:
+            req.file.mimetype,
 
-              resumeFileSize:
-                req.file.size,
+          resumeFileSize:
+            req.file.size,
 
-              /*
-              * Privacy acknowledgement record.
-              */
-              privacyAcknowledged: true,
+          privacyAcknowledged:
+            true,
 
-              privacyAcknowledgedAt:
-                new Date(),
+          privacyAcknowledgedAt:
+            new Date(),
 
-              privacyNoticeVersion:
-                RECRUITMENT_PRIVACY_NOTICE_VERSION
-            }
-          });
-
-      return res.redirect(
-        '/careers?applied=1'
-      );
+          privacyNoticeVersion:
+            RECRUITMENT_PRIVACY_NOTICE_VERSION
+        }
+      });
     } catch (error) {
+      /*
+       * Multer already stored the résumé.
+       *
+       * Remove it because the database operation failed.
+       */
       await deleteUploadedFile(
         req.file.path
       );
 
-      console.error(
-        'Job application failed:',
-        error
-      );
-
-      return res.status(500).render(
-        '500',
-        {
-          title: 'Server Error'
-        }
-      );
+      /*
+       * Rethrow the original error.
+       *
+       * asyncHandler will forward it to your global Express
+       * error middleware.
+       */
+      throw error;
     }
-  }
+
+    try {
+  await sendJobApplicationNotification({
+    applicationId:
+      createdApplication.id,
+
+    applicantName,
+    email,
+    phone,
+    coverNote,
+    jobId,
+
+    jobTitle:
+      selectedJob.title
+  });
+} catch (error) {
+  req.log.error(
+    {
+      err:
+        error,
+
+      applicationId:
+        createdApplication.id
+    },
+
+    'Job application notification email failed'
+  );
+}
+
+    return res.redirect(
+      '/careers?applied=1'
+    );
+  })
 );
 
 /*
- * Handle Multer-specific upload errors.
+ * Handle Multer, file-filter and multipart errors.
+ *
+ * This must retain all four parameters:
+ *
+ * error, req, res, next
+ *
+ * Express uses the four-parameter signature to recognise
+ * error-handling middleware.
  */
 router.use(
-  async (error, req, res, next) => {
-    /*
-     * In case Multer created a file before reporting another
-     * error, clean it up.
-     */
-    if (req.file?.path) {
-      await deleteUploadedFile(
-        req.file.path
-      );
-    }
+  (
+    error,
+    req,
+    res,
+    next
+  ) => {
+    return Promise
+      .resolve()
+      .then(async () => {
+        /*
+         * csrfAfterUpload already handles uploaded-file
+         * cleanup when the CSRF token is rejected.
+         *
+         * Forward the error to the main CSRF error handler.
+         */
+        if (
+          error.code ===
+          'EBADCSRFTOKEN'
+        ) {
+          return next(error);
+        }
 
-    if (error instanceof multer.MulterError) {
-      if (
-        error.code ===
-        'LIMIT_FILE_SIZE'
-      ) {
-        return renderCareerError(
-          res,
-          'The résumé must be 5 MB or smaller.'
+        /*
+         * Multer may have saved a file before reporting a
+         * multipart error.
+         */
+        await deleteUploadedFile(
+          req.file?.path
         );
-      }
 
-      if (
-        error.code ===
-        'LIMIT_FILE_COUNT'
-      ) {
-        return renderCareerError(
-          res,
-          'Please upload only one résumé.'
-        );
-      }
+        if (
+          error instanceof
+          multer.MulterError
+        ) {
+          if (
+            error.code ===
+            'LIMIT_FILE_SIZE'
+          ) {
+            return renderCareerError(
+              res,
+              'The résumé must be 5 MB or smaller.'
+            );
+          }
 
-      return renderCareerError(
-        res,
-        'The résumé could not be uploaded.'
-      );
-    }
+          if (
+            error.code ===
+            'LIMIT_FILE_COUNT'
+          ) {
+            return renderCareerError(
+              res,
+              'Please upload only one résumé.'
+            );
+          }
 
-    if (
-      error.message ===
-      'Please upload your résumé as a valid PDF file.'
-    ) {
-      return renderCareerError(
-        res,
-        error.message
-      );
-    }
+          if (
+            error.code ===
+            'LIMIT_UNEXPECTED_FILE'
+          ) {
+            return renderCareerError(
+              res,
+              'The résumé upload field was not recognised.'
+            );
+          }
 
-    return next(error);
+          return renderCareerError(
+            res,
+            'The résumé could not be uploaded.'
+          );
+        }
+
+        /*
+         * This error is created by your extension and MIME-type
+         * fileFilter.
+         */
+        if (
+          error.message ===
+          'Please upload your résumé as a valid PDF file.'
+        ) {
+          return renderCareerError(
+            res,
+            error.message
+          );
+        }
+
+        /*
+         * Anything else is unexpected.
+         */
+        return next(error);
+      })
+      .catch(next);
   }
 );
 

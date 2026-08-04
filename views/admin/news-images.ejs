@@ -32,7 +32,13 @@
         > 
       <label>
         Add Images (you can select multiple)
-        <input type="file" name="galleryImages" accept="image/*" multiple required />
+        <input
+          type="file"
+          name="galleryImages"
+          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+          multiple
+          required
+        >
       </label>
       <button type="submit" class="btn-primary">Upload</button>
     </form>

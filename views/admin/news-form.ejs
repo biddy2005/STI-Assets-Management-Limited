@@ -48,7 +48,11 @@
 
       <label>
         Cover Image <%= article && article.coverImage ? '(leave blank to keep current)' : '' %>
-        <input type="file" name="coverImage" accept="image/*" />
+        <input
+          type="file"
+          name="coverImage"
+          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+        >
       </label>
 
       <% if (article && article.coverImage) { %>

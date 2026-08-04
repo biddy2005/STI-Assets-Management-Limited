@@ -55,7 +55,12 @@
             <input type="hidden" name="dayOfWeek" value="<%= day.key %>" />
             <label>
               Upload PDF <%= day.digest ? '(replace)' : '' %>
-              <input type="file" name="digestFile" accept="application/pdf" required />
+              <input
+                type="file"
+                name="digestFile"
+                accept=".pdf,application/pdf"
+                required
+              >
             </label>
             <button type="submit" class="btn-primary"><%= day.digest ? 'Replace' : 'Upload' %></button>
           </form>

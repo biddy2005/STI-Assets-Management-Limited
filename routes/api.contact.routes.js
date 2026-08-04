@@ -9,38 +9,166 @@ const {
   '../middleware/csrf.middleware'
 );
 
+const {
+  asyncHandler
+} = require(
+  '../utils/asyncHandler'
+);
+
+const {
+  sendContactNotification
+} = require(
+  '../services/email.service'
+);
+
 router.post(
   '/',
+
+  /*
+   * This is a normal URL-encoded form, so use the standard
+   * CSRF middleware rather than csrfAfterUpload.
+   */
   csrfSynchronisedProtection,
-  async (req, res) => {
-  if (isHoneypotTriggered(req)) return res.redirect('/contact?success=1');
 
- const firstName = cleanText(req.body.firstName, 100);
-  const lastName = cleanText(req.body.lastName, 100);
-  const name = `${firstName} ${lastName}`.trim();
-  const email = cleanText(req.body.email, 254).toLowerCase();
-  const phone = cleanText(req.body.phone, 30) || null;
-  const subject = cleanText(req.body.subject, 200) || null;
-  const message = cleanText(req.body.message, 5000);
+  /*
+   * Forward unexpected asynchronous errors to the global
+   * Express error handler.
+   */
+  asyncHandler(async (req, res) => {
+    /*
+     * Bots commonly fill hidden honeypot fields.
+     *
+     * Pretend the form succeeded, but do not save anything.
+     */
+    if (
+      isHoneypotTriggered(req)
+    ) {
+      return res.redirect(
+        '/contact?success=1'
+      );
+    }
 
-  if (!firstName || !lastName || !isValidEmail(email) || !message) {
-    return res.status(400).render('contact', {
-      title: 'Contact Us',
-      error: 'Please provide a name, valid email address, and message.'
-    });
-  }
+    /*
+     * Clean and limit every submitted value.
+     */
+    const firstName =
+      cleanText(
+        req.body.firstName,
+        100
+      );
 
-  try {
-    await prisma.contactSubmission.create({
-      data: { name, email, phone, subject, message }
-    });
+    const lastName =
+      cleanText(
+        req.body.lastName,
+        100
+      );
 
-    // TODO: trigger an email notification here via nodemailer (see config/mailer.js you'll add)
-    return res.redirect('/contact?success=1');
-  } catch (err) {
-    console.error(err);
-    return res.status(500).render('500', { title: 'Server Error' });
-  }
-});
+    const name =
+      `${firstName} ${lastName}`.trim();
+
+    const email =
+      cleanText(
+        req.body.email,
+        254
+      ).toLowerCase();
+
+    const phone =
+      cleanText(
+        req.body.phone,
+        30
+      ) || null;
+
+    const subject =
+      cleanText(
+        req.body.subject,
+        200
+      ) || null;
+
+    const message =
+      cleanText(
+        req.body.message,
+        5000
+      );
+
+    /*
+     * Required fields:
+     *
+     * - first name
+     * - last name
+     * - valid email
+     * - message
+     */
+    const submissionIsInvalid =
+      !firstName ||
+      !lastName ||
+      !isValidEmail(email) ||
+      !message;
+
+    if (submissionIsInvalid) {
+      return res.status(400).render(
+        'contact',
+        {
+          title: 'Contact Us',
+
+          error:
+            'Please provide your first name, last name, a valid email address and a message.',
+
+          success: false
+        }
+      );
+    }
+
+    /*
+     * The ContactSubmission status automatically defaults to
+     * NEW based on your Prisma schema.
+     */
+const submission =
+  await prisma.contactSubmission.create({
+    data: {
+      name,
+      email,
+      phone,
+      subject,
+      message
+    }
+  });
+
+try {
+  await sendContactNotification({
+    submissionId:
+      submission.id,
+
+    name,
+    email,
+    phone,
+    subject,
+    message
+  });
+} catch (error) {
+  req.log.error(
+    {
+      err:
+        error,
+
+      submissionId:
+        submission.id
+    },
+
+    'Contact notification email failed'
+  );
+}
+
+    /*
+     * Email notification will be integrated later.
+     *
+     * The database record should be saved successfully before
+     * attempting any notification email.
+     */
+
+    return res.redirect(
+      '/contact?success=1'
+    );
+  })
+);
 
 module.exports = router;

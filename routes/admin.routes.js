@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const crypto = require('crypto');
 const fs = require('fs/promises');
 const {
   requireAuth,
@@ -13,6 +14,11 @@ const {
   '../utils/asyncHandler'
 );
 const prisma = require('../config/db');
+const {
+  writeAuditLog
+} = require(
+  '../services/audit.service'
+);
 const allowedContactStatuses =
   new Set([
     'NEW',
@@ -28,6 +34,7 @@ const allowedApplicationStatuses =
     'REJECTED',
     'HIRED'
   ]);
+
 const {
   resumeDirectory
 } = require('../config/storage');
@@ -62,26 +69,531 @@ const superAdminOnly = requireRole(
   'superadmin'
 );
 
+/*
+ * Physical folders used for public digest and news uploads.
+ *
+ * Using constants prevents us from repeating the complete
+ * folder path throughout the route file.
+ */
+const digestUploadDirectory =
+  path.join(
+    __dirname,
+    '../public/uploads/digests'
+  );
+
+const newsUploadDirectory =
+  path.join(
+    __dirname,
+    '../public/uploads/news'
+  );
+
+  /*
+ * Only these image formats are accepted for news cover and
+ * gallery uploads.
+ */
+const allowedImageMimeTypes =
+  new Set([
+    'image/jpeg',
+    'image/png',
+    'image/webp'
+  ]);
+
+/*
+ * The original file extension must agree with the submitted
+ * MIME type.
+ */
+const allowedImageExtensionsByMimeType =
+  new Map([
+    [
+      'image/jpeg',
+      new Set([
+        '.jpg',
+        '.jpeg'
+      ])
+    ],
+
+    [
+      'image/png',
+      new Set([
+        '.png'
+      ])
+    ],
+
+    [
+      'image/webp',
+      new Set([
+        '.webp'
+      ])
+    ]
+  ]);
+
+/*
+ * Use one consistent stored extension for each accepted image
+ * MIME type.
+ */
+const storedImageExtensionByMimeType =
+  new Map([
+    [
+      'image/jpeg',
+      '.jpg'
+    ],
+
+    [
+      'image/png',
+      '.png'
+    ],
+
+    [
+      'image/webp',
+      '.webp'
+    ]
+  ]);
+
+/**
+ * Confirms that an image's extension agrees with its submitted
+ * MIME type.
+ *
+ * This is only the first validation layer. The actual file
+ * bytes are inspected after Multer stores the file.
+ */
+function hasAllowedImageMetadata(
+  file
+) {
+  if (
+    !file ||
+    !allowedImageMimeTypes.has(
+      file.mimetype
+    )
+  ) {
+    return false;
+  }
+
+  const extension =
+    path
+      .extname(
+        file.originalname
+      )
+      .toLowerCase();
+
+  const allowedExtensions =
+    allowedImageExtensionsByMimeType.get(
+      file.mimetype
+    );
+
+  return Boolean(
+    allowedExtensions &&
+    allowedExtensions.has(
+      extension
+    )
+  );
+}
+
+/**
+ * Reads only the beginning of a file.
+ *
+ * File signatures are stored in the first few bytes, so the
+ * complete upload does not need to be loaded into memory.
+ */
+async function readFileHeader(
+  filePath,
+  numberOfBytes
+) {
+  let fileHandle;
+
+  try {
+    fileHandle =
+      await fs.open(
+        filePath,
+        'r'
+      );
+
+    const buffer =
+      Buffer.alloc(
+        numberOfBytes
+      );
+
+    const {
+      bytesRead
+    } = await fileHandle.read(
+      buffer,
+      0,
+      numberOfBytes,
+      0
+    );
+
+    return buffer.subarray(
+      0,
+      bytesRead
+    );
+  } finally {
+    if (fileHandle) {
+      try {
+        await fileHandle.close();
+      } catch (closeError) {
+        console.error(
+          'Could not close uploaded file after inspection:',
+          closeError
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Confirms that a stored digest starts with the normal PDF
+ * signature:
+ *
+ * %PDF-
+ */
+async function hasValidPdfSignature(
+  filePath
+) {
+  const header =
+    await readFileHeader(
+      filePath,
+      5
+    );
+
+  return (
+    header.length === 5 &&
+    header.toString(
+      'ascii'
+    ) === '%PDF-'
+  );
+}
+
+/**
+ * Detects JPEG, PNG or WebP using the file's opening bytes.
+ *
+ * Returns:
+ *
+ * image/jpeg
+ * image/png
+ * image/webp
+ * null
+ */
+async function detectImageMimeType(
+  filePath
+) {
+  const header =
+    await readFileHeader(
+      filePath,
+      12
+    );
+
+  /*
+   * JPEG:
+   *
+   * FF D8 FF
+   */
+  const isJpeg =
+    header.length >= 3 &&
+    header[0] === 0xff &&
+    header[1] === 0xd8 &&
+    header[2] === 0xff;
+
+  if (isJpeg) {
+    return 'image/jpeg';
+  }
+
+  /*
+   * PNG:
+   *
+   * 89 50 4E 47 0D 0A 1A 0A
+   */
+  const pngSignature =
+    Buffer.from([
+      0x89,
+      0x50,
+      0x4e,
+      0x47,
+      0x0d,
+      0x0a,
+      0x1a,
+      0x0a
+    ]);
+
+  const isPng =
+    header.length >=
+      pngSignature.length &&
+    header
+      .subarray(
+        0,
+        pngSignature.length
+      )
+      .equals(
+        pngSignature
+      );
+
+  if (isPng) {
+    return 'image/png';
+  }
+
+  /*
+   * WebP:
+   *
+   * Bytes 0-3: RIFF
+   * Bytes 8-11: WEBP
+   */
+  const isWebp =
+    header.length >= 12 &&
+    header
+      .subarray(0, 4)
+      .toString('ascii') ===
+      'RIFF' &&
+    header
+      .subarray(8, 12)
+      .toString('ascii') ===
+      'WEBP';
+
+  if (isWebp) {
+    return 'image/webp';
+  }
+
+  return null;
+}
+
+/**
+ * The detected image format must match the MIME type accepted
+ * by the Multer metadata filter.
+ */
+async function hasMatchingImageSignature(
+  file
+) {
+  if (!file?.path) {
+    return false;
+  }
+
+  const detectedMimeType =
+    await detectImageMimeType(
+      file.path
+    );
+
+  return (
+    detectedMimeType ===
+    file.mimetype
+  );
+}
+
+/**
+ * Deletes one file.
+ *
+ * A missing file is treated as already deleted.
+ */
+async function deleteFileIfExists(
+  filePath
+) {
+  if (!filePath) {
+    return;
+  }
+
+  try {
+    await fs.unlink(filePath);
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+}
+
+/**
+ * Converts either one Multer file or an array of Multer files
+ * into an array and removes every uploaded file.
+ */
+async function deleteMulterFiles(
+  files
+) {
+  const fileList =
+    Array.isArray(files)
+      ? files
+      : [files].filter(Boolean);
+
+  await Promise.all(
+    fileList.map((file) => {
+      return deleteFileIfExists(
+        file?.path
+      );
+    })
+  );
+}
+
+/**
+ * Attempts to clean newly uploaded files without replacing
+ * the original route error with a cleanup error.
+ */
+async function deleteMulterFilesSafely(
+  files,
+  context
+) {
+  try {
+    await deleteMulterFiles(files);
+  } catch (cleanupError) {
+    console.error(
+      context,
+      cleanupError
+    );
+  }
+}
+
+/**
+ * Converts a stored public URL such as:
+ *
+ * /uploads/news/example.jpg
+ *
+ * into the corresponding physical file path.
+ *
+ * path.posix.basename keeps only the filename portion and
+ * prevents directory traversal.
+ */
+function storedUrlToFilePath(
+  storedUrl,
+  uploadDirectory
+) {
+  if (
+    typeof storedUrl !== 'string' ||
+    !storedUrl.trim()
+  ) {
+    return null;
+  }
+
+  const fileName =
+    path.posix.basename(
+      storedUrl
+    );
+
+  return path.join(
+    uploadDirectory,
+    fileName
+  );
+}
+
+/**
+ * Removes an old stored file after the database has already
+ * been updated successfully.
+ *
+ * Cleanup failure is logged but does not make a successful
+ * database operation appear unsuccessful to the administrator.
+ */
+async function deleteStoredFileSafely(
+  storedUrl,
+  uploadDirectory,
+  context
+) {
+  const filePath =
+    storedUrlToFilePath(
+      storedUrl,
+      uploadDirectory
+    );
+
+  if (!filePath) {
+    return;
+  }
+
+  try {
+    await deleteFileIfExists(
+      filePath
+    );
+  } catch (cleanupError) {
+    console.error(
+      context,
+      {
+        filePath,
+        error: cleanupError
+      }
+    );
+  }
+}
+
 router.get('/dashboard', (req, res) => {
   res.render('admin/dashboard', { admin: { email: req.session.adminEmail } });
 });
 
 // --- Daily Digest uploads ---
-const digestStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '../public/uploads/digests')),
-  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
-});
+const digestStorage =
+  multer.diskStorage({
+    destination: (
+      req,
+      file,
+      callback
+    ) => {
+      return callback(
+        null,
+        digestUploadDirectory
+      );
+    },
 
-const uploadDigest = multer({
-  storage: digestStorage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype !== 'application/pdf') {
-      return cb(new Error('Only PDF files are allowed'));
+    filename: (
+      req,
+      file,
+      callback
+    ) => {
+      /*
+       * Do not reuse the uploaded original filename.
+       */
+      const generatedFilename =
+        `${crypto.randomUUID()}.pdf`;
+
+      return callback(
+        null,
+        generatedFilename
+      );
     }
-    cb(null, true);
-  }
-});
+  });
+
+const uploadDigest =
+  multer({
+    storage:
+      digestStorage,
+
+    limits: {
+      /*
+       * Maximum digest size: 10 MB.
+       */
+      fileSize:
+        10 * 1024 * 1024,
+
+      /*
+       * Only one digest file is accepted.
+       */
+      files: 1
+    },
+
+    fileFilter: (
+      req,
+      file,
+      callback
+    ) => {
+      const extension =
+        path
+          .extname(
+            file.originalname
+          )
+          .toLowerCase();
+
+      const hasPdfExtension =
+        extension === '.pdf';
+
+      const hasPdfMimeType =
+        file.mimetype ===
+        'application/pdf';
+
+      if (
+        !hasPdfExtension ||
+        !hasPdfMimeType
+      ) {
+        return callback(
+          new Error(
+            'Please upload a PDF file with a .pdf extension.'
+          )
+        );
+      }
+
+      return callback(
+        null,
+        true
+      );
+    }
+  });
 
 router.get(
   '/downloads',
@@ -136,47 +648,248 @@ router.get(
 );
 
 router.post(
-  '/downloads', 
+  '/downloads',
   contentManagerOnly,
-  uploadDigest.single('digestFile'),  
-  csrfAfterUpload,
-  async (req, res) => {
-  try {
-    const { dayOfWeek } = req.body;
 
-    if (!DAY_ORDER.includes(dayOfWeek) || !req.file) {
-      return res.redirect('/admin/downloads');
+  /*
+   * Multer stores the PDF and makes it available through
+   * req.file.
+   */
+  uploadDigest.single(
+    'digestFile'
+  ),
+
+  /*
+   * The CSRF token is part of the multipart body, so Multer
+   * must parse the form before CSRF verification.
+   */
+  csrfAfterUpload,
+
+  asyncHandler(async (req, res) => {
+    const dayOfWeek =
+      typeof req.body.dayOfWeek ===
+      'string'
+        ? req.body.dayOfWeek.trim()
+        : '';
+
+    /*
+     * Multer already ran before this handler. If the submitted
+     * weekday is invalid, remove the uploaded PDF.
+     */
+    if (
+      !DAY_ORDER.includes(
+        dayOfWeek
+      )
+    ) {
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not clean up digest uploaded with an invalid weekday:'
+      );
+
+      return res.status(400).send(
+        'Please select a valid weekday.'
+      );
     }
 
-    const { weekStart } = getActiveWeekRange();
-    const publishDate = getDateForDay(weekStart, dayOfWeek);
+    if (!req.file) {
+      return res.status(400).send(
+        'Please upload a PDF file.'
+      );
+    }
 
-    const existing = await prisma.dailyDigest.findFirst({
-      where: { dayOfWeek, publishDate }
-    });
+      /*
+  * The extension and MIME type have already been checked by
+  * Multer.
+  *
+  * Now inspect the stored file's actual opening bytes.
+  */
+  let isActualPdf;
 
-    if (existing) {
-      await prisma.dailyDigest.update({
-        where: { id: existing.id },
-        data: { filePath: `/uploads/digests/${req.file.filename}` }
-      });
-    } else {
-      await prisma.dailyDigest.create({
-        data: {
-          title: 'STIAM Daily Market Digest',
-          filePath: `/uploads/digests/${req.file.filename}`,
-          publishDate,
-          dayOfWeek
+  try {
+    isActualPdf =
+      await hasValidPdfSignature(
+        req.file.path
+      );
+  } catch (error) {
+    await deleteMulterFilesSafely(
+      req.file,
+      'Could not remove digest after PDF inspection failed:'
+    );
+
+    throw error;
+  }
+
+  if (!isActualPdf) {
+    await deleteMulterFilesSafely(
+      req.file,
+      'Could not remove invalid digest PDF:'
+    );
+
+    return res.status(400).send(
+      'The uploaded file is not a valid PDF document.'
+    );
+  }
+    const {
+      weekStart
+    } = getActiveWeekRange();
+
+    const publishDate =
+      getDateForDay(
+        weekStart,
+        dayOfWeek
+      );
+
+    const newFileUrl =
+      `/uploads/digests/${req.file.filename}`;
+
+    let previousFileUrl = null;
+
+    try {
+      const existing =
+        await prisma.dailyDigest.findFirst({
+          where: {
+            dayOfWeek,
+            publishDate
+          }
+        });
+
+if (existing) {
+  /*
+   * Save the old path before updating the database.
+   */
+  previousFileUrl =
+    existing.filePath;
+
+  await prisma.$transaction(
+    async (transaction) => {
+      const updatedDigest =
+        await transaction
+          .dailyDigest
+          .update({
+            where: {
+              id:
+                existing.id
+            },
+
+            data: {
+              filePath:
+                newFileUrl
+            }
+          });
+
+      await writeAuditLog({
+        client:
+          transaction,
+
+        req,
+
+        action:
+          'DIGEST_REPLACED',
+
+        entityType:
+          'DailyDigest',
+
+        entityId:
+          updatedDigest.id,
+
+        metadata: {
+          dayOfWeek:
+            updatedDigest.dayOfWeek,
+
+          publishDate:
+            updatedDigest.publishDate,
+
+          previousFilePath:
+            existing.filePath,
+
+          newFilePath:
+            updatedDigest.filePath
         }
       });
     }
+  );
+} else {
+  await prisma.$transaction(
+    async (transaction) => {
+      const createdDigest =
+        await transaction
+          .dailyDigest
+          .create({
+            data: {
+              title:
+                'STIAM Daily Market Digest',
 
-    res.redirect('/admin/downloads');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin/downloads');
-  }
-});
+              filePath:
+                newFileUrl,
+
+              publishDate,
+              dayOfWeek
+            }
+          });
+
+      await writeAuditLog({
+        client:
+          transaction,
+
+        req,
+
+        action:
+          'DIGEST_CREATED',
+
+        entityType:
+          'DailyDigest',
+
+        entityId:
+          createdDigest.id,
+
+        metadata: {
+          dayOfWeek:
+            createdDigest.dayOfWeek,
+
+          publishDate:
+            createdDigest.publishDate,
+
+          filePath:
+            createdDigest.filePath
+        }
+      });
+    }
+  );
+}
+    } catch (error) {
+      /*
+       * The new PDF was already saved by Multer.
+       * Remove it when the database operation fails.
+       */
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not remove digest after database failure:'
+      );
+
+      throw error;
+    }
+
+    /*
+     * The database now points to the new PDF.
+     * Remove the old PDF only after the update succeeds.
+     */
+    if (
+      previousFileUrl &&
+      previousFileUrl !==
+        newFileUrl
+    ) {
+      await deleteStoredFileSafely(
+        previousFileUrl,
+        digestUploadDirectory,
+        'Digest was replaced, but the previous PDF could not be removed:'
+      );
+    }
+
+    return res.redirect(
+      '/admin/downloads'
+    );
+  })
+);
 
 router.post(
   '/downloads/:id/delete',
@@ -196,6 +909,10 @@ router.post(
       );
     }
 
+    /*
+     * Retrieve the record before deleting it because we need
+     * its filePath to remove the physical PDF afterward.
+     */
     const digest =
       await prisma.dailyDigest.findUnique({
         where: {
@@ -210,15 +927,63 @@ router.post(
     }
 
     /*
-     * This currently deletes only the database record.
-     * Physical PDF cleanup will be added in the file-storage
-     * cleanup phase.
+     * Delete the database record first.
+     *
+     * If this database operation fails, asyncHandler forwards
+     * the error and the physical PDF remains available.
      */
-    await prisma.dailyDigest.delete({
-      where: {
-        id: digestId
+await prisma.$transaction(
+  async (transaction) => {
+    await transaction
+      .dailyDigest
+      .delete({
+        where: {
+          id:
+            digestId
+        }
+      });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'DIGEST_DELETED',
+
+      entityType:
+        'DailyDigest',
+
+      entityId:
+        digestId,
+
+      metadata: {
+        dayOfWeek:
+          digest.dayOfWeek,
+
+        publishDate:
+          digest.publishDate,
+
+        filePath:
+          digest.filePath
       }
     });
+  }
+);
+
+    /*
+     * The database deletion succeeded.
+     * Remove the physical PDF from public/uploads/digests.
+     *
+     * deleteStoredFileSafely logs cleanup errors without
+     * changing the successful database result into a 500 error.
+     */
+    await deleteStoredFileSafely(
+      digest.filePath,
+      digestUploadDirectory,
+      'Digest record was deleted, but its PDF could not be removed:'
+    );
 
     return res.redirect(
       '/admin/downloads'
@@ -227,20 +992,110 @@ router.post(
 );
 
 // --- News & Articles ---
-const newsStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '../public/uploads/news')),
-  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
-});
+const newsStorage =
+  multer.diskStorage({
+    destination: (
+      req,
+      file,
+      callback
+    ) => {
+      return callback(
+        null,
+        newsUploadDirectory
+      );
+    },
 
-const imageFileFilter = (req, file, cb) => {
-  if (!file.mimetype.startsWith('image/')) {
-    return cb(new Error('Only image files are allowed'));
+    filename: (
+      req,
+      file,
+      callback
+    ) => {
+      const extension =
+        storedImageExtensionByMimeType.get(
+          file.mimetype
+        );
+
+      /*
+       * The file filter rejects unsupported MIME types before
+       * storage. The fallback is only defensive.
+       */
+      const safeExtension =
+        extension || '.bin';
+
+      const generatedFilename =
+        `${crypto.randomUUID()}${safeExtension}`;
+
+      return callback(
+        null,
+        generatedFilename
+      );
+    }
+  });
+
+const imageFileFilter = (
+  req,
+  file,
+  callback
+) => {
+  if (
+    !hasAllowedImageMetadata(
+      file
+    )
+  ) {
+    return callback(
+      new Error(
+        'Please upload only JPEG, PNG or WebP images.'
+      )
+    );
   }
-  cb(null, true);
+
+  return callback(
+    null,
+    true
+  );
 };
 
-const uploadCoverImage = multer({ storage: newsStorage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: imageFileFilter });
-const uploadGalleryImages = multer({ storage: newsStorage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: imageFileFilter });
+const uploadCoverImage =
+  multer({
+    storage:
+      newsStorage,
+
+    limits: {
+      /*
+       * Maximum cover image size: 5 MB.
+       */
+      fileSize:
+        5 * 1024 * 1024,
+
+      files: 1
+    },
+
+    fileFilter:
+      imageFileFilter
+  });
+
+const uploadGalleryImages =
+  multer({
+    storage:
+      newsStorage,
+
+    limits: {
+      /*
+       * Maximum size for each gallery image: 5 MB.
+       */
+      fileSize:
+        5 * 1024 * 1024,
+
+      /*
+       * The route also uses array(..., 10), but this adds a
+       * second explicit multipart limit.
+       */
+      files: 10
+    },
+
+    fileFilter:
+      imageFileFilter
+  });
 
 router.get(
   '/news',
@@ -278,39 +1133,206 @@ router.get(
 );
 
 router.post(
-  '/news', 
-   contentManagerOnly,
-  uploadCoverImage.single('coverImage'),  
-  csrfAfterUpload,
-  async (req, res) => {
-  try {
-    const { title, body, published } = req.body;
-    const baseSlug = slugify(title);
+  '/news',
+  contentManagerOnly,
 
-    let slug = baseSlug;
-    let counter = 1;
-    while (await prisma.newsArticle.findUnique({ where: { slug } })) {
-      slug = `${baseSlug}-${counter}`;
-      counter += 1;
+  uploadCoverImage.single(
+    'coverImage'
+  ),
+
+  csrfAfterUpload,
+
+  asyncHandler(async (req, res) => {
+    const title =
+      typeof req.body.title === 'string'
+        ? req.body.title.trim()
+        : '';
+
+    const body =
+      typeof req.body.body === 'string'
+        ? req.body.body.trim()
+        : '';
+
+    const isPublished =
+      req.body.published === 'on';
+
+    /*
+     * The image may already have been uploaded, so remove it
+     * when the remaining article fields are invalid.
+     */
+    if (!title || !body) {
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not remove cover image from invalid article submission:'
+      );
+
+      return res.status(400).render(
+        'admin/news-form',
+        {
+          article: null,
+
+          error:
+            'Article title and body are required.'
+        }
+      );
     }
 
-    await prisma.newsArticle.create({
-      data: {
-        title,
-        slug,
-        body,
-        coverImage: req.file ? `/uploads/news/${req.file.filename}` : null,
-        published: published === 'on',
-        publishedAt: published === 'on' ? new Date() : null
+          /*
+      * A cover image is optional.
+      *
+      * When one is supplied, its actual signature must agree with
+      * its accepted MIME type.
+      */
+      if (req.file) {
+        let coverImageIsValid;
+
+        try {
+          coverImageIsValid =
+            await hasMatchingImageSignature(
+              req.file
+            );
+        } catch (error) {
+          await deleteMulterFilesSafely(
+            req.file,
+            'Could not remove cover image after inspection failed:'
+          );
+
+          throw error;
+        }
+
+        if (!coverImageIsValid) {
+          await deleteMulterFilesSafely(
+            req.file,
+            'Could not remove invalid cover image:'
+          );
+
+          return res.status(400).render(
+            'admin/news-form',
+            {
+              article: null,
+
+              error:
+                'The cover file is not a valid JPEG, PNG or WebP image.'
+            }
+          );
+        }
+      }
+    try {
+      const baseSlug =
+        slugify(title);
+
+      if (!baseSlug) {
+        await deleteMulterFilesSafely(
+          req.file,
+          'Could not remove cover image after invalid slug:'
+        );
+
+        return res.status(400).render(
+          'admin/news-form',
+          {
+            article: null,
+
+            error:
+              'The article title must contain valid letters or numbers.'
+          }
+        );
+      }
+
+      let slug =
+        baseSlug;
+
+      let counter = 1;
+
+      while (
+        await prisma.newsArticle.findUnique({
+          where: {
+            slug
+          }
+        })
+      ) {
+        slug =
+          `${baseSlug}-${counter}`;
+
+        counter += 1;
+      }
+      
+await prisma.$transaction(
+  async (transaction) => {
+    const createdArticle =
+      await transaction
+        .newsArticle
+        .create({
+          data: {
+            title,
+            slug,
+            body,
+
+            coverImage:
+              req.file
+                ? `/uploads/news/${req.file.filename}`
+                : null,
+
+            published:
+              isPublished,
+
+            publishedAt:
+              isPublished
+                ? new Date()
+                : null
+          }
+        });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'NEWS_CREATED',
+
+      entityType:
+        'NewsArticle',
+
+      entityId:
+        createdArticle.id,
+
+      metadata: {
+        title:
+          createdArticle.title,
+
+        slug:
+          createdArticle.slug,
+
+        published:
+          createdArticle.published,
+
+        hasCoverImage:
+          Boolean(
+            createdArticle.coverImage
+          )
       }
     });
-
-    res.redirect('/admin/news');
-  } catch (err) {
-    console.error(err);
-    res.render('admin/news-form', { article: null, error: 'Something went wrong creating the article.' });
   }
-});
+);
+    } catch (error) {
+      /*
+       * Remove the new cover image when the article could not
+       * be saved in PostgreSQL.
+       */
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not remove cover image after article creation failed:'
+      );
+
+      throw error;
+    }
+
+    return res.redirect(
+      '/admin/news'
+    );
+  })
+);
 
 router.get(
   '/news/:id/edit',
@@ -353,37 +1375,253 @@ router.get(
 );
 
 router.post(
-  '/news/:id', 
-   contentManagerOnly,
-  uploadCoverImage.single('coverImage'),  
+  '/news/:id',
+  contentManagerOnly,
+
+  uploadCoverImage.single(
+    'coverImage'
+  ),
+
   csrfAfterUpload,
-  async (req, res) => {
+
+  asyncHandler(async (req, res) => {
+    const articleId =
+      Number(req.params.id);
+
+    const title =
+      typeof req.body.title === 'string'
+        ? req.body.title.trim()
+        : '';
+
+    const body =
+      typeof req.body.body === 'string'
+        ? req.body.body.trim()
+        : '';
+
+    const isNowPublished =
+      req.body.published === 'on';
+
+    /*
+     * Multer may already have saved a replacement image.
+     */
+    if (
+      !Number.isInteger(articleId) ||
+      articleId < 1
+    ) {
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not remove cover image after invalid article ID:'
+      );
+
+      return res.status(400).send(
+        'Invalid article ID.'
+      );
+    }
+
+    try {
+      const existing =
+        await prisma.newsArticle.findUnique({
+          where: {
+            id: articleId
+          }
+        });
+
+      if (!existing) {
+        await deleteMulterFilesSafely(
+          req.file,
+          'Could not remove cover image for missing article:'
+        );
+
+        return res.status(404).send(
+          'News article not found.'
+        );
+      }
+
+      if (!title || !body) {
+        await deleteMulterFilesSafely(
+          req.file,
+          'Could not remove replacement cover image from invalid article update:'
+        );
+
+        return res.status(400).render(
+          'admin/news-form',
+          {
+            article: {
+              ...existing,
+              title,
+              body,
+              published:
+                isNowPublished
+            },
+
+            error:
+              'Article title and body are required.'
+          }
+        );
+      }
+
+      /*
+ * Validate the actual replacement cover image before updating
+ * the database.
+ */
+if (req.file) {
+  let replacementCoverIsValid;
+
   try {
-    const { title, body, published } = req.body;
-    const id = Number(req.params.id);
-    const existing = await prisma.newsArticle.findUnique({ where: { id } });
-    if (!existing) return res.redirect('/admin/news');
+    replacementCoverIsValid =
+      await hasMatchingImageSignature(
+        req.file
+      );
+  } catch (error) {
+    await deleteMulterFilesSafely(
+      req.file,
+      'Could not remove replacement cover after inspection failed:'
+    );
 
-    const wasPublished = existing.published;
-    const isNowPublished = published === 'on';
+    throw error;
+  }
 
-    await prisma.newsArticle.update({
-      where: { id },
-      data: {
-        title,
-        body,
-        published: isNowPublished,
-        publishedAt: isNowPublished && !wasPublished ? new Date() : existing.publishedAt,
-        ...(req.file ? { coverImage: `/uploads/news/${req.file.filename}` } : {})
+  if (!replacementCoverIsValid) {
+    await deleteMulterFilesSafely(
+      req.file,
+      'Could not remove invalid replacement cover:'
+    );
+
+    return res.status(400).render(
+      'admin/news-form',
+      {
+        article: {
+          ...existing,
+          title,
+          body,
+          published:
+            isNowPublished
+        },
+
+        error:
+          'The replacement cover is not a valid JPEG, PNG or WebP image.'
+      }
+    );
+  }
+}
+
+      const previousCoverUrl =
+        existing.coverImage;
+
+      const newCoverUrl =
+        req.file
+          ? `/uploads/news/${req.file.filename}`
+          : existing.coverImage;
+
+      const wasPublished =
+        existing.published;
+
+await prisma.$transaction(
+  async (transaction) => {
+    const updatedArticle =
+      await transaction
+        .newsArticle
+        .update({
+          where: {
+            id:
+              articleId
+          },
+
+          data: {
+            title,
+            body,
+
+            coverImage:
+              newCoverUrl,
+
+            published:
+              isNowPublished,
+
+            publishedAt:
+              isNowPublished &&
+              !wasPublished
+                ? new Date()
+                : existing.publishedAt
+          }
+        });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'NEWS_UPDATED',
+
+      entityType:
+        'NewsArticle',
+
+      entityId:
+        articleId,
+
+      metadata: {
+        previous: {
+          title:
+            existing.title,
+
+          published:
+            existing.published,
+
+          coverImage:
+            existing.coverImage
+        },
+
+        updated: {
+          title:
+            updatedArticle.title,
+
+          published:
+            updatedArticle.published,
+
+          coverImage:
+            updatedArticle.coverImage
+        }
       }
     });
-
-    res.redirect('/admin/news');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin/news');
   }
-});
+);
+
+      /*
+       * Only remove the old cover image after the database
+       * update succeeds.
+       */
+      if (
+        req.file &&
+        previousCoverUrl &&
+        previousCoverUrl !==
+          newCoverUrl
+      ) {
+        await deleteStoredFileSafely(
+          previousCoverUrl,
+          newsUploadDirectory,
+          'Article was updated, but the previous cover image could not be removed:'
+        );
+      }
+    } catch (error) {
+      /*
+       * When the database update fails, the old image remains
+       * valid and the newly uploaded replacement must be
+       * removed.
+       */
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not remove replacement cover image after article update failed:'
+      );
+
+      throw error;
+    }
+
+    return res.redirect(
+      '/admin/news'
+    );
+  })
+);
 
 router.post(
   '/news/:id/delete',
@@ -403,10 +1641,22 @@ router.post(
       );
     }
 
+    /*
+     * Retrieve the article and all of its gallery image URLs
+     * before deleting any database records.
+     */
     const article =
       await prisma.newsArticle.findUnique({
         where: {
           id: articleId
+        },
+
+        include: {
+          images: {
+            select: {
+              imageUrl: true
+            }
+          }
         }
       });
 
@@ -417,16 +1667,100 @@ router.post(
     }
 
     /*
-     * Prisma deletes the article record.
+     * Build a list of all physical files connected to the
+     * article.
      *
-     * Physical cover and gallery image cleanup will be added
-     * in the file-storage cleanup phase.
+     * This includes:
+     * - the article cover image;
+     * - every gallery image.
      */
-    await prisma.newsArticle.delete({
-      where: {
-        id: articleId
+    const storedImageUrls =
+      [
+        article.coverImage,
+
+        ...article.images.map(
+          (image) => image.imageUrl
+        )
+      ].filter(Boolean);
+
+    /*
+     * Delete the gallery records and article in one database
+     * transaction.
+     *
+     * Deleting gallery records first also works when your
+     * Prisma relationship does not have onDelete: Cascade.
+     */
+await prisma.$transaction(
+  async (transaction) => {
+    await transaction
+      .newsImage
+      .deleteMany({
+        where: {
+          newsArticleId:
+            articleId
+        }
+      });
+
+    await transaction
+      .newsArticle
+      .delete({
+        where: {
+          id:
+            articleId
+        }
+      });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'NEWS_DELETED',
+
+      entityType:
+        'NewsArticle',
+
+      entityId:
+        articleId,
+
+      metadata: {
+        title:
+          article.title,
+
+        slug:
+          article.slug,
+
+        galleryImageCount:
+          article.images.length,
+
+        hadCoverImage:
+          Boolean(
+            article.coverImage
+          )
       }
     });
+  }
+);
+    /*
+     * Remove all physical images after the transaction
+     * succeeds.
+     *
+     * A cleanup failure is logged but will not restore the
+     * already-deleted article.
+     */
+    await Promise.all(
+      storedImageUrls.map(
+        (storedImageUrl) => {
+          return deleteStoredFileSafely(
+            storedImageUrl,
+            newsUploadDirectory,
+            'Article record was deleted, but one of its image files could not be removed:'
+          );
+        }
+      )
+    );
 
     return res.redirect(
       '/admin/news'
@@ -484,38 +1818,210 @@ router.get(
 );
 
 router.post(
-  '/news/:id/images', 
-    contentManagerOnly,
-  uploadGalleryImages.array('galleryImages', 10),  
+  '/news/:id/images',
+  contentManagerOnly,
+
+  uploadGalleryImages.array(
+    'galleryImages',
+    10
+  ),
+
   csrfAfterUpload,
-  async (req, res) => {
-  try {
-    const newsArticleId = Number(req.params.id);
-    const files = req.files || [];
 
-    const lastImage = await prisma.newsImage.findFirst({
-      where: { newsArticleId },
-      orderBy: { order: 'desc' }
-    });
-    let nextOrder = lastImage ? lastImage.order + 1 : 0;
+  asyncHandler(async (req, res) => {
+    const articleId =
+      Number(req.params.id);
 
-    for (const file of files) {
-      await prisma.newsImage.create({
-        data: {
-          newsArticleId,
-          imageUrl: `/uploads/news/${file.filename}`,
-          order: nextOrder
-        }
-      });
-      nextOrder += 1;
+    const files =
+      Array.isArray(req.files)
+        ? req.files
+        : [];
+
+    if (
+      !Number.isInteger(articleId) ||
+      articleId < 1
+    ) {
+      await deleteMulterFilesSafely(
+        files,
+        'Could not remove gallery uploads after invalid article ID:'
+      );
+
+      return res.status(400).send(
+        'Invalid article ID.'
+      );
     }
 
-    res.redirect(`/admin/news/${newsArticleId}/images`);
-  } catch (err) {
-    console.error(err);
-    res.redirect(`/admin/news/${req.params.id}/images`);
+    if (files.length === 0) {
+      return res.status(400).send(
+        'Please select at least one image.'
+      );
+    }
+
+    /*
+ * Validate every stored gallery image before creating any
+ * database records.
+ */
+let galleryValidationResults;
+
+try {
+  galleryValidationResults =
+    await Promise.all(
+      files.map(
+        (file) => {
+          return hasMatchingImageSignature(
+            file
+          );
+        }
+      )
+    );
+} catch (error) {
+  await deleteMulterFilesSafely(
+    files,
+    'Could not remove gallery files after inspection failed:'
+  );
+
+  throw error;
+}
+
+const allGalleryImagesAreValid =
+  galleryValidationResults.every(
+    Boolean
+  );
+
+if (!allGalleryImagesAreValid) {
+  await deleteMulterFilesSafely(
+    files,
+    'Could not remove invalid gallery files:'
+  );
+
+  return res.status(400).send(
+    'One or more uploaded files are not valid JPEG, PNG or WebP images.'
+  );
+}
+
+    try {
+      const article =
+        await prisma.newsArticle.findUnique({
+          where: {
+            id: articleId
+          },
+
+          select: {
+            id: true
+          }
+        });
+
+      if (!article) {
+        await deleteMulterFilesSafely(
+          files,
+          'Could not remove gallery uploads for a missing article:'
+        );
+
+        return res.status(404).send(
+          'News article not found.'
+        );
+      }
+
+      const lastImage =
+        await prisma.newsImage.findFirst({
+          where: {
+            newsArticleId:
+              articleId
+          },
+
+          orderBy: {
+            order: 'desc'
+          }
+        });
+
+      const startingOrder =
+        lastImage
+          ? lastImage.order + 1
+          : 0;
+
+      /*
+       * Create every gallery record inside one transaction.
+       *
+       * If one creation fails, Prisma rolls back all of them.
+       */
+await prisma.$transaction(
+  async (transaction) => {
+    const createdImageIds =
+      [];
+
+    for (
+      const [
+        index,
+        file
+      ] of files.entries()
+    ) {
+      const createdImage =
+        await transaction
+          .newsImage
+          .create({
+            data: {
+              newsArticleId:
+                articleId,
+
+              imageUrl:
+                `/uploads/news/${file.filename}`,
+
+              order:
+                startingOrder +
+                index
+            }
+          });
+
+      createdImageIds.push(
+        createdImage.id
+      );
+    }
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'GALLERY_IMAGE_ADDED',
+
+      entityType:
+        'NewsArticle',
+
+      entityId:
+        articleId,
+
+      metadata: {
+        imageCount:
+          createdImageIds.length,
+
+        imageIds:
+          createdImageIds
+      }
+    });
   }
-});
+);
+    } catch (error) {
+      /*
+       * Because the database writes are transactional, none of
+       * the image records remain when one operation fails.
+       *
+       * Remove all corresponding physical files.
+       */
+      await deleteMulterFilesSafely(
+        files,
+        'Could not remove gallery images after database failure:'
+      );
+
+      throw error;
+    }
+
+    return res.redirect(
+      `/admin/news/${articleId}/images`
+    );
+  })
+);
 
 router.post(
   '/news/:id/images/:imageId/delete',
@@ -548,14 +2054,17 @@ router.post(
     }
 
     /*
-     * Confirm that the image actually belongs to the article
-     * in the URL.
+     * Confirm that:
+     *
+     * 1. The image exists.
+     * 2. The image belongs to the article in the URL.
      */
     const image =
       await prisma.newsImage.findFirst({
         where: {
           id: imageId,
-          newsArticleId: articleId
+          newsArticleId:
+            articleId
         }
       });
 
@@ -566,14 +2075,56 @@ router.post(
     }
 
     /*
-     * This currently removes only the database record.
-     * Physical image deletion will be added later.
+     * Delete the database record first.
      */
-    await prisma.newsImage.delete({
-      where: {
-        id: imageId
+await prisma.$transaction(
+  async (transaction) => {
+    await transaction
+      .newsImage
+      .delete({
+        where: {
+          id:
+            imageId
+        }
+      });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'GALLERY_IMAGE_DELETED',
+
+      entityType:
+        'NewsImage',
+
+      entityId:
+        imageId,
+
+      metadata: {
+        newsArticleId:
+          articleId,
+
+        imageUrl:
+          image.imageUrl,
+
+        order:
+          image.order
       }
     });
+  }
+);
+    /*
+     * The database deletion succeeded.
+     * Remove the corresponding physical image.
+     */
+    await deleteStoredFileSafely(
+      image.imageUrl,
+      newsUploadDirectory,
+      'Gallery image record was deleted, but its physical file could not be removed:'
+    );
 
     return res.redirect(
       `/admin/news/${articleId}/images`
@@ -691,20 +2242,63 @@ router.post(
       }
     }
 
-    await prisma.jobPosting.create({
-      data: {
-        title,
-        department,
-        location,
-        description,
-        deadline: parsedDeadline,
+await prisma.$transaction(
+  async (transaction) => {
+    const createdJob =
+      await transaction
+        .jobPosting
+        .create({
+          data: {
+            title,
+            department,
+            location,
+            description,
+
+            deadline:
+              parsedDeadline,
+
+            status:
+              submittedStatus ===
+              'open'
+                ? 'open'
+                : 'closed'
+          }
+        });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'JOB_CREATED',
+
+      entityType:
+        'JobPosting',
+
+      entityId:
+        createdJob.id,
+
+      metadata: {
+        title:
+          createdJob.title,
+
+        department:
+          createdJob.department,
+
+        location:
+          createdJob.location,
 
         status:
-          submittedStatus === 'open'
-            ? 'open'
-            : 'closed'
+          createdJob.status,
+
+        deadline:
+          createdJob.deadline
       }
     });
+  }
+);
 
     return res.redirect(
       '/admin/jobs'
@@ -851,24 +2445,89 @@ router.post(
       }
     }
 
-    await prisma.jobPosting.update({
-      where: {
-        id: jobId
-      },
+const newStatus =
+  submittedStatus === 'open'
+    ? 'open'
+    : 'closed';
 
-      data: {
-        title,
-        department,
-        location,
-        description,
-        deadline: parsedDeadline,
+await prisma.$transaction(
+  async (transaction) => {
+    const updatedJob =
+      await transaction
+        .jobPosting
+        .update({
+          where: {
+            id:
+              jobId
+          },
 
-        status:
-          submittedStatus === 'open'
-            ? 'open'
-            : 'closed'
+          data: {
+            title,
+            department,
+            location,
+            description,
+
+            deadline:
+              parsedDeadline,
+
+            status:
+              newStatus
+          }
+        });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'JOB_UPDATED',
+
+      entityType:
+        'JobPosting',
+
+      entityId:
+        jobId,
+
+      metadata: {
+        previous: {
+          title:
+            existingJob.title,
+
+          department:
+            existingJob.department,
+
+          location:
+            existingJob.location,
+
+          status:
+            existingJob.status,
+
+          deadline:
+            existingJob.deadline
+        },
+
+        updated: {
+          title:
+            updatedJob.title,
+
+          department:
+            updatedJob.department,
+
+          location:
+            updatedJob.location,
+
+          status:
+            updatedJob.status,
+
+          deadline:
+            updatedJob.deadline
+        }
       }
     });
+  }
+);
 
     return res.redirect(
       '/admin/jobs'
@@ -928,11 +2587,48 @@ router.post(
       );
     }
 
-    await prisma.jobPosting.delete({
-      where: {
-        id: jobId
+await prisma.$transaction(
+  async (transaction) => {
+    await transaction
+      .jobPosting
+      .delete({
+        where: {
+          id:
+            jobId
+        }
+      });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'JOB_DELETED',
+
+      entityType:
+        'JobPosting',
+
+      entityId:
+        jobId,
+
+      metadata: {
+        title:
+          job.title,
+
+        department:
+          job.department,
+
+        location:
+          job.location,
+
+        status:
+          job.status
       }
     });
+  }
+);
 
     return res.redirect(
       '/admin/jobs'
@@ -1150,16 +2846,18 @@ router.post(
       );
     }
 
-    const application =
-      await prisma.jobApplication.findUnique({
-        where: {
-          id: applicationId
-        },
+const application =
+  await prisma.jobApplication.findUnique({
+    where: {
+      id:
+        applicationId
+    },
 
-        select: {
-          id: true
-        }
-      });
+    select: {
+      id: true,
+      status: true
+    }
+  });
 
     if (!application) {
       return res.status(404).send(
@@ -1167,15 +2865,46 @@ router.post(
       );
     }
 
-    await prisma.jobApplication.update({
-      where: {
-        id: applicationId
-      },
+await prisma.$transaction(
+  async (transaction) => {
+    await transaction
+      .jobApplication
+      .update({
+        where: {
+          id:
+            applicationId
+        },
 
-      data: {
-        status
+        data: {
+          status
+        }
+      });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'APPLICATION_STATUS_UPDATED',
+
+      entityType:
+        'JobApplication',
+
+      entityId:
+        applicationId,
+
+      metadata: {
+        previousStatus:
+          application.status,
+
+        newStatus:
+          status
       }
     });
+  }
+);
 
     return res.redirect(
       '/admin/applications'
@@ -1214,11 +2943,45 @@ router.post(
       );
     }
 
-    await prisma.jobApplication.delete({
-      where: {
-        id: applicationId
+await prisma.$transaction(
+  async (transaction) => {
+    await transaction
+      .jobApplication
+      .delete({
+        where: {
+          id:
+            applicationId
+        }
+      });
+
+    await writeAuditLog({
+      client:
+        transaction,
+
+      req,
+
+      action:
+        'APPLICATION_DELETED',
+
+      entityType:
+        'JobApplication',
+
+      entityId:
+        applicationId,
+
+      metadata: {
+        jobId:
+          application.jobId,
+
+        previousStatus:
+          application.status,
+
+        originalResumeName:
+          application.resumeOriginalName
       }
     });
+  }
+);
 
     const safeStorageName =
       path.basename(
@@ -1290,15 +3053,20 @@ router.post(
 
   asyncHandler(async (req, res) => {
     const submissionId =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
     const status =
-      typeof req.body.status === 'string'
+      typeof req.body.status ===
+      'string'
         ? req.body.status.trim()
         : '';
 
     if (
-      !Number.isInteger(submissionId) ||
+      !Number.isInteger(
+        submissionId
+      ) ||
       submissionId < 1
     ) {
       return res.status(400).send(
@@ -1317,15 +3085,19 @@ router.post(
     }
 
     const submission =
-      await prisma.contactSubmission.findUnique({
-        where: {
-          id: submissionId
-        },
+      await prisma
+        .contactSubmission
+        .findUnique({
+          where: {
+            id:
+              submissionId
+          },
 
-        select: {
-          id: true
-        }
-      });
+          select: {
+            id: true,
+            status: true
+          }
+        });
 
     if (!submission) {
       return res.status(404).send(
@@ -1333,15 +3105,46 @@ router.post(
       );
     }
 
-    await prisma.contactSubmission.update({
-      where: {
-        id: submissionId
-      },
+    await prisma.$transaction(
+      async (transaction) => {
+        await transaction
+          .contactSubmission
+          .update({
+            where: {
+              id:
+                submissionId
+            },
 
-      data: {
-        status
+            data: {
+              status
+            }
+          });
+
+        await writeAuditLog({
+          client:
+            transaction,
+
+          req,
+
+          action:
+            'CONTACT_STATUS_UPDATED',
+
+          entityType:
+            'ContactSubmission',
+
+          entityId:
+            submissionId,
+
+          metadata: {
+            previousStatus:
+              submission.status,
+
+            newStatus:
+              status
+          }
+        });
       }
-    });
+    );
 
     return res.redirect(
       '/admin/contact-submissions'
@@ -1356,10 +3159,14 @@ router.post(
 
   asyncHandler(async (req, res) => {
     const submissionId =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
     if (
-      !Number.isInteger(submissionId) ||
+      !Number.isInteger(
+        submissionId
+      ) ||
       submissionId < 1
     ) {
       return res.status(400).send(
@@ -1368,15 +3175,21 @@ router.post(
     }
 
     const submission =
-      await prisma.contactSubmission.findUnique({
-        where: {
-          id: submissionId
-        },
+      await prisma
+        .contactSubmission
+        .findUnique({
+          where: {
+            id:
+              submissionId
+          },
 
-        select: {
-          id: true
-        }
-      });
+          select: {
+            id: true,
+            subject: true,
+            status: true,
+            submittedAt: true
+          }
+        });
 
     if (!submission) {
       return res.status(404).send(
@@ -1384,11 +3197,45 @@ router.post(
       );
     }
 
-    await prisma.contactSubmission.delete({
-      where: {
-        id: submissionId
+    await prisma.$transaction(
+      async (transaction) => {
+        await transaction
+          .contactSubmission
+          .delete({
+            where: {
+              id:
+                submissionId
+            }
+          });
+
+        await writeAuditLog({
+          client:
+            transaction,
+
+          req,
+
+          action:
+            'CONTACT_DELETED',
+
+          entityType:
+            'ContactSubmission',
+
+          entityId:
+            submissionId,
+
+          metadata: {
+            subject:
+              submission.subject,
+
+            previousStatus:
+              submission.status,
+
+            submittedAt:
+              submission.submittedAt
+          }
+        });
       }
-    });
+    );
 
     return res.redirect(
       '/admin/contact-submissions'
@@ -1418,6 +3265,41 @@ router.get(
   })
 );
 
+router.get(
+  '/audit-logs',
+  superAdminOnly,
+
+  asyncHandler(async (
+    req,
+    res
+  ) => {
+    const auditLogs =
+      await prisma.auditLog.findMany({
+        include: {
+          admin: {
+            select: {
+              email: true
+            }
+          }
+        },
+
+        orderBy: {
+          createdAt:
+            'desc'
+        },
+
+        take: 200
+      });
+
+    return res.render(
+      'admin/audit-logs',
+      {
+        auditLogs
+      }
+    );
+  })
+);
+
 router.post(
   '/newsletter/:id/delete',
   superAdminOnly,
@@ -1425,10 +3307,14 @@ router.post(
 
   asyncHandler(async (req, res) => {
     const subscriberId =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
     if (
-      !Number.isInteger(subscriberId) ||
+      !Number.isInteger(
+        subscriberId
+      ) ||
       subscriberId < 1
     ) {
       return res.status(400).send(
@@ -1437,15 +3323,20 @@ router.post(
     }
 
     const subscriber =
-      await prisma.newsletterSubscriber.findUnique({
-        where: {
-          id: subscriberId
-        },
+      await prisma
+        .newsletterSubscriber
+        .findUnique({
+          where: {
+            id:
+              subscriberId
+          },
 
-        select: {
-          id: true
-        }
-      });
+          select: {
+            id: true,
+            email: true,
+            subscribedAt: true
+          }
+        });
 
     if (!subscriber) {
       return res.status(404).send(
@@ -1453,11 +3344,42 @@ router.post(
       );
     }
 
-    await prisma.newsletterSubscriber.delete({
-      where: {
-        id: subscriberId
+    await prisma.$transaction(
+      async (transaction) => {
+        await transaction
+          .newsletterSubscriber
+          .delete({
+            where: {
+              id:
+                subscriberId
+            }
+          });
+
+        await writeAuditLog({
+          client:
+            transaction,
+
+          req,
+
+          action:
+            'NEWSLETTER_SUBSCRIBER_DELETED',
+
+          entityType:
+            'NewsletterSubscriber',
+
+          entityId:
+            subscriberId,
+
+          metadata: {
+            email:
+              subscriber.email,
+
+            subscribedAt:
+              subscriber.subscribedAt
+          }
+        });
       }
-    });
+    );
 
     return res.redirect(
       '/admin/newsletter'
@@ -1465,8 +3387,120 @@ router.post(
   })
 );
 
-// --- CRUD route stubs ---
-// Remaining resources still to build out: jobs, faqs, team.
-// Pattern to copy is the "news" section above.
+// --- Future Admin Resources ---
+// Admin management for FAQs and team profiles can be added
+// later when those resources are moved into the database.
+
+
+/*
+ * Handle Multer and upload metadata errors.
+ *
+ * This middleware must keep all four Express error-middleware
+ * parameters:
+ *
+ * error, req, res, next
+ */
+router.use(
+  (
+    error,
+    req,
+    res,
+    next
+  ) => {
+    return Promise
+      .resolve()
+      .then(async () => {
+        /*
+         * csrfAfterUpload already removes files rejected by
+         * CSRF verification.
+         *
+         * Forward the error to the application's main CSRF
+         * handler.
+         */
+        if (
+          error.code ===
+          'EBADCSRFTOKEN'
+        ) {
+          return next(error);
+        }
+
+        /*
+         * Clean up any files Multer may have stored before
+         * reporting another multipart error.
+         */
+        const uploadedFiles =
+          Array.isArray(req.files) &&
+          req.files.length > 0
+            ? req.files
+            : req.file;
+
+        await deleteMulterFilesSafely(
+          uploadedFiles,
+          'Could not remove files after an upload error:'
+        );
+
+        if (
+          error instanceof
+          multer.MulterError
+        ) {
+          if (
+            error.code ===
+            'LIMIT_FILE_SIZE'
+          ) {
+            return res.status(400).send(
+              'The uploaded file exceeds the allowed size.'
+            );
+          }
+
+          if (
+            error.code ===
+            'LIMIT_FILE_COUNT'
+          ) {
+            return res.status(400).send(
+              'Too many files were uploaded.'
+            );
+          }
+
+          if (
+            error.code ===
+            'LIMIT_UNEXPECTED_FILE'
+          ) {
+            return res.status(400).send(
+              'The upload field was not recognised or too many files were selected.'
+            );
+          }
+
+          return res.status(400).send(
+            'The file upload could not be completed.'
+          );
+        }
+
+        if (
+          error.message ===
+          'Please upload a PDF file with a .pdf extension.'
+        ) {
+          return res.status(400).send(
+            error.message
+          );
+        }
+
+        if (
+          error.message ===
+          'Please upload only JPEG, PNG or WebP images.'
+        ) {
+          return res.status(400).send(
+            error.message
+          );
+        }
+
+        /*
+         * Forward unrelated errors to the global Express error
+         * handler.
+         */
+        return next(error);
+      })
+      .catch(next);
+  }
+);
 
 module.exports = router;

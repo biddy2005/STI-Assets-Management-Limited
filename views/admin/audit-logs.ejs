@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>Admin Audit Logs</title>
+  <link
+    rel="stylesheet"
+    href="/css/style.css"
+  >
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a
+        href="/admin/dashboard"
+        class="logo"
+      >
+        AssetCo Admin
+      </a>
+
+      <form
+        action="/auth/logout"
+        method="POST"
+      >
+        <input
+          type="hidden"
+          name="_csrf"
+          value="<%= csrfToken %>"
+        >
+
+        <button
+          class="btn-nav"
+          type="submit"
+        >
+          Log Out
+        </button>
+      </form>
+    </div>
+  </header>
+
+  <section class="section">
+    <h1>Audit Logs</h1>
+
+    <div class="card-grid">
+      <% auditLogs.forEach(function(log) { %>
+        <article class="card">
+          <h3><%= log.action %></h3>
+
+          <p>
+            Admin:
+            <%= log.admin?.email || 'System or unknown' %>
+          </p>
+
+          <p>
+            Entity:
+            <%= log.entityType || 'Not provided' %>
+            <%= log.entityId || '' %>
+          </p>
+
+          <p>
+            IP:
+            <%= log.ipAddress || 'Not available' %>
+          </p>
+
+          <p>
+            Time:
+            <%= log.createdAt.toLocaleString() %>
+          </p>
+
+          <% if (log.metadata) { %>
+            <pre><%= JSON.stringify(log.metadata, null, 2) %></pre>
+          <% } %>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+</body>
+</html>

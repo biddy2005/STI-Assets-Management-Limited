@@ -9,6 +9,11 @@ const {
 } = require(
   '../middleware/csrf.middleware'
 );
+const {
+  asyncHandler
+} = require(
+  '../utils/asyncHandler'
+);
 
 const {
   cleanText,
@@ -60,13 +65,29 @@ function safeRedirectBack(
 
 router.post(
   '/',
+
+  /*
+   * The newsletter form is a normal URL-encoded form.
+   * It does not upload files, so use the standard CSRF
+   * middleware.
+   */
   csrfSynchronisedProtection,
-  async (req, res, next) => {
-  try {
+
+  /*
+   * Forward unexpected database and programming errors to the
+   * global Express error handler.
+   */
+  asyncHandler(async (req, res) => {
     /*
-     * Ignore automated submissions that filled the honeypot.
+     * Ignore automated submissions that filled the hidden
+     * honeypot field.
+     *
+     * Pretend the subscription succeeded, but do not create a
+     * database record.
      */
-    if (isHoneypotTriggered(req)) {
+    if (
+      isHoneypotTriggered(req)
+    ) {
       return safeRedirectBack(
         req,
         res,
@@ -74,11 +95,21 @@ router.post(
       );
     }
 
-    const email = cleanText(
-      req.body.email,
-      254
-    ).toLowerCase();
+    /*
+     * Clean and normalise the email address.
+     */
+    const email =
+      cleanText(
+        req.body.email,
+        254
+      ).toLowerCase();
 
+    /*
+     * Invalid email addresses are expected form errors.
+     *
+     * Redirect back to the page and show the newsletter error
+     * message. This is not a server error.
+     */
     if (!isValidEmail(email)) {
       return safeRedirectBack(
         req,
@@ -88,7 +119,13 @@ router.post(
     }
 
     /*
-     * upsert prevents duplicate subscriber records.
+     * upsert prevents duplicate records.
+     *
+     * When the email already exists, update: {} makes no
+     * changes.
+     *
+     * When the email does not exist, create adds the new
+     * subscriber.
      */
     await prisma.newsletterSubscriber.upsert({
       where: {
@@ -107,18 +144,7 @@ router.post(
       res,
       'subscribed'
     );
-  } catch (error) {
-    console.error(
-      'Newsletter subscription failed:',
-      error
-    );
-
-    return safeRedirectBack(
-      req,
-      res,
-      'newsletterError'
-    );
-  }
-});
+  })
+);
 
 module.exports = router;
