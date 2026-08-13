@@ -38,12 +38,12 @@ async function main() {
     await bcrypt.hash(password, 12);
 
   await prisma.admin.create({
-    data: {
-      email,
-      passwordHash,
-      role: 'superadmin'
-    }
-  });
+  data: {
+    email,
+    passwordHash,
+    role: 'SUPERADMIN'
+  }
+});
 
   console.log('Administrator created successfully.');
 }

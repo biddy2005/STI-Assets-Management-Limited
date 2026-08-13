@@ -15,7 +15,8 @@ function createFormLimiter({
   identifier,
   windowMs,
   limit,
-  message
+  message,
+  skipSuccessfulRequests = false
 }) {
   return rateLimit({
     /*
@@ -53,9 +54,19 @@ function createFormLimiter({
     legacyHeaders: false,
 
     /*
-     * This custom handler runs when the visitor exceeds
-     * the configured limit.
-     */
+    * Successful requests can optionally be removed from
+    * the request count.
+    *
+    * This is useful for administrator login because normal,
+    * successful sign-ins should not consume the failed-login
+    * protection quota.
+    */
+    skipSuccessfulRequests,
+
+    /*
+    * This custom handler runs when the visitor exceeds
+    * the configured limit.
+    */
     handler: (req, res) => {
       let retryAfterSeconds = null;
 
@@ -138,11 +149,24 @@ const careersLimiter = createFormLimiter({
  * A visitor can attempt ten logins in fifteen minutes.
  */
 const loginLimiter = createFormLimiter({
-  identifier: 'admin-login',
-  windowMs: 15 * 60 * 1000,
-  limit: 10,
+  identifier:
+    'admin-login',
+
+  windowMs:
+    15 * 60 * 1000,
+
+  limit:
+    10,
+
+  /*
+   * A successful administrator login should not count
+   * against the failed-login rate limit.
+   */
+  skipSuccessfulRequests:
+    true,
+
   message:
-    'Too many login attempts were made from this device. Please wait before trying again.'
+    'Too many failed login attempts were made from this network. Please wait before trying again.'
 });
 
 module.exports = {
