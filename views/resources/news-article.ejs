@@ -1,36 +1,309 @@
-<%- include('../partials/header') %>
+<%- include('../partials/header', {
+  pageCss: '/css/pages/news-article.css'
+}) %>
 
-<section class="inner-page-hero digest-hero news-article-hero">
+<!-- ============================================================
+     ARTICLE HERO
+============================================================ -->
+<section class="inner-page-hero news-article-page-hero">
+
   <div class="inner-page-hero-inner">
-    <span class="hero-eyebrow">Resources</span>
-    <h1><%= article.title %></h1>
+
+    <span class="hero-eyebrow">
+      Resources
+    </span>
+
+    <h1>
+      <%= article.title %>
+    </h1>
+
     <% if (formattedDate) { %>
-      <p class="news-article-date"><%= formattedDate %></p>
+
+      <div class="news-article-hero-meta">
+
+        <svg
+          class="ui-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <rect
+            x="3"
+            y="5"
+            width="18"
+            height="16"
+            rx="2"
+          ></rect>
+
+          <path d="M3 10h18"></path>
+          <path d="M8 3v4"></path>
+          <path d="M16 3v4"></path>
+        </svg>
+
+        <span>
+          <%= formattedDate %>
+        </span>
+
+      </div>
+
     <% } %>
+
   </div>
+
 </section>
 
-<section class="section news-article-section">
-  <div class="news-article-container">
+<!-- ============================================================
+     ARTICLE CONTENT
+============================================================ -->
+<section class="news-article-section">
+
+  <div class="news-article-shell">
+
     <% if (article.coverImage) { %>
-      <div class="news-article-cover-wrapper">
-        <img class="news-article-cover-img" src="<%= article.coverImage %>" alt="<%= article.title %>" />
-      </div>
+
+      <figure class="news-article-cover">
+
+        <img
+          class="news-article-cover-img"
+          src="<%= article.coverImage %>"
+          alt="<%= article.title %>"
+          loading="eager"
+          decoding="async"
+        >
+
+      </figure>
+
     <% } %>
 
-    <div class="news-article-body"><%= article.body %></div>
 
-    <% if (article.images && article.images.length > 0) { %>
-      <h2>Gallery</h2>
-      <div class="news-gallery-grid">
-        <% article.images.forEach(function (img) { %>
-          <img class="news-gallery-img" src="<%= img.imageUrl %>" alt="<%= img.caption || article.title %>" />
-        <% }); %>
+    <article class="news-article-content">
+
+      <div class="news-article-body">
+        <%= article.body %>
       </div>
-    <% } %>
 
-    <p><a href="/resources/news" class="news-article-back-link">&larr; Back to News &amp; Articles</a></p>
+    </article>
+
+
+    <!-- ============================================================
+     ARTICLE GALLERY
+============================================================ -->
+<% if (article.images && article.images.length > 0) { %>
+
+  <section
+    class="news-article-gallery"
+    aria-labelledby="news-gallery-title"
+  >
+
+    <div class="news-article-gallery-header">
+
+      <h2 id="news-gallery-title">
+        Gallery
+      </h2>
+
+      <p class="news-article-gallery-hint">
+        Click an image to view
+      </p>
+
+    </div>
+
+
+    <div
+      class="news-gallery-grid"
+      data-news-gallery
+    >
+
+      <% article.images.forEach(function (img, index) { %>
+
+        <button
+          type="button"
+          class="news-gallery-item"
+          data-gallery-item
+          data-gallery-index="<%= index %>"
+          data-gallery-src="<%= img.imageUrl %>"
+          data-gallery-caption="<%= img.caption || article.title %>"
+          aria-label="View gallery image <%= index + 1 %> of <%= article.images.length %>"
+        >
+
+          <img
+            class="news-gallery-img"
+            src="<%= img.imageUrl %>"
+            alt="<%= img.caption || article.title %>"
+            loading="lazy"
+            decoding="async"
+          >
+
+          <span
+            class="news-gallery-zoom"
+            aria-hidden="true"
+          >
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+              ></circle>
+
+              <path
+                d="m20 20-3.5-3.5"
+              ></path>
+
+              <path
+                d="M11 8v6"
+              ></path>
+
+              <path
+                d="M8 11h6"
+              ></path>
+            </svg>
+
+          </span>
+
+        </button>
+
+      <% }); %>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==========================================================
+       GALLERY LIGHTBOX
+  =========================================================== -->
+  <div
+    class="news-lightbox"
+    data-news-lightbox
+    role="dialog"
+    aria-modal="true"
+    aria-label="Article image gallery"
+    hidden
+  >
+
+    <button
+      type="button"
+      class="news-lightbox-backdrop"
+      data-lightbox-close
+      tabindex="-1"
+      aria-label="Close image viewer"
+    ></button>
+
+
+    <div class="news-lightbox-dialog">
+
+      <button
+        type="button"
+        class="news-lightbox-close"
+        data-lightbox-close
+        aria-label="Close image viewer"
+      >
+        &times;
+      </button>
+
+
+      <button
+        type="button"
+        class="news-lightbox-arrow news-lightbox-prev"
+        data-lightbox-prev
+        aria-label="Previous image"
+      >
+        &#10094;
+      </button>
+
+
+      <figure class="news-lightbox-figure">
+
+        <img
+          class="news-lightbox-image"
+          data-lightbox-image
+          src=""
+          alt=""
+        >
+
+        <figcaption
+          class="news-lightbox-caption"
+          data-lightbox-caption
+        ></figcaption>
+
+      </figure>
+
+
+      <button
+        type="button"
+        class="news-lightbox-arrow news-lightbox-next"
+        data-lightbox-next
+        aria-label="Next image"
+      >
+        &#10095;
+      </button>
+
+
+      <div
+        class="news-lightbox-counter"
+        data-lightbox-counter
+        aria-live="polite"
+      ></div>
+
+    </div>
+
   </div>
+
+<% } %>
+
+
+    <!-- ============================================================
+         BACK TO NEWS
+    ============================================================ -->
+    <div class="news-article-back">
+
+      <a
+        href="/resources/news"
+        class="news-article-back-link"
+      >
+
+        <svg
+          class="ui-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M19 12H5"></path>
+          <path d="m11 18-6-6 6-6"></path>
+        </svg>
+
+        <span>
+          Back to News &amp; Articles
+        </span>
+
+      </a>
+
+    </div>
+
+  </div>
+
 </section>
+
+<script
+  src="/js/news-gallery.js"
+  defer
+></script>
 
 <%- include('../partials/footer') %>

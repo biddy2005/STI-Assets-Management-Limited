@@ -1,6 +1,8 @@
-<%- include('../partials/header') %>
+<%- include('../partials/header', {
+  pageCss: '/css/pages/news.css'
+}) %>
 
-<section class="inner-page-hero digest-hero">
+<section class="inner-page-hero news-page-hero">
   <div class="inner-page-hero-inner">
     <span class="hero-eyebrow">Resources</span>
     <h1>News &amp; Articles</h1>
@@ -8,34 +10,173 @@
   </div>
 </section>
 
-<section class="news-insights-section">
-  <div class="news-insights-inner">
+<!-- ============================================================
+     NEWS & ARTICLES LISTING
+============================================================ -->
+<section class="news-listing-section">
+
+  <div class="news-listing-shell">
 
     <% if (articles.length === 0) { %>
-      <p class="news-empty">No articles published yet. Check back soon.</p>
-    <% } else { %>
-      <div class="news-grid">
-        <% articles.forEach(function (article) { %>
-          <a class="news-card" href="/resources/news/<%= article.slug %>">
-            <div class="news-card-image-wrap">
-              <% if (article.coverImage) { %>
-                <img class="news-card-cover" src="<%= article.coverImage %>" alt="<%= article.title %>" />
-              <% } %>
-            </div>
-            <div class="news-card-body">
-              <% if (article.formattedDate) { %>
-                <span class="news-card-date"><%= article.formattedDate %></span>
-              <% } %>
-              <h3 class="news-card-title"><%= article.title %></h3>
-              <p class="news-card-excerpt"><%= article.excerpt %></p>
-              <span class="news-card-cta">Read More <span class="news-card-arrow">&rarr;</span></span>
-            </div>
-          </a>
-        <% }); %>
+
+      <div class="news-empty-state">
+
+        <span
+          class="news-empty-icon"
+          aria-hidden="true"
+        >
+          <svg
+            class="ui-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            focusable="false"
+          >
+            <path d="M4 5h16v14H4z"></path>
+            <path d="M8 9h8"></path>
+            <path d="M8 13h5"></path>
+          </svg>
+        </span>
+
+        <p>
+          No articles published yet. Check back soon.
+        </p>
+
       </div>
+
+    <% } else { %>
+
+      <div class="news-grid">
+
+        <% articles.forEach(function (article) { %>
+
+          <a
+            class="news-card"
+            href="/resources/news/<%= article.slug %>"
+          >
+
+            <div class="news-card-media">
+
+              <% if (article.coverImage) { %>
+
+                <img
+                  class="news-card-cover"
+                  src="<%= article.coverImage %>"
+                  alt="<%= article.title %>"
+                  loading="lazy"
+                  decoding="async"
+                >
+
+              <% } else { %>
+
+                <div
+                  class="news-card-placeholder"
+                  aria-hidden="true"
+                >
+                  <svg
+                    class="ui-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.75"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    focusable="false"
+                  >
+                    <path d="M4 5h16v14H4z"></path>
+                    <path d="M8 9h8"></path>
+                    <path d="M8 13h5"></path>
+                  </svg>
+                </div>
+
+              <% } %>
+
+            </div>
+
+            <div class="news-card-body">
+
+              <% if (article.formattedDate) { %>
+
+                <div class="news-card-meta">
+
+                  <svg
+                    class="ui-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.75"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <rect
+                      x="3"
+                      y="5"
+                      width="18"
+                      height="16"
+                      rx="2"
+                    ></rect>
+
+                    <path d="M3 10h18"></path>
+                    <path d="M8 3v4"></path>
+                    <path d="M16 3v4"></path>
+                  </svg>
+
+                  <span class="news-card-date">
+                    <%= article.formattedDate %>
+                  </span>
+
+                </div>
+
+              <% } %>
+
+              <h3 class="news-card-title">
+                <%= article.title %>
+              </h3>
+
+              <p class="news-card-excerpt">
+                <%= article.excerpt %>
+              </p>
+
+              <span class="news-card-cta">
+
+                <span>
+                  Read More
+                </span>
+
+                <svg
+                  class="ui-icon news-card-arrow"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m13 6 6 6-6 6"></path>
+                </svg>
+
+              </span>
+
+            </div>
+
+          </a>
+
+        <% }); %>
+
+      </div>
+
     <% } %>
 
   </div>
+
 </section>
 
 <%- include('../partials/footer') %>

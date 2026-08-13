@@ -1,11 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %> | STI Assets Management</title>
-  <link rel="stylesheet" href="/css/style.css" />
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <%
+    const metaTitle =
+      typeof title !== 'undefined' && title
+        ? `${title} | STI Assets Management`
+        : 'STI Assets Management';
+
+    const metaDescription =
+      typeof description !== 'undefined' && description
+        ? description
+        : 'STI Assets Management Limited provides investment management, financial advisory, market research and portfolio solutions for individuals and organisations.';
+
+    const canonicalHref =
+      typeof canonicalPath !== 'undefined' && canonicalPath
+        ? `https://stiassetmgt.com${canonicalPath}`
+        : null;
+
+    const socialImage =
+      typeof ogImage !== 'undefined' && ogImage
+        ? ogImage
+        : null;
+
+    const socialType =
+      typeof ogType !== 'undefined' && ogType
+        ? ogType
+        : 'website';
+  %>
+
+  <title><%= metaTitle %></title>
+
+  <meta
+    name="description"
+    content="<%= metaDescription %>"
+  >
+
+  <meta
+    name="theme-color"
+    content="#033669"
+  >
+
+
+  <% if (typeof robots !== 'undefined' && robots) { %>
+
+    <meta
+      name="robots"
+      content="<%= robots %>"
+    >
+
+  <% } %>
+
+
+  <% if (canonicalHref) { %>
+
+    <link
+      rel="canonical"
+      href="<%= canonicalHref %>"
+    >
+
+  <% } %>
+
+
+  <!-- Open Graph -->
+
+  <meta
+    property="og:title"
+    content="<%= metaTitle %>"
+  >
+
+  <meta
+    property="og:description"
+    content="<%= metaDescription %>"
+  >
+
+  <meta
+    property="og:type"
+    content="<%= socialType %>"
+  >
+
+  <meta
+    property="og:site_name"
+    content="STI Assets Management"
+  >
+
+  <meta
+    property="og:locale"
+    content="en_NG"
+  >
+
+
+  <% if (canonicalHref) { %>
+
+    <meta
+      property="og:url"
+      content="<%= canonicalHref %>"
+    >
+
+  <% } %>
+
+
+  <% if (socialImage) { %>
+
+    <meta
+      property="og:image"
+      content="<%= socialImage %>"
+    >
+
+  <% } %>
+
+
+  <!-- Social sharing -->
+
+  <meta
+    name="twitter:card"
+    content="<%= socialImage ? 'summary_large_image' : 'summary' %>"
+  >
+
+  <meta
+    name="twitter:title"
+    content="<%= metaTitle %>"
+  >
+
+  <meta
+    name="twitter:description"
+    content="<%= metaDescription %>"
+  >
+
+
+  <% if (socialImage) { %>
+
+    <meta
+      name="twitter:image"
+      content="<%= socialImage %>"
+    >
+
+  <% } %>
+
+
+  <!-- Styles -->
+
+  <link
+    rel="stylesheet"
+    href="/css/style.css"
+  >
+
+  <% if (
+    typeof pageCss !== 'undefined' &&
+    pageCss
+  ) { %>
+
+    <link
+      rel="stylesheet"
+      href="<%= pageCss %>"
+    >
+
+  <% } %>
+
 </head>
+
 <body>
+
   <%- include('nav') %>
+
   <main class="site-main">

@@ -47,14 +47,32 @@
       <% article.images.forEach(function (img) { %>
         <div class="card">
           <img src="<%= img.imageUrl %>" alt="" style="width:100%;border-radius:var(--radius);margin-bottom:8px;" />
-          <form action="/admin/news/<%= article.id %>/images/<%= img.id %>/delete" method="POST">
-              <input
-                type="hidden"
-                name="_csrf"
-                value="<%= csrfToken %>"
-              >
-            <button type="submit" class="btn-nav">Delete</button>
-          </form>
+          <% if (
+                admin.role ===
+                'SUPERADMIN'
+              ) { %>
+
+                <form
+                  action="/admin/news/<%= article.id %>/images/<%= img.id %>/delete"
+                  method="POST"
+                >
+
+                  <input
+                    type="hidden"
+                    name="_csrf"
+                    value="<%= csrfToken %>"
+                  >
+
+                  <button
+                    type="submit"
+                    class="btn-nav"
+                  >
+                    Delete
+                  </button>
+
+                </form>
+
+              <% } %>
         </div>
       <% }); %>
     </div>

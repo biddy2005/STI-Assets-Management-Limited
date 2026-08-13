@@ -4,7 +4,10 @@
       <img src="https://stiassetmgt.com/wp-content/uploads/2023/09/Group-46603.png" alt="STI Assets Management Logo" />
     </a>
 
-    <nav class="primary-nav">
+    <nav
+      class="primary-nav"
+      aria-label="Primary navigation"
+    >
       <ul>
         <li><a href="/" class="nav-link">Home</a></li>
         <li><a href="/who-we-are" class="nav-link">Who We Are</a></li>
@@ -13,8 +16,20 @@
         <li><a href="/products" class="nav-link">Products</a></li>
 
         <li class="has-dropdown">
-          <a href="/resources" class="nav-link">Resources <span class="nav-caret"></span></a>
-          <ul class="dropdown">
+        <a
+          href="/resources"
+          class="nav-link"
+          aria-haspopup="true"
+        >
+          Resources
+
+          <span
+            class="nav-caret"
+            aria-hidden="true"
+          ></span>
+        </a>
+
+        <ul class="dropdown">
             <li><a href="/resources/faqs">FAQs</a></li>
             <li><a href="/resources/downloads">Downloads</a></li>
             <li><a href="/resources/news">News &amp; Articles</a></li>
@@ -29,22 +44,50 @@
       <a href="/contact" class="btn-contact-cta">Contact Us</a>
     </div>
 
-    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-      <span></span><span></span><span></span>
+    <button
+      id="navToggle"
+      class="nav-toggle"
+      type="button"
+      aria-label="Open navigation"
+      aria-controls="mobileDrawer"
+      aria-expanded="false"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
     </button>
   </div>
 </header>
 
-<div id="navOverlay" class="nav-overlay"></div>
+<div
+  id="navOverlay"
+  class="nav-overlay"
+  aria-hidden="true"
+></div>
 
-<aside id="mobileDrawer" class="mobile-drawer">
+<aside
+  id="mobileDrawer"
+  class="mobile-drawer"
+  aria-label="Mobile navigation"
+  aria-hidden="true"
+>
   <div class="mobile-drawer-header">
     <a href="/" class="logo-placeholder" aria-label="STI Assets Management Home">
       <img src="https://stiassetmgt.com/wp-content/uploads/2023/09/Group-46603.png" alt="STI Assets Management Logo" />
     </a>
-    <button id="drawerClose" class="drawer-close" aria-label="Close navigation">&times;</button>
+    <button
+      id="drawerClose"
+      class="drawer-close"
+      type="button"
+      aria-label="Close navigation"
+    >
+      &times;
+    </button>
   </div>
-  <nav class="mobile-drawer-nav">
+  <nav
+    class="mobile-drawer-nav"
+    aria-label="Mobile navigation links"
+  >
     <ul>
       <li><a href="/">Home</a></li>
 
@@ -54,7 +97,18 @@
       <li><a href="/products">Products</a></li>
 
       <li class="has-dropdown">
-        <a href="/resources">Resources <span class="nav-caret"></span></a>
+        <a
+          href="/resources"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Resources
+
+          <span
+            class="nav-caret"
+            aria-hidden="true"
+          ></span>
+        </a>
         <ul class="dropdown">
           <li><a href="/resources/faqs">FAQs</a></li>
           <li><a href="/resources/downloads">Downloads</a></li>

@@ -9,16 +9,23 @@ datasource db {
   provider = "postgresql"
 }
 
+enum AdminRole {
+  SUPERADMIN @map("superadmin")
+  EDITOR     @map("editor")
+}
+
 model Admin {
-  id           Int    @id @default(autoincrement())
-  email        String @unique
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
   passwordHash String
-  role         String @default("editor")
+  role         AdminRole @default(EDITOR)
 
   isActive     Boolean   @default(true)
   failedLogins Int       @default(0)
   lockedUntil  DateTime?
   lastLoginAt  DateTime?
+
+  sessionVersion Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -27,6 +34,7 @@ model Admin {
 
   @@index([isActive])
   @@index([lockedUntil])
+  @@index([role, isActive])
 }
 
 model AuditLog {
@@ -100,15 +108,30 @@ model Download {
 }
 
 model JobPosting {
-  id          Int       @id @default(autoincrement())
-  title       String
-  department  String
-  location    String
+  id         Int    @id @default(autoincrement())
+  title      String
+  department String
+  location   String
+
+  // Short overview shown on the Careers listing page.
   description String
-  deadline    DateTime?
-  status      String    @default("open") // "open" | "closed"
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
+
+  // Detailed job information shown on the Job Details page.
+  responsibilities String?
+  qualifications   String?
+  experience       String?
+  competencies     String?
+
+  // Additional job information.
+  jobCategory String?
+  jobType     String?
+
+  deadline DateTime?
+
+  status String @default("open") // "open" | "closed"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   applications JobApplication[]
 }
@@ -215,4 +238,15 @@ model DailyDigest {
 
   @@index([publishDate])
   @@index([dayOfWeek, publishDate])
+}
+
+model RateGuide {
+  id           Int    @id
+  imageUrl     String
+  originalName String
+  mimeType     String
+  fileSize     Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

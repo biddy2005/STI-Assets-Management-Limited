@@ -1,15 +1,38 @@
-<%- include('partials/header') %>
+<%- include('partials/header', {
+  pageCss: '/css/pages/legal.css'
+}) %>
 
-<section class="inner-page-hero digest-hero">
+<!-- ============================================================
+     LEGAL HERO
+============================================================ -->
+<section class="inner-page-hero legal-page-hero">
+
   <div class="inner-page-hero-inner">
-    <span class="hero-eyebrow">Legal</span>
-    <h1>Our Privacy Policy</h1>
-    <p>How STI Asset Management collects, uses, and protects your personal information.</p>
+
+    <span class="hero-eyebrow">
+      Legal
+    </span>
+
+    <h1>
+      Our Privacy Policy
+    </h1>
+
+    <p>
+      How STI Asset Management collects, uses, and protects your personal information.
+    </p>
+
   </div>
+
 </section>
 
-<section class="section legal-section">
-  <div class="legal-content">
+<!-- ============================================================
+     PRIVACY POLICY CONTENT
+============================================================ -->
+<section class="legal-section">
+
+  <div class="legal-shell">
+
+    <article class="legal-content">
     <p>By accessing or using the Services, or by accepting our Terms and Conditions (the "Terms") or any other terms that incorporate this Privacy Policy by reference, you agree on behalf of yourself and any organization that you represent (together, "you") that you have read and understood this Privacy Policy and that you consent to the collection, use, and sharing of information as discussed below. If you do not agree with this Privacy Policy, do not access or use the Services or the Platforms. This Policy is incorporated into and made a part of our Terms and Conditions.</p>
 
     <h2>1. Users' Privacy Rights</h2>
@@ -94,7 +117,10 @@
 
     <h2>11. Governing Law</h2>
     <p>This Policy is made pursuant to the provisions of the NDPR and any other relevant Nigerian laws, regulations or international conventions applicable to Nigeria.</p>
+    </article>
+
   </div>
+
 </section>
 
 <%- include('partials/footer') %>

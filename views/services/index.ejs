@@ -1,8 +1,10 @@
-<%- include('../partials/header') %>
+<%- include('../partials/header', {
+  pageCss: '/css/pages/services.css'
+}) %>
 <!-- ============================================================
      PAGE HEADER
 ============================================================ -->
-<section class="inner-page-hero digest-hero">
+<section class="inner-page-hero services-page-hero">
   <div class="inner-page-hero-inner">
     <span class="hero-eyebrow">Our Solutions</span>
     <h1>Tailored Strategies. Proven Expertise.</h1>
@@ -13,60 +15,150 @@
 <!-- ============================================================
      SERVICE 1: FINANCIAL ADVISORY SERVICES
 ============================================================ -->
-<section class="section service-block service-block-white">
+<section
+  id="financial-advisory"
+  class="section service-block service-block-white service-advisory-section"
+>
   <div class="service-split">
-    <div class="service-intro">
+
+    <article class="service-intro">
+
       <div class="service-intro-image">
-        <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?auto=format&fit=crop&w=800&q=80" alt="Financial advisor meeting with a client">
+        <img
+          src="/financialadvisory.jpg"
+          alt="Financial advisor meeting with a client"
+          loading="lazy"
+          decoding="async"
+        >
       </div>
+
       <div class="service-intro-text">
-         <div class="values-eyebrow-row">
-    <span class="product-index-line"></span>
-    <span class="product-index-number">01</span>
-    </div>
+
+        <div
+          class="service-section-index service-section-index-left"
+        >
+          <span class="service-section-number">
+            01
+          </span>
+        </div>
+
         <h2>Financial Advisory Services</h2>
-        <p>Financial advisory is the cornerstone of our commitment to you. We work closely with every client to understand their goals and build a strategy that stands the test of time, grounded in expertise and tailored to your unique circumstances.</p>
+
+        <p>
+          Financial advisory is the cornerstone of our commitment to you. We work closely with every client to understand their goals and build a strategy that stands the test of time, grounded in expertise and tailored to your unique circumstances.
+        </p>
+
       </div>
-    </div>
-    <div class="service-feature-stack">
-      <div class="service-feature">
+    </article>
+
+    <div
+      class="service-feature-stack"
+      aria-label="Financial advisory capabilities"
+    >
+
+      <article class="service-feature">
+
         <div class="service-feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#033669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            class="ui-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             <path d="M9 12l2 2 4-4"></path>
           </svg>
         </div>
-        <div>
+
+        <div class="service-feature-copy">
           <h3>Risk Assessment</h3>
-          <p>We assess your risk profile to determine the best investment strategy for you.</p>
+          <p>
+            We assess your risk profile to determine the best investment strategy for you.
+          </p>
         </div>
-      </div>
-      <div class="service-feature">
+
+      </article>
+
+      <article class="service-feature">
+
         <div class="service-feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#033669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-            <path d="M3 10h18"></path>
-            <path d="M8 15h2"></path>
-            <path d="M14 15h2"></path>
+          <svg
+            class="ui-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect
+                width="8"
+                height="4"
+                x="8"
+                y="2"
+                rx="1"
+                ry="1"
+              ></rect>
+
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              ></path>
+
+              <path d="M12 11h4"></path>
+              <path d="M12 16h4"></path>
+              <path d="M8 11h.01"></path>
+              <path d="M8 16h.01"></path>
           </svg>
         </div>
-        <div>
+
+        <div class="service-feature-copy">
           <h3>Financial Planning</h3>
-          <p>We create a comprehensive financial plan that includes budgeting, savings, and investment strategies.</p>
+          <p>
+            We create a comprehensive financial plan that includes budgeting, savings, and investment strategies.
+          </p>
         </div>
-      </div>
-      <div class="service-feature">
+
+      </article>
+
+      <article class="service-feature">
+
         <div class="service-feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#033669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"></circle>
+          <svg
+            class="ui-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+            ></circle>
             <path d="M12 7v5l3 3"></path>
           </svg>
         </div>
-        <div>
+
+        <div class="service-feature-copy">
           <h3>Retirement Planning</h3>
-          <p>We help you prepare for a comfortable and secure retirement through retirement account management and income planning.</p>
+          <p>
+            We help you prepare for a comfortable and secure retirement through retirement account management and income planning.
+          </p>
         </div>
-      </div>
+
+      </article>
+
     </div>
   </div>
 </section>
@@ -74,164 +166,324 @@
 <!-- ============================================================
      SERVICE 2: MARKET RESEARCH
 ============================================================ -->
-<section class="section service-block service-block-alt">
+<section
+  id="market-research"
+  class="section service-block service-block-alt service-research-section"
+>
   <div class="section-header-center">
-     <div class="values-eyebrow-row">
-    <span class="product-index-line"></span>
-    <span class="product-index-number">02</span>
+
+    <div class="service-section-index">
+      <span class="service-section-number">
+        02
+      </span>
     </div>
+
     <h2>Market Research</h2>
-    <p class="section-lead">We equip our clients with timely, rigorous research to inform every investment decision.</p>
+
+    <p class="section-lead">
+      We equip our clients with timely, rigorous research to inform every investment decision.
+    </p>
+
   </div>
 
   <div class="service-research-grid">
-<div class="research-card">
+
+    <article class="research-card">
+
       <div class="research-card-image">
-        <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80" alt="Global stock market data on a trading screen">
+        <img
+          src="/globalmarket.jpg"
+          alt="Global stock market data on a trading screen"
+          loading="lazy"
+          decoding="async"
+        >
       </div>
+
       <div class="research-card-body">
-        <div class="research-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#033669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"></circle>
-            <path d="M3 12h18"></path>
-            <path d="M12 3a15 15 0 0 1 0 18"></path>
-            <path d="M12 3a15 15 0 0 0 0 18"></path>
-          </svg>
-        </div>
         <h3>Global Market Updates</h3>
-        <p>Summary of daily domestic and global market activities to aid better portfolio diversification understanding.</p>
+
+        <p>
+          Summary of daily domestic and global market activities to aid better portfolio diversification understanding.
+        </p>
+
       </div>
-    </div>
-    <div class="research-card">
+    </article>
+
+    <article class="research-card">
+
       <div class="research-card-image">
-        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=600&q=80" alt="Economic indicators displayed on an analytics dashboard">
+        <img
+          src="/economicanalysis.jpg"
+          alt="Economic indicators displayed on an analytics dashboard"
+          loading="lazy"
+          decoding="async"
+        >
       </div>
+
       <div class="research-card-body">
-        <div class="research-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#033669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 17 9 11 13 15 21 7"></polyline>
-            <polyline points="14 7 21 7 21 14"></polyline>
-          </svg>
-        </div>
         <h3>Economic Analysis</h3>
-        <p>Regular updates on economic indicators and their potential impact on your investments.</p>
+
+        <p>
+          Regular updates on economic indicators and their potential impact on your investments.
+        </p>
+
       </div>
-    </div>
-    <div class="research-card">
+    </article>
+
+    <article class="research-card">
+
       <div class="research-card-image">
-        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80" alt="Bar chart comparing performance across market sectors">
+        <img
+          src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80"
+          alt="Bar chart comparing performance across market sectors"
+          loading="lazy"
+          decoding="async"
+        >
       </div>
+
       <div class="research-card-body">
-        <div class="research-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#033669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="12" width="4" height="8"></rect>
-            <rect x="10" y="7" width="4" height="13"></rect>
-            <rect x="17" y="3" width="4" height="17"></rect>
-          </svg>
-        </div>
         <h3>Sector Analysis</h3>
-        <p>In-depth sector-specific research to identify opportunities and risks.</p>
+
+        <p>
+          In-depth sector-specific research to identify opportunities and risks.
+        </p>
+
       </div>
-    </div>
-    <div class="research-card">
+    </article>
+
+    <article class="research-card">
+
       <div class="research-card-image">
-        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="Analyst reviewing a company financial report">
+        <img
+          src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80"
+          alt="Analyst reviewing a company financial report"
+          loading="lazy"
+          decoding="async"
+        >
       </div>
+
       <div class="research-card-body">
-        <div class="research-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#033669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="4" y="3" width="16" height="18" rx="2"></rect>
-            <path d="M8 8h8"></path>
-            <path d="M8 12h8"></path>
-            <path d="M8 16h5"></path>
-          </svg>
-        </div>
         <h3>Company Analysis</h3>
-        <p>Detailed analysis of individual companies to guide your investment choices.</p>
+
+        <p>
+          Detailed analysis of individual companies to guide your investment choices.
+        </p>
+
       </div>
-    </div>
+    </article>
+
   </div>
 </section>
 
 <!-- ============================================================
      SERVICE 3: PORTFOLIO AND FUND MANAGEMENT
 ============================================================ -->
-<section class="section service-block service-block-white">
+<section
+  id="portfolio-fund-management"
+  class="section service-block service-block-white service-portfolio-section"
+>
   <div class="section-header-center">
-     <div class="values-eyebrow-row">
-    <span class="product-index-line"></span>
-    <span class="product-index-number">03</span>
+
+    <div class="service-section-index">
+      <span class="service-section-number">
+        03
+      </span>
     </div>
+
     <h2>Portfolio and Fund Management</h2>
-    <p class="section-lead">Our flagship management services are built to match every client's risk appetite and investment horizon.</p>
+
+    <p class="section-lead">
+      Our flagship management services are built to match every client's risk appetite and investment horizon.
+    </p>
+
   </div>
 
- <div class="service-asymmetric-grid">
-   <div class="asymmetric-card" style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80');">
-      <div class="asymmetric-card-content">
+  <div class="service-portfolio-grid">
+
+    <article class="portfolio-service-card">
+
+      <div class="portfolio-card-media">
+        <img
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
+          alt="Modern commercial buildings representing portfolio management"
+          loading="lazy"
+          decoding="async"
+        >
+      </div>
+
+      <div
+        class="portfolio-card-overlay"
+        aria-hidden="true"
+      ></div>
+
+      <div class="portfolio-card-content">
         <h3>Discretionary Portfolio Management</h3>
-        <div class="asymmetric-card-divider"></div>
-        <p>Experienced portfolio managers actively managing your investments to capitalize on market opportunities.</p>
+
+        <p>
+          Experienced portfolio managers actively managing your investments to capitalize on market opportunities.
+        </p>
       </div>
-    </div>
-    <div class="asymmetric-card" style="background-image: url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80');">
-      <div class="asymmetric-card-content">
+
+    </article>
+
+    <article class="portfolio-service-card">
+
+      <div class="portfolio-card-media">
+        <img
+          src="/modelportfolio.jpg"
+          alt="Financial documents and calculator representing model portfolios"
+          loading="lazy"
+          decoding="async"
+        >
+      </div>
+
+      <div
+        class="portfolio-card-overlay"
+        aria-hidden="true"
+      ></div>
+
+      <div class="portfolio-card-content">
         <h3>Model Portfolios</h3>
-        <div class="asymmetric-card-divider"></div>
-        <p>Diversified selections designed to match different risk profiles for individual and corporate clients.</p>
+
+        <p>
+          Diversified selections designed to match different risk profiles for individual and corporate clients.
+        </p>
       </div>
-    </div>
-    <div class="asymmetric-card" style="background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80');">
-      <div class="asymmetric-card-content">
+
+    </article>
+
+    <article class="portfolio-service-card">
+
+      <div class="portfolio-card-media">
+        <img
+          src="/mutualfunds.jpg"
+          alt="Market chart representing mutual fund investments"
+          loading="lazy"
+          decoding="async"
+        >
+      </div>
+
+      <div
+        class="portfolio-card-overlay"
+        aria-hidden="true"
+      ></div>
+
+      <div class="portfolio-card-content">
         <h3>Mutual Funds</h3>
-        <div class="asymmetric-card-divider"></div>
-        <p>Access to a wide range of mutual funds carefully selected to meet various investment needs.</p>
+
+        <p>
+          Access to a wide range of mutual funds carefully selected to meet various investment needs.
+        </p>
       </div>
-    </div>
-    <div class="asymmetric-card" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80');">
-      <div class="asymmetric-card-content">
+
+    </article>
+
+    <article class="portfolio-service-card">
+
+      <div class="portfolio-card-media">
+        <img
+          src="/alternativeinvestment.jpg"
+          alt="Modern property representing alternative investments"
+          loading="lazy"
+          decoding="async"
+        >
+      </div>
+
+      <div
+        class="portfolio-card-overlay"
+        aria-hidden="true"
+      ></div>
+
+      <div class="portfolio-card-content">
         <h3>Alternative Investments</h3>
-        <div class="asymmetric-card-divider"></div>
-        <p>Opportunities to diversify with alternative assets such as real estate, private equity, and hedge funds.</p>
+
+        <p>
+          Opportunities to diversify with alternative assets such as real estate, private equity, and hedge funds.
+        </p>
       </div>
-    </div>
+
+    </article>
+
   </div>
 </section>
 
 <!-- ============================================================
      SERVICE 4: CORPORATE INVESTMENT SCHEMES
 ============================================================ -->
-<section class="section service-block service-block-light">
+<section
+  id="corporate-investment-schemes"
+  class="section service-block service-block-light service-corporate-section"
+>
   <div class="section-header-center">
-    <div class="values-eyebrow-row">
-    <span class="product-index-line"></span>
-    <span class="product-index-number">04</span>
+
+    <div class="service-section-index">
+      <span class="service-section-number">
+        04
+      </span>
     </div>
+
     <h2>Corporate Investment Schemes</h2>
-    <p class="section-lead">For businesses looking to optimize their corporate assets and investments, we provide specialized services tailored to corporate financial needs:</p>
+
+    <p class="section-lead">
+      For businesses looking to optimize their corporate assets and investments, we provide specialized services tailored to corporate financial needs:
+    </p>
+
   </div>
 
   <div class="service-corporate-grid">
-<div class="corporate-card" style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80');">
-      <div class="corporate-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="7" width="20" height="14" rx="2"></rect>
-          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path>
-        </svg>
+
+    <article class="corporate-service-card">
+
+      <div class="corporate-card-media">
+        <img
+          src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=80"
+          alt="Corporate finance professionals reviewing business documents"
+          loading="lazy"
+          decoding="async"
+        >
       </div>
-      <h3>Corporate Cash Management</h3>
-      <p>Efficiently manage your company's liquidity and cash flow.</p>
-    </div>
-    <div class="corporate-card" style="background-image: url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80');">
-      <div class="corporate-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
+
+      <div
+        class="corporate-card-overlay"
+        aria-hidden="true"
+      ></div>
+
+      <div class="corporate-card-content">
+        <h3>Corporate Cash Management</h3>
+
+        <p>
+          Efficiently manage your company's liquidity and cash flow.
+        </p>
+
       </div>
-      <h3>Employee Benefit Plans</h3>
-      <p>Design and administer employee retirement plans, ensuring compliance and employee satisfaction.</p>
-    </div>
+    </article>
+
+    <article class="corporate-service-card">
+
+      <div class="corporate-card-media">
+        <img
+          src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1000&q=80"
+          alt="Professional team representing employee benefit planning"
+          loading="lazy"
+          decoding="async"
+        >
+      </div>
+
+      <div
+        class="corporate-card-overlay"
+        aria-hidden="true"
+      ></div>
+
+      <div class="corporate-card-content">
+        <h3>Employee Benefit Plans</h3>
+
+        <p>
+          Design and administer employee retirement plans, ensuring compliance and employee satisfaction.
+        </p>
+
+      </div>
+    </article>
+
   </div>
 </section>
 

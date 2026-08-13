@@ -1,3 +1,19 @@
+document.addEventListener('DOMContentLoaded', function () {
+  if (
+    window.lucide &&
+    typeof window.lucide.createIcons === 'function'
+  ) {
+    window.lucide.createIcons({
+      attrs: {
+        fill: 'none',
+        stroke: 'currentColor',
+        'stroke-width': 1.75,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round'
+      }
+    });
+  }
+});
 
 document.addEventListener('DOMContentLoaded', function () {
   var carousel = document.querySelector('[data-home-insights-carousel]');
@@ -173,3 +189,35 @@ var observer = new IntersectionObserver(function (entries, obs) {
 
   observer.observe(statsCard);
 });
+
+
+function initialiseLucideIcons() {
+  if (
+    !window.lucide ||
+    typeof window.lucide.createIcons !==
+      'function'
+  ) {
+    console.warn(
+      'Lucide icon library is unavailable.'
+    );
+
+    return;
+  }
+
+  window.lucide.createIcons();
+}
+
+if (
+  document.readyState ===
+  'loading'
+) {
+  document.addEventListener(
+    'DOMContentLoaded',
+    initialiseLucideIcons,
+    {
+      once: true
+    }
+  );
+} else {
+  initialiseLucideIcons();
+}

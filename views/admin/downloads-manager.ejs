@@ -33,15 +33,48 @@
         <div class="card">
           <h3><%= day.label %></h3>
           <% if (day.digest) { %>
-            <p>Uploaded: <a href="<%= day.digest.filePath %>" target="_blank" rel="noopener">View current PDF</a></p>
-            <form action="/admin/downloads/<%= day.digest.id %>/delete" method="POST" style="margin-bottom:12px;">
-              <input
+
+            <p>
+              Uploaded:
+              <a
+                href="<%= day.digest.filePath %>"
+                target="_blank"
+                rel="noopener"
+              >
+                View current PDF
+              </a>
+            </p>
+
+
+            <% if (
+              admin.role ===
+              'SUPERADMIN'
+            ) { %>
+
+              <form
+                action="/admin/downloads/<%= day.digest.id %>/delete"
+                method="POST"
+                style="margin-bottom:12px;"
+              >
+
+                <input
                   type="hidden"
                   name="_csrf"
                   value="<%= csrfToken %>"
-              >
-              <button type="submit" class="btn-nav">Remove</button>
-            </form>
+                >
+
+                <button
+                  type="submit"
+                  class="btn-nav"
+                >
+                  Remove
+                </button>
+
+              </form>
+
+            <% } %>
+
+
           <% } else { %>
             <p>No digest uploaded yet.</p>
           <% } %>

@@ -1,0 +1,622 @@
+/* ============================================================
+   STI ASSETS MANAGEMENT
+   FAQS PAGE
+============================================================ */
+/* ============================================================
+   FAQ HERO
+============================================================ */
+
+.faqs-page-hero {
+  --hero-bg-image:
+    url(
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80"
+    );
+}
+/* ============================================================
+   FAQ HERO ENTRANCE
+============================================================ */
+
+.faqs-page-hero
+  .hero-eyebrow {
+  animation:
+    faqs-hero-enter 620ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    80ms both;
+}
+
+.faqs-page-hero h1 {
+  animation:
+    faqs-hero-enter 680ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    160ms both;
+}
+
+.faqs-page-hero p {
+  animation:
+    faqs-hero-enter 680ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    240ms both;
+}
+
+
+/* ============================================================
+   FAQ HERO KEYFRAMES
+============================================================ */
+
+@keyframes faqs-hero-enter {
+  from {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0);
+  }
+}
+
+/* ============================================================
+   FAQ SECTION
+============================================================ */
+
+.faqs-section {
+  width: 100%;
+  max-width: none;
+
+  padding:
+    clamp(70px, 8vw, 104px)
+    20px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      #ffffff 100%
+    );
+}
+
+.faqs-shell {
+  width: 100%;
+  max-width: var(--max-width);
+
+  margin: 0 auto;
+}
+
+/* ============================================================
+   FAQ CATEGORY SWITCH
+   Matches the Our Team segmented switch
+============================================================ */
+
+.faqs-tabs {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 5px;
+
+  width: min(100%, 860px);
+
+  margin:
+    0 auto
+    clamp(38px, 5vw, 52px);
+
+  padding: 6px;
+
+  background: #f4f7fa;
+
+  border:
+    1px solid rgba(3, 54, 105, 0.08);
+
+  border-radius: 999px;
+
+  box-shadow:
+    0 8px 24px
+    rgba(3, 54, 105, 0.055);
+}
+
+
+/* ============================================================
+   FAQ CATEGORY BUTTON
+============================================================ */
+
+.faqs-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+  min-height: 44px;
+
+  padding: 10px 18px;
+
+  color: var(--color-text-muted);
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 999px;
+
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.3;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition:
+    color 250ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    background-color 250ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    box-shadow 250ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    transform 250ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* ============================================================
+   FAQ CATEGORY HOVER
+============================================================ */
+
+.faqs-tab:hover:not(.active) {
+  color: var(--color-primary);
+
+  background:
+    rgba(3, 54, 105, 0.055);
+}
+
+
+/* ============================================================
+   ACTIVE CATEGORY
+============================================================ */
+
+.faqs-tab.active {
+  color: #ffffff;
+
+  background:
+    var(--color-accent);
+
+  border: 0;
+
+  box-shadow:
+    0 8px 18px
+    rgba(246, 134, 52, 0.26);
+}
+
+
+/* ============================================================
+   KEYBOARD FOCUS
+============================================================ */
+
+.faqs-tab:focus-visible {
+  outline:
+    3px solid
+    rgba(246, 134, 52, 0.28);
+
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   FAQ ACCORDION SURFACE
+============================================================ */
+
+.faqs-panel {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  background: #ffffff;
+
+  border:
+    1px solid rgba(3, 54, 105, 0.09);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 14px 38px
+    rgba(3, 54, 105, 0.055);
+
+  overflow: hidden;
+}
+
+.faqs-panel:not(.active) {
+  display: none;
+}
+
+.faqs-panel.active {
+  display: block;
+}
+
+
+/* ============================================================
+   FAQ ITEMS
+============================================================ */
+
+.faq-item {
+  position: relative;
+
+  width: 100%;
+  margin: 0;
+
+  background: transparent;
+
+  border: 0;
+  border-bottom:
+    1px solid rgba(3, 54, 105, 0.075);
+
+  border-radius: 0;
+
+  box-shadow: none;
+
+  overflow: hidden;
+
+  transition:
+    background-color 260ms ease;
+}
+
+.faq-item:last-child {
+  border-bottom: 0;
+}
+
+
+/* ============================================================
+   FAQ QUESTION
+============================================================ */
+
+.faq-question {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    24px;
+
+  align-items: center;
+  gap: 22px;
+
+  width: 100%;
+
+  padding: 23px 26px;
+
+  background: transparent;
+
+  border: 0;
+
+  color: var(--color-primary);
+
+  font-family: inherit;
+
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.5;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    color 240ms ease,
+    background-color 240ms ease;
+}
+
+.faq-question > span:first-child {
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* ============================================================
+   FAQ CHEVRON
+============================================================ */
+
+.faq-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  height: 24px;
+
+  color: var(--color-accent);
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 0;
+
+  flex: 0 0 auto;
+}
+
+.faq-icon .ui-icon {
+  width: 20px;
+  height: 20px;
+
+  transition:
+    transform 280ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.faq-item.open
+  .faq-icon .ui-icon {
+  transform: rotate(180deg);
+}
+
+
+/* ============================================================
+   FAQ ANSWER
+============================================================ */
+
+.faq-answer {
+  max-height: 0;
+
+  overflow: hidden;
+
+  opacity: 0;
+
+  transition:
+    max-height 360ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    opacity 240ms ease;
+}
+
+.faq-answer p {
+  margin: 0;
+
+  padding:
+    0 64px
+    24px 26px;
+
+  color: var(--color-text-muted);
+
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.faq-answer a {
+  color: var(--color-accent);
+  font-weight: 650;
+
+  text-decoration:
+    underline;
+
+  text-underline-offset: 3px;
+}
+
+
+/* ============================================================
+   OPEN FAQ STATE
+============================================================ */
+
+.faq-item.open {
+  background: #f8fafc;
+}
+
+.faq-item.open
+  .faq-question {
+  color: var(--color-primary);
+
+  background: #f8fafc;
+}
+
+.faq-item.open
+  .faq-answer {
+  opacity: 1;
+}
+
+
+/* ============================================================
+   FAQ INTERACTIONS
+============================================================ */
+
+@media (hover: hover) {
+  .faq-question:hover {
+    background:
+      rgba(3, 54, 105, 0.025);
+  }
+
+  .faq-item.open
+    .faq-question:hover {
+    background: #f8fafc;
+  }
+}
+
+.faq-question:focus-visible {
+  position: relative;
+  z-index: 1;
+
+  outline:
+    3px solid rgba(246, 134, 52, 0.25);
+
+  outline-offset: -3px;
+}
+
+
+/* ============================================================
+   FAQ MOBILE
+============================================================ */
+
+@media (max-width: 639px) {
+  .faqs-panel {
+    border-radius: 16px;
+  }
+
+  .faq-question {
+    grid-template-columns:
+      minmax(0, 1fr)
+      22px;
+
+    gap: 16px;
+
+    padding:
+      20px 16px;
+
+    font-size: 0.9rem;
+  }
+
+  .faq-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .faq-icon .ui-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .faq-answer p {
+    padding:
+      0 54px
+      21px 16px;
+
+    font-size: 0.86rem;
+    line-height: 1.7;
+  }
+}
+
+
+/* ============================================================
+   FAQ REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item,
+  .faq-question,
+  .faq-answer,
+  .faq-icon .ui-icon {
+    transition: none;
+  }
+}
+
+
+/* ============================================================
+   FAQ CATEGORY SWITCH: TABLET
+============================================================ */
+
+@media (min-width: 481px) and (max-width: 759px) {
+  .faqs-tabs {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    width: min(100%, 620px);
+
+    border-radius: 24px;
+  }
+
+  .faqs-tab {
+    width: 100%;
+  }
+}
+
+
+/* ============================================================
+   FAQ CATEGORY SWITCH: MOBILE
+============================================================ */
+
+@media (max-width: 480px) {
+  .faqs-tabs {
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    width: 100%;
+
+    gap: 5px;
+
+    border-radius: 18px;
+  }
+
+  .faqs-tab {
+    width: 100%;
+
+    min-width: 0;
+
+    padding: 10px 16px;
+
+    white-space: normal;
+
+    text-align: center;
+  }
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .faqs-tab {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   FAQ SCROLL REVEALS
+============================================================ */
+
+.faqs-reveal {
+  opacity: 0;
+  translate: 0 22px;
+
+  transition:
+    opacity 660ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    translate 660ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+
+  transition-delay:
+    var(--reveal-delay, 0ms);
+
+  will-change:
+    opacity,
+    translate;
+}
+
+.faqs-reveal.reveal-left {
+  translate: -26px 0;
+}
+
+.faqs-reveal.reveal-right {
+  translate: 26px 0;
+}
+
+.faqs-reveal.is-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+
+/* ============================================================
+   FAQ REVEAL REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .faqs-reveal {
+    opacity: 1;
+    translate: none;
+
+    transition: none;
+    will-change: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faqs-page-hero
+    .hero-eyebrow,
+
+  .faqs-page-hero h1,
+
+  .faqs-page-hero p {
+    animation: none;
+  }
+}

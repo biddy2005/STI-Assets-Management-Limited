@@ -34,14 +34,32 @@
             <a href="/admin/news/<%= article.id %>/edit">Edit</a> ·
             <a href="/admin/news/<%= article.id %>/images">Manage Images</a>
           </p>
-          <form action="/admin/news/<%= article.id %>/delete" method="POST">
-            <input
-              type="hidden"
-              name="_csrf"
-              value="<%= csrfToken %>"
-            >
-            <button type="submit" class="btn-nav">Delete</button>
-          </form>
+          <% if (
+                  admin.role ===
+                  'SUPERADMIN'
+                ) { %>
+
+                  <form
+                    action="/admin/news/<%= article.id %>/delete"
+                    method="POST"
+                  >
+
+                    <input
+                      type="hidden"
+                      name="_csrf"
+                      value="<%= csrfToken %>"
+                    >
+
+                    <button
+                      type="submit"
+                      class="btn-nav"
+                    >
+                      Delete
+                    </button>
+
+                  </form>
+
+                <% } %>
         </div>
       <% }); %>
     </div>

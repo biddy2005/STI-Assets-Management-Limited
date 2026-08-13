@@ -521,11 +521,22 @@ const email =
       admin.email;
 
     req.session.adminRole =
-      admin.role;
+  admin.role;
 
     /*
-     * Save the session before redirecting.
-     */
+    * Save the security version of the account that authenticated
+    * this session.
+    *
+    * If the account password or status is later changed by the
+    * SUPERADMIN, sessionVersion will be incremented and this
+    * existing session will become invalid.
+    */
+    req.session.adminSessionVersion =
+      admin.sessionVersion;
+
+    /*
+    * Save the session before redirecting.
+    */
     await saveSession(
       req
     );

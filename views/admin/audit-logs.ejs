@@ -1,20 +1,930 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
-  <title>Admin Audit Logs</title>
+
+  <title>
+    Admin Audit Logs
+  </title>
+
+
   <link
     rel="stylesheet"
     href="/css/style.css"
   >
+
+
+  <link
+    rel="stylesheet"
+    href="/css/admin/audit-logs.css"
+  >
+
 </head>
+
+
 <body>
+
+
+  <%
+    /*
+     * ==========================================================
+     * HUMAN-READABLE AUDIT ACTIONS
+     * ==========================================================
+     */
+
+    const actionConfig = {
+
+      ADMIN_LOGIN_SUCCESS: {
+        label:
+          'Login Successful',
+
+        category:
+          'Authentication',
+
+        tone:
+          'success'
+      },
+
+
+      ADMIN_LOGIN_FAILED: {
+        label:
+          'Login Failed',
+
+        category:
+          'Authentication',
+
+        tone:
+          'danger'
+      },
+
+
+      ADMIN_LOGIN_BLOCKED: {
+        label:
+          'Login Blocked',
+
+        category:
+          'Security',
+
+        tone:
+          'warning'
+      },
+
+
+      ADMIN_ACCOUNT_LOCKED: {
+        label:
+          'Account Locked',
+
+        category:
+          'Security',
+
+        tone:
+          'danger'
+      },
+
+
+      ADMIN_LOGOUT: {
+        label:
+          'Logged Out',
+
+        category:
+          'Authentication',
+
+        tone:
+          'neutral'
+      },
+
+
+      ADMIN_ACCOUNT_CREATED: {
+        label:
+          'Administrator Created',
+
+        category:
+          'Administration',
+
+        tone:
+          'info'
+      },
+
+
+      ADMIN_ROLE_UPDATED: {
+        label:
+          'Administrator Role Updated',
+
+        category:
+          'Administration',
+
+        tone:
+          'warning'
+      },
+
+
+      ADMIN_STATUS_UPDATED: {
+        label:
+          'Administrator Status Updated',
+
+        category:
+          'Administration',
+
+        tone:
+          'warning'
+      },
+
+
+      ADMIN_ACCOUNT_UNLOCKED: {
+        label:
+          'Administrator Unlocked',
+
+        category:
+          'Security',
+
+        tone:
+          'success'
+      },
+
+
+      RATE_GUIDE_UPDATED: {
+        label:
+          'Rate Guide Updated',
+
+        category:
+          'Content',
+
+        tone:
+          'info'
+      },
+
+
+      NEWS_CREATED: {
+        label:
+          'News Article Created',
+
+        category:
+          'Content',
+
+        tone:
+          'success'
+      },
+
+
+      NEWS_UPDATED: {
+        label:
+          'News Article Updated',
+
+        category:
+          'Content',
+
+        tone:
+          'info'
+      },
+
+
+      NEWS_DELETED: {
+        label:
+          'News Article Deleted',
+
+        category:
+          'Content',
+
+        tone:
+          'danger'
+      },
+
+
+      GALLERY_IMAGE_ADDED: {
+        label:
+          'Gallery Images Added',
+
+        category:
+          'Content',
+
+        tone:
+          'success'
+      },
+
+
+      GALLERY_IMAGE_DELETED: {
+        label:
+          'Gallery Image Deleted',
+
+        category:
+          'Content',
+
+        tone:
+          'danger'
+      },
+
+
+      DIGEST_CREATED: {
+        label:
+          'Market Digest Uploaded',
+
+        category:
+          'Content',
+
+        tone:
+          'success'
+      },
+
+
+      DIGEST_REPLACED: {
+        label:
+          'Market Digest Replaced',
+
+        category:
+          'Content',
+
+        tone:
+          'warning'
+      },
+
+
+      DIGEST_DELETED: {
+        label:
+          'Market Digest Deleted',
+
+        category:
+          'Content',
+
+        tone:
+          'danger'
+      },
+
+
+      JOB_CREATED: {
+        label:
+          'Job Posting Created',
+
+        category:
+          'Content',
+
+        tone:
+          'success'
+      },
+
+
+      JOB_UPDATED: {
+        label:
+          'Job Posting Updated',
+
+        category:
+          'Content',
+
+        tone:
+          'info'
+      },
+
+
+      JOB_DELETED: {
+        label:
+          'Job Posting Deleted',
+
+        category:
+          'Content',
+
+        tone:
+          'danger'
+      },
+
+
+      APPLICATION_STATUS_UPDATED: {
+        label:
+          'Application Status Updated',
+
+        category:
+          'Recruitment',
+
+        tone:
+          'info'
+      },
+
+
+      APPLICATION_DELETED: {
+        label:
+          'Application Deleted',
+
+        category:
+          'Recruitment',
+
+        tone:
+          'danger'
+      },
+
+
+      CONTACT_STATUS_UPDATED: {
+        label:
+          'Contact Status Updated',
+
+        category:
+          'Contact',
+
+        tone:
+          'info'
+      },
+
+
+      CONTACT_DELETED: {
+        label:
+          'Contact Submission Deleted',
+
+        category:
+          'Contact',
+
+        tone:
+          'danger'
+      },
+
+
+      NEWSLETTER_SUBSCRIBER_DELETED: {
+        label:
+          'Newsletter Subscriber Deleted',
+
+        category:
+          'Newsletter',
+
+        tone:
+          'danger'
+      }
+
+    };
+
+
+    /*
+     * Convert unknown action codes into normal title case.
+     *
+     * SOMETHING_UPDATED
+     * becomes:
+     * Something Updated
+     */
+    function humanizeAction(
+      action
+    ) {
+
+      if (
+        actionConfig[action]
+      ) {
+        return actionConfig[action];
+      }
+
+
+      const label =
+        String(
+          action ||
+          'Unknown Event'
+        )
+          .toLowerCase()
+          .split('_')
+          .map(
+            (word) =>
+              word
+                .charAt(0)
+                .toUpperCase() +
+              word.slice(1)
+          )
+          .join(' ');
+
+
+      return {
+        label,
+
+        category:
+          'Other',
+
+        tone:
+          'neutral'
+      };
+
+    }
+
+
+    /*
+     * ==========================================================
+     * TARGET LABEL
+     * ==========================================================
+     */
+
+    const entityLabels = {
+
+      Admin:
+        'Administrator',
+
+      RateGuide:
+        'Rate Guide',
+
+      NewsArticle:
+        'News Article',
+
+      NewsImage:
+        'Gallery Image',
+
+      DailyDigest:
+        'Market Digest',
+
+      JobPosting:
+        'Job Posting',
+
+      JobApplication:
+        'Job Application',
+
+      ContactSubmission:
+        'Contact Submission',
+
+      NewsletterSubscriber:
+        'Newsletter Subscriber'
+
+    };
+
+
+    function getTarget(
+      log
+    ) {
+
+      if (!log.entityType) {
+        return 'No specific target';
+      }
+
+
+      const label =
+        entityLabels[
+          log.entityType
+        ] ||
+        log.entityType;
+
+
+      if (
+        log.entityId ===
+          null ||
+        log.entityId ===
+          undefined ||
+        log.entityId === ''
+      ) {
+        return label;
+      }
+
+
+      return (
+        `${label} #${log.entityId}`
+      );
+
+    }
+
+
+    /*
+     * ==========================================================
+     * STATUS DISPLAY
+     * ==========================================================
+     */
+
+    function formatStatus(
+      value
+    ) {
+
+      if (!value) {
+        return 'unknown';
+      }
+
+
+      return String(value)
+        .toLowerCase()
+        .replaceAll(
+          '_',
+          ' '
+        );
+
+    }
+
+
+    /*
+     * ==========================================================
+     * PLAIN-ENGLISH EVENT DESCRIPTION
+     * ==========================================================
+     */
+
+    function getDescription(
+      log
+    ) {
+
+      const actor =
+        log.admin?.email ||
+        'The system';
+
+
+      const target =
+        getTarget(log);
+
+
+      const metadata =
+        log.metadata || {};
+
+
+      switch (
+        log.action
+      ) {
+
+        case 'ADMIN_LOGIN_SUCCESS':
+
+          return (
+            `${actor} successfully signed in.`
+          );
+
+
+        case 'ADMIN_LOGIN_FAILED':
+
+          return (
+            `A sign-in attempt for ${actor} was unsuccessful.`
+          );
+
+
+        case 'ADMIN_LOGIN_BLOCKED':
+
+          return (
+            `A sign-in attempt for ${actor} was blocked because the account could not currently authenticate.`
+          );
+
+
+        case 'ADMIN_ACCOUNT_LOCKED':
+
+          return (
+            `${actor}'s administrator account was temporarily locked after repeated failed sign-in attempts.`
+          );
+
+
+        case 'ADMIN_LOGOUT':
+
+          return (
+            `${actor} signed out of the administration portal.`
+          );
+
+
+        case 'RATE_GUIDE_UPDATED':
+
+          return metadata.originalName
+            ? `${actor} replaced the Rate Guide image with "${metadata.originalName}".`
+            : `${actor} replaced the Rate Guide image.`;
+
+
+        case 'NEWS_CREATED':
+
+          return metadata.title
+            ? `${actor} created the news article "${metadata.title}".`
+            : `${actor} created ${target}.`;
+
+
+        case 'NEWS_UPDATED':
+
+          return (
+            `${actor} updated ${target}.`
+          );
+
+
+        case 'NEWS_DELETED':
+
+          return metadata.title
+            ? `${actor} deleted the news article "${metadata.title}".`
+            : `${actor} deleted ${target}.`;
+
+
+        case 'GALLERY_IMAGE_ADDED': {
+
+          const count =
+            Number(
+              metadata.imageCount
+            ) || 0;
+
+
+          return (
+            `${actor} added ${count} ${
+              count === 1
+                ? 'image'
+                : 'images'
+            } to ${target}.`
+          );
+
+        }
+
+
+        case 'GALLERY_IMAGE_DELETED':
+
+          return (
+            `${actor} deleted a gallery image from News Article #${
+              metadata.newsArticleId ||
+              'unknown'
+            }.`
+          );
+
+
+        case 'DIGEST_CREATED':
+
+          return (
+            `${actor} uploaded the ${
+              metadata.dayOfWeek ||
+              ''
+            } Market Digest.`
+          );
+
+
+        case 'DIGEST_REPLACED':
+
+          return (
+            `${actor} replaced the ${
+              metadata.dayOfWeek ||
+              ''
+            } Market Digest.`
+          );
+
+
+        case 'DIGEST_DELETED':
+
+          return (
+            `${actor} deleted the ${
+              metadata.dayOfWeek ||
+              ''
+            } Market Digest.`
+          );
+
+
+        case 'JOB_CREATED':
+
+          return metadata.title
+            ? `${actor} created the job posting "${metadata.title}".`
+            : `${actor} created ${target}.`;
+
+
+        case 'JOB_UPDATED':
+
+          return (
+            `${actor} updated ${target}.`
+          );
+
+
+        case 'JOB_DELETED':
+
+          return metadata.title
+            ? `${actor} deleted the job posting "${metadata.title}".`
+            : `${actor} deleted ${target}.`;
+
+
+        case 'APPLICATION_STATUS_UPDATED':
+
+          return (
+            `${actor} changed ${target} from ${formatStatus(
+              metadata.previousStatus
+            )} to ${formatStatus(
+              metadata.newStatus
+            )}.`
+          );
+
+
+        case 'APPLICATION_DELETED':
+
+          return (
+            `${actor} permanently deleted ${target}.`
+          );
+
+
+        case 'CONTACT_STATUS_UPDATED':
+
+          return (
+            `${actor} changed ${target} from ${formatStatus(
+              metadata.previousStatus
+            )} to ${formatStatus(
+              metadata.newStatus
+            )}.`
+          );
+
+
+        case 'CONTACT_DELETED':
+
+          return (
+            `${actor} permanently deleted ${target}.`
+          );
+
+
+        case 'NEWSLETTER_SUBSCRIBER_DELETED':
+
+          return metadata.email
+            ? `${actor} removed ${metadata.email} from the newsletter subscriber list.`
+            : `${actor} deleted ${target}.`;
+
+
+        case 'ADMIN_ACCOUNT_CREATED':
+
+          return (
+            `${actor} created a new administrator account.`
+          );
+
+
+        case 'ADMIN_ROLE_UPDATED':
+
+          return (
+            `${actor} changed an administrator's access role.`
+          );
+
+
+        case 'ADMIN_STATUS_UPDATED':
+
+          return (
+            `${actor} changed an administrator's account status.`
+          );
+
+
+        case 'ADMIN_ACCOUNT_UNLOCKED':
+
+          return (
+            `${actor} unlocked an administrator account.`
+          );
+
+
+        default:
+
+          return (
+            `${actor} performed ${humanizeAction(
+              log.action
+            ).label.toLowerCase()} on ${target}.`
+          );
+
+      }
+
+    }
+
+
+    /*
+     * ==========================================================
+     * DATE FORMATTING
+     * ==========================================================
+     */
+
+    function formatDateTime(
+      value
+    ) {
+
+      return new Intl.DateTimeFormat(
+        'en-GB',
+        {
+          day:
+            '2-digit',
+
+          month:
+            'short',
+
+          year:
+            'numeric',
+
+          hour:
+            '2-digit',
+
+          minute:
+            '2-digit',
+
+          hour12:
+            true
+        }
+      ).format(
+        new Date(value)
+      );
+
+    }
+
+
+    function formatExactDateTime(
+      value
+    ) {
+
+      return new Intl.DateTimeFormat(
+        'en-GB',
+        {
+          day:
+            '2-digit',
+
+          month:
+            'short',
+
+          year:
+            'numeric',
+
+          hour:
+            '2-digit',
+
+          minute:
+            '2-digit',
+
+          second:
+            '2-digit',
+
+          hour12:
+            true
+        }
+      ).format(
+        new Date(value)
+      );
+
+    }
+
+
+    /*
+     * ==========================================================
+     * PAGINATION URL
+     * ==========================================================
+     */
+
+    function buildPageUrl(
+      pageNumber
+    ) {
+
+      const params =
+        new URLSearchParams();
+
+
+      if (filters.action) {
+        params.set(
+          'action',
+          filters.action
+        );
+      }
+
+
+      if (filters.adminId) {
+        params.set(
+          'adminId',
+          filters.adminId
+        );
+      }
+
+
+      if (filters.entityType) {
+        params.set(
+          'entityType',
+          filters.entityType
+        );
+      }
+
+
+      if (filters.from) {
+        params.set(
+          'from',
+          filters.from
+        );
+      }
+
+
+      if (filters.to) {
+        params.set(
+          'to',
+          filters.to
+        );
+      }
+
+
+      params.set(
+        'page',
+        String(pageNumber)
+      );
+
+
+      return (
+        `/admin/audit-logs?${params.toString()}`
+      );
+
+    }
+
+
+    const firstResult =
+      pagination.totalLogs === 0
+        ? 0
+        : (
+            (
+              pagination.currentPage -
+              1
+            ) *
+            pagination.pageSize
+          ) + 1;
+
+
+    const lastResult =
+      Math.min(
+        pagination.currentPage *
+          pagination.pageSize,
+
+        pagination.totalLogs
+      );
+
+  %>
+
+
+  <!-- ==========================================================
+       ADMIN HEADER
+  =========================================================== -->
   <header class="site-header">
+
     <div class="nav-wrap">
+
       <a
         href="/admin/dashboard"
         class="logo"
@@ -22,10 +932,12 @@
         AssetCo Admin
       </a>
 
+
       <form
         action="/auth/logout"
         method="POST"
       >
+
         <input
           type="hidden"
           name="_csrf"
@@ -38,45 +950,603 @@
         >
           Log Out
         </button>
+
       </form>
+
     </div>
+
   </header>
 
-  <section class="section">
-    <h1>Audit Logs</h1>
 
-    <div class="card-grid">
-      <% auditLogs.forEach(function(log) { %>
-        <article class="card">
-          <h3><%= log.action %></h3>
+  <!-- ==========================================================
+       AUDIT PAGE
+  =========================================================== -->
+  <main class="audit-page">
 
-          <p>
-            Admin:
-            <%= log.admin?.email || 'System or unknown' %>
-          </p>
+    <div class="audit-shell">
 
-          <p>
-            Entity:
-            <%= log.entityType || 'Not provided' %>
-            <%= log.entityId || '' %>
-          </p>
 
-          <p>
-            IP:
-            <%= log.ipAddress || 'Not available' %>
-          </p>
+      <!-- Page heading -->
+      <div class="audit-page-heading">
+
+        <div>
+
+          <span class="audit-eyebrow">
+            Security &amp; Administration
+          </span>
+
+          <h1>
+            Audit Logs
+          </h1>
 
           <p>
-            Time:
-            <%= log.createdAt.toLocaleString() %>
+            Review administrator activity,
+            content changes and security events.
           </p>
 
-          <% if (log.metadata) { %>
-            <pre><%= JSON.stringify(log.metadata, null, 2) %></pre>
+        </div>
+
+
+        <a
+          href="/admin/dashboard"
+          class="audit-back-link"
+        >
+          &larr; Back to Dashboard
+        </a>
+
+      </div>
+
+
+      <!-- ======================================================
+           FILTERS
+      ======================================================= -->
+      <form
+        action="/admin/audit-logs"
+        method="GET"
+        class="audit-filters"
+      >
+
+        <div class="audit-filter-field">
+
+          <label for="audit-action">
+            Action
+          </label>
+
+          <select
+            id="audit-action"
+            name="action"
+          >
+
+            <option value="">
+              All actions
+            </option>
+
+
+            <% actionOptions.forEach(function(action) { %>
+
+              <option
+                value="<%= action %>"
+                <%= filters.action === action ? 'selected' : '' %>
+              >
+                <%= humanizeAction(action).label %>
+              </option>
+
+            <% }) %>
+
+          </select>
+
+        </div>
+
+
+        <div class="audit-filter-field">
+
+          <label for="audit-admin">
+            Administrator
+          </label>
+
+          <select
+            id="audit-admin"
+            name="adminId"
+          >
+
+            <option value="">
+              All administrators
+            </option>
+
+
+            <% admins.forEach(function(admin) { %>
+
+              <option
+                value="<%= admin.id %>"
+                <%= filters.adminId === String(admin.id) ? 'selected' : '' %>
+              >
+                <%= admin.email %>
+              </option>
+
+            <% }) %>
+
+          </select>
+
+        </div>
+
+
+        <div class="audit-filter-field">
+
+          <label for="audit-entity">
+            Target
+          </label>
+
+          <select
+            id="audit-entity"
+            name="entityType"
+          >
+
+            <option value="">
+              All targets
+            </option>
+
+
+            <% entityTypeOptions.forEach(function(entityType) { %>
+
+              <option
+                value="<%= entityType %>"
+                <%= filters.entityType === entityType ? 'selected' : '' %>
+              >
+                <%= entityLabels[entityType] || entityType %>
+              </option>
+
+            <% }) %>
+
+          </select>
+
+        </div>
+
+
+        <div class="audit-filter-field">
+
+          <label for="audit-from">
+            From
+          </label>
+
+          <input
+            id="audit-from"
+            type="date"
+            name="from"
+            value="<%= filters.from %>"
+          >
+
+        </div>
+
+
+        <div class="audit-filter-field">
+
+          <label for="audit-to">
+            To
+          </label>
+
+          <input
+            id="audit-to"
+            type="date"
+            name="to"
+            value="<%= filters.to %>"
+          >
+
+        </div>
+
+
+        <div class="audit-filter-actions">
+
+          <button
+            type="submit"
+            class="audit-filter-submit"
+          >
+            Apply Filters
+          </button>
+
+
+          <a
+            href="/admin/audit-logs"
+            class="audit-filter-reset"
+          >
+            Reset
+          </a>
+
+        </div>
+
+      </form>
+
+
+      <!-- ======================================================
+           RESULT SUMMARY
+      ======================================================= -->
+      <div class="audit-result-bar">
+
+        <div>
+
+          <strong>
+            <%= pagination.totalLogs %>
+          </strong>
+
+          <span>
+            matching
+            <%= pagination.totalLogs === 1 ? 'event' : 'events' %>
+          </span>
+
+        </div>
+
+
+        <% if (pagination.totalLogs > 0) { %>
+
+          <span class="audit-result-range">
+
+            Showing
+            <%= firstResult %>
+            &ndash;
+            <%= lastResult %>
+
+          </span>
+
+        <% } %>
+
+      </div>
+
+
+      <!-- ======================================================
+           COLUMN LABELS
+      ======================================================= -->
+      <% if (auditLogs.length > 0) { %>
+
+        <div
+          class="audit-list-heading"
+          aria-hidden="true"
+        >
+
+          <span>
+            Event
+          </span>
+
+          <span>
+            Actor
+          </span>
+
+          <span>
+            Target
+          </span>
+
+          <span>
+            Date &amp; Time
+          </span>
+
+        </div>
+
+      <% } %>
+
+
+      <!-- ======================================================
+           AUDIT EVENTS
+      ======================================================= -->
+      <div class="audit-list">
+
+        <% if (auditLogs.length === 0) { %>
+
+          <div class="audit-empty">
+
+            <h2>
+              No audit events found
+            </h2>
+
+            <p>
+              Try changing or resetting the
+              current filters.
+            </p>
+
+            <a href="/admin/audit-logs">
+              Reset filters
+            </a>
+
+          </div>
+
+        <% } %>
+
+
+        <% auditLogs.forEach(function(log) {
+
+          const action =
+            humanizeAction(
+              log.action
+            );
+
+          const actor =
+            log.admin?.email ||
+            'System or unknown';
+
+        %>
+
+          <article
+            class="audit-event audit-tone-<%= action.tone %>"
+          >
+
+            <div class="audit-event-grid">
+
+
+              <!-- Event -->
+              <div class="audit-event-primary">
+
+                <div class="audit-event-badges">
+
+                  <span
+                    class="audit-category-badge"
+                  >
+                    <%= action.category %>
+                  </span>
+
+                </div>
+
+
+                <h2>
+                  <%= action.label %>
+                </h2>
+
+
+                <p>
+                  <%= getDescription(log) %>
+                </p>
+
+              </div>
+
+
+              <!-- Actor -->
+              <div class="audit-event-cell">
+
+                <span class="audit-mobile-label">
+                  Actor
+                </span>
+
+                <span class="audit-cell-value">
+                  <%= actor %>
+                </span>
+
+              </div>
+
+
+              <!-- Target -->
+              <div class="audit-event-cell">
+
+                <span class="audit-mobile-label">
+                  Target
+                </span>
+
+                <span class="audit-cell-value">
+                  <%= getTarget(log) %>
+                </span>
+
+              </div>
+
+
+              <!-- Date -->
+              <div class="audit-event-cell">
+
+                <span class="audit-mobile-label">
+                  Date &amp; Time
+                </span>
+
+                <time
+                  datetime="<%= new Date(log.createdAt).toISOString() %>"
+                  class="audit-cell-value"
+                >
+                  <%= formatDateTime(log.createdAt) %>
+                </time>
+
+              </div>
+
+            </div>
+
+
+            <!-- ================================================
+                 EXPANDABLE TECHNICAL DETAILS
+            ================================================= -->
+            <details class="audit-details">
+
+              <summary>
+                View details
+              </summary>
+
+
+              <div class="audit-details-body">
+
+                <dl class="audit-details-grid">
+
+
+                  <div>
+                    <dt>
+                      Event ID
+                    </dt>
+
+                    <dd>
+                      #<%= log.id %>
+                    </dd>
+                  </div>
+
+
+                  <div>
+                    <dt>
+                      Action code
+                    </dt>
+
+                    <dd>
+                      <code>
+                        <%= log.action %>
+                      </code>
+                    </dd>
+                  </div>
+
+
+                  <div>
+                    <dt>
+                      Actor
+                    </dt>
+
+                    <dd>
+                      <%= actor %>
+                    </dd>
+                  </div>
+
+
+                  <div>
+                    <dt>
+                      Target
+                    </dt>
+
+                    <dd>
+                      <%= getTarget(log) %>
+                    </dd>
+                  </div>
+
+
+                  <div>
+                    <dt>
+                      IP address
+                    </dt>
+
+                    <dd>
+                      <%= log.ipAddress || 'Not available' %>
+                    </dd>
+                  </div>
+
+
+                  <div>
+                    <dt>
+                      Exact time
+                    </dt>
+
+                    <dd>
+                      <%= formatExactDateTime(log.createdAt) %>
+                    </dd>
+                  </div>
+
+
+                  <% if (log.userAgent) { %>
+
+                    <div class="audit-detail-wide">
+
+                      <dt>
+                        Browser / User Agent
+                      </dt>
+
+                      <dd>
+                        <%= log.userAgent %>
+                      </dd>
+
+                    </div>
+
+                  <% } %>
+
+
+                </dl>
+
+
+                <% if (log.metadata) { %>
+
+                  <details class="audit-raw-metadata">
+
+                    <summary>
+                      Show raw metadata
+                    </summary>
+
+                    <pre><%= JSON.stringify(log.metadata, null, 2) %></pre>
+
+                  </details>
+
+                <% } %>
+
+              </div>
+
+            </details>
+
+          </article>
+
+        <% }) %>
+
+      </div>
+
+
+      <!-- ======================================================
+           PAGINATION
+      ======================================================= -->
+      <% if (pagination.totalPages > 1) { %>
+
+        <nav
+          class="audit-pagination"
+          aria-label="Audit log pagination"
+        >
+
+
+          <% if (pagination.currentPage > 1) { %>
+
+            <a
+              href="<%= buildPageUrl(pagination.currentPage - 1) %>"
+              class="audit-page-button"
+            >
+              &larr; Previous
+            </a>
+
+          <% } else { %>
+
+            <span
+              class="audit-page-button is-disabled"
+            >
+              &larr; Previous
+            </span>
+
           <% } %>
-        </article>
-      <% }) %>
+
+
+          <span class="audit-page-status">
+
+            Page
+            <strong>
+              <%= pagination.currentPage %>
+            </strong>
+
+            of
+
+            <strong>
+              <%= pagination.totalPages %>
+            </strong>
+
+          </span>
+
+
+          <% if (pagination.currentPage < pagination.totalPages) { %>
+
+            <a
+              href="<%= buildPageUrl(pagination.currentPage + 1) %>"
+              class="audit-page-button"
+            >
+              Next &rarr;
+            </a>
+
+          <% } else { %>
+
+            <span
+              class="audit-page-button is-disabled"
+            >
+              Next &rarr;
+            </span>
+
+          <% } %>
+
+
+        </nav>
+
+      <% } %>
+
+
     </div>
-  </section>
+
+  </main>
+
+
 </body>
+
 </html>

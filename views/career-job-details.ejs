@@ -1,0 +1,291 @@
+<%- include('partials/header', {
+  pageCss: '/css/pages/career-job-details.css'
+}) %>
+
+<section class="inner-page-hero career-job-page-hero">
+
+  <div class="inner-page-hero-inner">
+
+    <span class="hero-eyebrow">
+      Career Opportunity
+    </span>
+
+    <h1>
+      <%= job.title %>
+    </h1>
+
+    <p>
+      <%= job.department %>
+      <% if (job.location) { %>
+        | <%= job.location %>
+      <% } %>
+    </p>
+
+  </div>
+
+</section>
+
+
+<main class="career-job-section">
+
+  <div class="career-job-shell">
+
+
+    <a
+      href="/careers"
+      class="career-job-back"
+    >
+
+      <svg
+        class="ui-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M19 12H5"></path>
+        <path d="m11 18-6-6 6-6"></path>
+      </svg>
+
+      <span>
+        Back to Careers
+      </span>
+
+    </a>
+
+
+    <div class="career-job-layout">
+
+
+      <article class="career-job-content">
+
+
+        <header class="career-job-intro">
+
+          <span class="career-job-department">
+            <%= job.department %>
+          </span>
+
+          <h2>
+            <%= job.title %>
+          </h2>
+
+          <p>
+            <%= job.description %>
+          </p>
+
+        </header>
+
+
+        <% if (responsibilities.length) { %>
+
+          <section class="career-job-block">
+
+            <h3>
+              Duties and Responsibilities
+            </h3>
+
+            <ul>
+
+              <% responsibilities.forEach(function (item) { %>
+
+                <li>
+                  <%= item %>
+                </li>
+
+              <% }); %>
+
+            </ul>
+
+          </section>
+
+        <% } %>
+
+
+        <% if (qualifications.length) { %>
+
+          <section class="career-job-block">
+
+            <h3>
+              Educational &amp; Professional Qualification
+            </h3>
+
+            <ul>
+
+              <% qualifications.forEach(function (item) { %>
+
+                <li>
+                  <%= item %>
+                </li>
+
+              <% }); %>
+
+            </ul>
+
+          </section>
+
+        <% } %>
+
+
+        <% if (experience.length) { %>
+
+          <section class="career-job-block">
+
+            <h3>
+              Experience
+            </h3>
+
+            <ul>
+
+              <% experience.forEach(function (item) { %>
+
+                <li>
+                  <%= item %>
+                </li>
+
+              <% }); %>
+
+            </ul>
+
+          </section>
+
+        <% } %>
+
+
+        <% if (competencies.length) { %>
+
+          <section class="career-job-block">
+
+            <h3>
+              Competency Requirements
+            </h3>
+
+            <ul>
+
+              <% competencies.forEach(function (item) { %>
+
+                <li>
+                  <%= item %>
+                </li>
+
+              <% }); %>
+
+            </ul>
+
+          </section>
+
+        <% } %>
+
+
+      </article>
+
+
+      <aside class="career-job-sidebar">
+
+        <div class="career-job-facts">
+
+          <h2>
+            Job Details
+          </h2>
+
+
+          <% if (job.jobCategory) { %>
+
+            <div class="career-job-fact">
+
+              <span>
+                Job Category
+              </span>
+
+              <strong>
+                <%= job.jobCategory %>
+              </strong>
+
+            </div>
+
+          <% } %>
+
+
+          <% if (job.jobType) { %>
+
+            <div class="career-job-fact">
+
+              <span>
+                Job Type
+              </span>
+
+              <strong>
+                <%= job.jobType %>
+              </strong>
+
+            </div>
+
+          <% } %>
+
+
+          <div class="career-job-fact">
+
+            <span>
+              Department
+            </span>
+
+            <strong>
+              <%= job.department %>
+            </strong>
+
+          </div>
+
+
+          <div class="career-job-fact">
+
+            <span>
+              Job Location
+            </span>
+
+            <strong>
+              <%= job.location %>
+            </strong>
+
+          </div>
+
+
+          <% if (job.deadline) { %>
+
+            <div class="career-job-fact">
+
+              <span>
+                Application Deadline
+              </span>
+
+              <strong>
+                <%= job.deadline.toDateString() %>
+              </strong>
+
+            </div>
+
+          <% } %>
+
+
+          <a
+            href="/careers?job=<%= job.id %>#apply"
+            class="career-job-apply"
+          >
+            Apply for this role
+          </a>
+
+        </div>
+
+      </aside>
+
+
+    </div>
+
+  </div>
+
+</main>
+
+<%- include('partials/footer') %>

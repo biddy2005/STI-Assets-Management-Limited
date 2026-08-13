@@ -47,7 +47,10 @@ async function requireAuth(
   next
 ) {
   const adminId =
-    req.session?.adminId;
+  req.session?.adminId;
+
+  const sessionVersion =
+    req.session?.adminSessionVersion;
 
   if (!adminId) {
     return res.redirect(
@@ -64,10 +67,11 @@ async function requireAuth(
         },
 
         select: {
-          id: true,
-          email: true,
-          role: true,
-          isActive: true
+        id: true,
+        email: true,
+        role: true,
+        isActive: true,
+        sessionVersion: true
         }
       });
 
@@ -77,7 +81,12 @@ async function requireAuth(
      */
     if (
       !admin ||
-      !admin.isActive
+      !admin.isActive ||
+      !Number.isInteger(
+        sessionVersion
+      ) ||
+      sessionVersion !==
+        admin.sessionVersion
     ) {
       await destroyCurrentSession(
         req
@@ -108,9 +117,12 @@ async function requireAuth(
     req.session.adminRole =
       admin.role;
 
+    req.session.adminSessionVersion = 
+      admin.sessionVersion;
+
     /*
-     * Make administrator information available to EJS views.
-     */
+    * Make administrator information available to EJS views.
+    */
     res.locals.admin = {
       id:
         admin.id,
@@ -135,9 +147,9 @@ async function requireAuth(
  *
  * Example:
  *
- * requireRole('superadmin')
+ * requireRole('SUPERADMIN')
  *
- * requireRole('superadmin', 'editor')
+ * requireRole('SUPERADMIN', 'EDITOR')
  */
 function requireRole(
   ...allowedRoles

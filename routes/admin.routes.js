@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const fs = require('fs/promises');
 const {
   requireAuth,
@@ -56,18 +57,104 @@ router.use(requireAuth);
 /*
  * Content editors can create and update public website content.
  */
-const contentManagerOnly = requireRole(
-  'superadmin',
-  'editor'
-);
+const contentManagerOnly =
+  requireRole(
+    'SUPERADMIN',
+    'EDITOR'
+  );
 
 /*
  * Sensitive data and permanent deletion are restricted
- * to superadmins.
+ * to SUPERADMIN accounts.
  */
-const superAdminOnly = requireRole(
-  'superadmin'
-);
+const superAdminOnly =
+  requireRole(
+    'SUPERADMIN'
+  );
+
+/*
+ * ============================================================
+ * EDITOR ACCOUNT MANAGEMENT
+ * ============================================================
+ */
+
+const EDITOR_MIN_PASSWORD_LENGTH =
+  14;
+
+const EDITOR_MAX_PASSWORD_LENGTH =
+  128;
+
+const ADMIN_EMAIL_PATTERN =
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+/*
+ * Return only EDITOR accounts.
+ *
+ * SUPERADMIN accounts are deliberately excluded from the
+ * normal Editor-management interface.
+ */
+async function getEditorAccounts() {
+
+  return prisma.admin.findMany({
+
+    where: {
+      role:
+        'EDITOR'
+    },
+
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      isActive: true,
+      failedLogins: true,
+      lockedUntil: true,
+      lastLoginAt: true,
+      sessionVersion: true,
+      createdAt: true,
+      updatedAt: true
+    },
+
+    orderBy: {
+      email:
+        'asc'
+    }
+
+  });
+
+}
+
+
+/*
+ * Re-render the Editor-management page after validation
+ * failures.
+ */
+async function renderEditorManager(
+  res,
+  {
+    error = null,
+    success = null,
+    status = 200
+  } = {}
+) {
+
+  const editors =
+    await getEditorAccounts();
+
+
+  return res
+    .status(status)
+    .render(
+      'admin/editor-manager',
+      {
+        editors,
+        error,
+        success
+      }
+    );
+
+}
 
 /*
  * Physical folders used for public digest and news uploads.
@@ -81,10 +168,18 @@ const digestUploadDirectory =
     '../public/uploads/digests'
   );
 
+
 const newsUploadDirectory =
   path.join(
     __dirname,
     '../public/uploads/news'
+  );
+
+
+const rateGuideUploadDirectory =
+  path.join(
+    __dirname,
+    '../public/uploads/rate-guide'
   );
 
   /*
@@ -504,9 +599,853 @@ async function deleteStoredFileSafely(
   }
 }
 
-router.get('/dashboard', (req, res) => {
-  res.render('admin/dashboard', { admin: { email: req.session.adminEmail } });
-});
+router.get(
+  '/dashboard',
+
+  (req, res) => {
+    return res.render(
+      'admin/dashboard',
+      {
+        admin:
+          res.locals.admin
+      }
+    );
+  }
+);
+
+/*
+ * ============================================================
+ * EDITOR MANAGEMENT PAGE
+ * ============================================================
+ */
+
+router.get(
+  '/editors',
+
+  superAdminOnly,
+
+  asyncHandler(async (
+    req,
+    res
+  ) => {
+
+    const successCode =
+      typeof req.query.success ===
+      'string'
+        ? req.query.success
+        : '';
+
+
+    const successMessages = {
+
+      created:
+        'Editor account created successfully.',
+
+      status:
+        'Editor account status updated successfully.',
+
+      password:
+        'Editor password updated successfully.',
+
+      unlocked:
+        'Editor account unlocked successfully.'
+
+    };
+
+
+    return renderEditorManager(
+      res,
+      {
+        success:
+          successMessages[
+            successCode
+          ] || null
+      }
+    );
+
+  })
+);
+
+router.post(
+  '/editors',
+
+  superAdminOnly,
+  csrfSynchronisedProtection,
+
+  asyncHandler(async (
+    req,
+    res
+  ) => {
+
+    const submittedEmail =
+      typeof req.body.email ===
+      'string'
+        ? req.body.email
+            .trim()
+            .toLowerCase()
+        : '';
+
+
+    const email =
+      submittedEmail.length <=
+        254
+        ? submittedEmail
+        : '';
+
+
+    const password =
+      typeof req.body.password ===
+      'string'
+        ? req.body.password
+        : '';
+
+
+    const confirmPassword =
+      typeof req.body.confirmPassword ===
+      'string'
+        ? req.body.confirmPassword
+        : '';
+
+
+    /*
+     * Validate email.
+     */
+    if (
+      !email ||
+      !ADMIN_EMAIL_PATTERN.test(
+        email
+      )
+    ) {
+
+      return renderEditorManager(
+        res,
+        {
+          error:
+            'Please provide a valid email address.',
+
+          status:
+            400
+        }
+      );
+
+    }
+
+
+    /*
+     * Validate password length.
+     */
+    if (
+      password.length <
+        EDITOR_MIN_PASSWORD_LENGTH ||
+      password.length >
+        EDITOR_MAX_PASSWORD_LENGTH
+    ) {
+
+      return renderEditorManager(
+        res,
+        {
+          error:
+            'The password must be between 14 and 128 characters.',
+
+          status:
+            400
+        }
+      );
+
+    }
+
+
+    if (
+      password !==
+      confirmPassword
+    ) {
+
+      return renderEditorManager(
+        res,
+        {
+          error:
+            'The passwords do not match.',
+
+          status:
+            400
+        }
+      );
+
+    }
+
+
+    /*
+     * Prevent duplicate administrator emails.
+     */
+    const existingAdmin =
+      await prisma.admin.findUnique({
+
+        where: {
+          email
+        },
+
+        select: {
+          id:
+            true
+        }
+
+      });
+
+
+    if (existingAdmin) {
+
+      return renderEditorManager(
+        res,
+        {
+          error:
+            'An administrator account already exists with that email address.',
+
+          status:
+            400
+        }
+      );
+
+    }
+
+
+    const passwordHash =
+      await bcrypt.hash(
+        password,
+        12
+      );
+
+
+    try {
+
+      await prisma.$transaction(
+        async (
+          transaction
+        ) => {
+
+          const editor =
+            await transaction
+              .admin
+              .create({
+
+                data: {
+                  email,
+
+                  passwordHash,
+
+                  /*
+                   * Role is assigned by the server.
+                   *
+                   * The browser is never permitted to choose
+                   * SUPERADMIN.
+                   */
+                  role:
+                    'EDITOR',
+
+                  isActive:
+                    true,
+
+                  sessionVersion:
+                    0
+                }
+
+              });
+
+
+          await writeAuditLog({
+
+            client:
+              transaction,
+
+            req,
+
+            action:
+              'EDITOR_ACCOUNT_CREATED',
+
+            entityType:
+              'Admin',
+
+            entityId:
+              editor.id,
+
+            metadata: {
+              targetEmail:
+                editor.email,
+
+              role:
+                editor.role,
+
+              isActive:
+                editor.isActive
+            }
+
+          });
+
+        }
+      );
+
+    } catch (error) {
+
+      /*
+       * A second request may theoretically create the same
+       * email between the earlier lookup and this insert.
+       */
+      if (
+        error?.code ===
+        'P2002'
+      ) {
+
+        return renderEditorManager(
+          res,
+          {
+            error:
+              'An administrator account already exists with that email address.',
+
+            status:
+              400
+          }
+        );
+
+      }
+
+
+      throw error;
+
+    }
+
+
+    return res.redirect(
+      '/admin/editors?success=created'
+    );
+
+  })
+);
+
+/*
+ * ============================================================
+ * ACTIVATE / DEACTIVATE EDITOR
+ * ============================================================
+ */
+
+router.post(
+  '/editors/:id/status',
+
+  superAdminOnly,
+  csrfSynchronisedProtection,
+
+  asyncHandler(async (
+    req,
+    res
+  ) => {
+
+    const editorId =
+      Number(
+        req.params.id
+      );
+
+
+    const submittedStatus =
+      typeof req.body.status ===
+      'string'
+        ? req.body.status.trim()
+        : '';
+
+
+    if (
+      !Number.isInteger(
+        editorId
+      ) ||
+      editorId < 1
+    ) {
+
+      return res.status(400).send(
+        'Invalid Editor ID.'
+      );
+
+    }
+
+
+    if (
+      submittedStatus !== 'active' &&
+      submittedStatus !== 'inactive'
+    ) {
+
+      return res.status(400).send(
+        'Invalid account status.'
+      );
+
+    }
+
+
+    const editor =
+      await prisma.admin.findUnique({
+
+        where: {
+          id:
+            editorId
+        }
+
+      });
+
+
+    /*
+     * Never allow this route to modify a SUPERADMIN.
+     */
+    if (
+      !editor ||
+      editor.role !==
+        'EDITOR'
+    ) {
+
+      return res.status(404).send(
+        'Editor account not found.'
+      );
+
+    }
+
+
+    const nextIsActive =
+      submittedStatus ===
+      'active';
+
+
+    /*
+     * Nothing needs changing.
+     */
+    if (
+      editor.isActive ===
+      nextIsActive
+    ) {
+
+      return res.redirect(
+        '/admin/editors?success=status'
+      );
+
+    }
+
+
+    await prisma.$transaction(
+      async (
+        transaction
+      ) => {
+
+        await transaction
+          .admin
+          .update({
+
+            where: {
+              id:
+                editor.id
+            },
+
+            data: {
+
+              isActive:
+                nextIsActive,
+
+              /*
+               * Immediately invalidate all sessions belonging
+               * to this Editor.
+               */
+              sessionVersion: {
+                increment:
+                  1
+              }
+
+            }
+
+          });
+
+
+        await writeAuditLog({
+
+          client:
+            transaction,
+
+          req,
+
+          action:
+            'EDITOR_STATUS_UPDATED',
+
+          entityType:
+            'Admin',
+
+          entityId:
+            editor.id,
+
+          metadata: {
+
+            targetEmail:
+              editor.email,
+
+            previousIsActive:
+              editor.isActive,
+
+            newIsActive:
+              nextIsActive
+
+          }
+
+        });
+
+      }
+    );
+
+
+    return res.redirect(
+      '/admin/editors?success=status'
+    );
+
+  })
+);
+
+/*
+ * ============================================================
+ * RESET EDITOR PASSWORD
+ * ============================================================
+ */
+
+router.post(
+  '/editors/:id/password',
+
+  superAdminOnly,
+  csrfSynchronisedProtection,
+
+  asyncHandler(async (
+    req,
+    res
+  ) => {
+
+    const editorId =
+      Number(
+        req.params.id
+      );
+
+
+    const password =
+      typeof req.body.password ===
+      'string'
+        ? req.body.password
+        : '';
+
+
+    const confirmPassword =
+      typeof req.body.confirmPassword ===
+      'string'
+        ? req.body.confirmPassword
+        : '';
+
+
+    if (
+      !Number.isInteger(
+        editorId
+      ) ||
+      editorId < 1
+    ) {
+
+      return res.status(400).send(
+        'Invalid Editor ID.'
+      );
+
+    }
+
+
+    if (
+      password.length <
+        EDITOR_MIN_PASSWORD_LENGTH ||
+      password.length >
+        EDITOR_MAX_PASSWORD_LENGTH
+    ) {
+
+      return renderEditorManager(
+        res,
+        {
+          error:
+            'The new password must be between 14 and 128 characters.',
+
+          status:
+            400
+        }
+      );
+
+    }
+
+
+    if (
+      password !==
+      confirmPassword
+    ) {
+
+      return renderEditorManager(
+        res,
+        {
+          error:
+            'The new passwords do not match.',
+
+          status:
+            400
+        }
+      );
+
+    }
+
+
+    const editor =
+      await prisma.admin.findUnique({
+
+        where: {
+          id:
+            editorId
+        }
+
+      });
+
+
+    if (
+      !editor ||
+      editor.role !==
+        'EDITOR'
+    ) {
+
+      return res.status(404).send(
+        'Editor account not found.'
+      );
+
+    }
+
+
+    const passwordHash =
+      await bcrypt.hash(
+        password,
+        12
+      );
+
+
+    await prisma.$transaction(
+      async (
+        transaction
+      ) => {
+
+        await transaction
+          .admin
+          .update({
+
+            where: {
+              id:
+                editor.id
+            },
+
+            data: {
+
+              passwordHash,
+
+              /*
+               * A password reset should also recover an
+               * account that was locked by failed logins.
+               */
+              failedLogins:
+                0,
+
+              lockedUntil:
+                null,
+
+              /*
+               * Log the Editor out of every existing session.
+               */
+              sessionVersion: {
+                increment:
+                  1
+              }
+
+            }
+
+          });
+
+
+        await writeAuditLog({
+
+          client:
+            transaction,
+
+          req,
+
+          action:
+            'EDITOR_PASSWORD_UPDATED',
+
+          entityType:
+            'Admin',
+
+          entityId:
+            editor.id,
+
+          metadata: {
+
+            targetEmail:
+              editor.email
+
+          }
+
+        });
+
+      }
+    );
+
+
+    return res.redirect(
+      '/admin/editors?success=password'
+    );
+
+  })
+);
+
+/*
+ * ============================================================
+ * UNLOCK EDITOR ACCOUNT
+ * ============================================================
+ */
+
+router.post(
+  '/editors/:id/unlock',
+
+  superAdminOnly,
+  csrfSynchronisedProtection,
+
+  asyncHandler(async (
+    req,
+    res
+  ) => {
+
+    const editorId =
+      Number(
+        req.params.id
+      );
+
+
+    if (
+      !Number.isInteger(
+        editorId
+      ) ||
+      editorId < 1
+    ) {
+
+      return res.status(400).send(
+        'Invalid Editor ID.'
+      );
+
+    }
+
+
+    const editor =
+      await prisma.admin.findUnique({
+
+        where: {
+          id:
+            editorId
+        }
+
+      });
+
+
+    if (
+      !editor ||
+      editor.role !==
+        'EDITOR'
+    ) {
+
+      return res.status(404).send(
+        'Editor account not found.'
+      );
+
+    }
+
+
+    /*
+     * Account is already clean.
+     */
+    if (
+      !editor.lockedUntil &&
+      editor.failedLogins === 0
+    ) {
+
+      return res.redirect(
+        '/admin/editors?success=unlocked'
+      );
+
+    }
+
+
+    await prisma.$transaction(
+      async (
+        transaction
+      ) => {
+
+        await transaction
+          .admin
+          .update({
+
+            where: {
+              id:
+                editor.id
+            },
+
+            data: {
+
+              failedLogins:
+                0,
+
+              lockedUntil:
+                null,
+
+              sessionVersion: {
+                increment:
+                  1
+              }
+
+            }
+
+          });
+
+
+        await writeAuditLog({
+
+          client:
+            transaction,
+
+          req,
+
+          action:
+            'EDITOR_ACCOUNT_UNLOCKED',
+
+          entityType:
+            'Admin',
+
+          entityId:
+            editor.id,
+
+          metadata: {
+
+            targetEmail:
+              editor.email,
+
+            previousFailedLogins:
+              editor.failedLogins,
+
+            previousLockedUntil:
+              editor.lockedUntil
+
+          }
+
+        });
+
+      }
+    );
+
+
+    return res.redirect(
+      '/admin/editors?success=unlocked'
+    );
+
+  })
+);
 
 // --- Daily Digest uploads ---
 const digestStorage =
@@ -1096,6 +2035,352 @@ const uploadGalleryImages =
     fileFilter:
       imageFileFilter
   });
+
+/*
+ * Rate Guide image storage.
+ *
+ * Rate Guides are kept separately from News images because
+ * this is a Products-page website asset.
+ */
+const rateGuideStorage =
+  multer.diskStorage({
+    destination: (
+      req,
+      file,
+      callback
+    ) => {
+      return callback(
+        null,
+        rateGuideUploadDirectory
+      );
+    },
+
+    filename: (
+      req,
+      file,
+      callback
+    ) => {
+      const extension =
+        storedImageExtensionByMimeType.get(
+          file.mimetype
+        );
+
+      const safeExtension =
+        extension || '.bin';
+
+      const generatedFilename =
+        `${crypto.randomUUID()}${safeExtension}`;
+
+      return callback(
+        null,
+        generatedFilename
+      );
+    }
+  });
+
+
+const uploadRateGuide =
+  multer({
+    storage:
+      rateGuideStorage,
+
+    limits: {
+      /*
+       * Maximum Rate Guide image size: 5 MB.
+       */
+      fileSize:
+        5 * 1024 * 1024,
+
+      files: 1
+    },
+
+    /*
+     * Reuse the same secure JPEG / PNG / WebP
+     * validation used by News images.
+     */
+    fileFilter:
+      imageFileFilter
+  });
+
+/*
+ * ============================================================
+ * RATE GUIDE MANAGEMENT
+ * ============================================================
+ */
+
+router.get(
+  '/rate-guide',
+
+  contentManagerOnly,
+
+  asyncHandler(async (req, res) => {
+    const rateGuide =
+      await prisma.rateGuide.findUnique({
+        where: {
+          id: 1
+        }
+      });
+
+
+    return res.render(
+      'admin/rate-guide-manager',
+      {
+        rateGuide,
+
+        error:
+          null,
+
+        success:
+          req.query.updated === '1'
+      }
+    );
+  })
+);
+
+router.post(
+  '/rate-guide',
+
+  contentManagerOnly,
+
+  /*
+   * Multer must parse the multipart form first.
+   */
+  uploadRateGuide.single(
+    'rateGuideImage'
+  ),
+
+  /*
+   * Then verify the CSRF token from the parsed form.
+   */
+  csrfAfterUpload,
+
+  asyncHandler(async (req, res) => {
+
+    /*
+     * An image is required when this route is submitted.
+     */
+    if (!req.file) {
+      const rateGuide =
+        await prisma.rateGuide.findUnique({
+          where: {
+            id: 1
+          }
+        });
+
+
+      return res.status(400).render(
+        'admin/rate-guide-manager',
+        {
+          rateGuide,
+
+          error:
+            'Please select a Rate Guide image.',
+
+          success:
+            false
+        }
+      );
+    }
+
+
+    /*
+     * Multer has already checked:
+     *
+     * - extension
+     * - MIME type
+     *
+     * Now inspect the actual file signature.
+     */
+    let imageIsValid;
+
+
+    try {
+      imageIsValid =
+        await hasMatchingImageSignature(
+          req.file
+        );
+    } catch (error) {
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not remove Rate Guide after image inspection failed:'
+      );
+
+      throw error;
+    }
+
+
+    if (!imageIsValid) {
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not remove invalid Rate Guide image:'
+      );
+
+
+      const rateGuide =
+        await prisma.rateGuide.findUnique({
+          where: {
+            id: 1
+          }
+        });
+
+
+      return res.status(400).render(
+        'admin/rate-guide-manager',
+        {
+          rateGuide,
+
+          error:
+            'The uploaded file is not a valid JPEG, PNG or WebP image.',
+
+          success:
+            false
+        }
+      );
+    }
+
+
+    const newImageUrl =
+      `/uploads/rate-guide/${req.file.filename}`;
+
+
+    let previousImageUrl =
+      null;
+
+
+    try {
+      const existing =
+        await prisma.rateGuide.findUnique({
+          where: {
+            id: 1
+          }
+        });
+
+
+      previousImageUrl =
+        existing?.imageUrl || null;
+
+
+      /*
+       * Update the Rate Guide and create an audit record
+       * in the same database transaction.
+       */
+      await prisma.$transaction(
+        async (transaction) => {
+
+          const savedRateGuide =
+            await transaction
+              .rateGuide
+              .upsert({
+                where: {
+                  id: 1
+                },
+
+                update: {
+                  imageUrl:
+                    newImageUrl,
+
+                  originalName:
+                    path.basename(
+                      req.file.originalname
+                    ),
+
+                  mimeType:
+                    req.file.mimetype,
+
+                  fileSize:
+                    req.file.size
+                },
+
+                create: {
+                  id: 1,
+
+                  imageUrl:
+                    newImageUrl,
+
+                  originalName:
+                    path.basename(
+                      req.file.originalname
+                    ),
+
+                  mimeType:
+                    req.file.mimetype,
+
+                  fileSize:
+                    req.file.size
+                }
+              });
+
+
+          await writeAuditLog({
+            client:
+              transaction,
+
+            req,
+
+            action:
+              'RATE_GUIDE_UPDATED',
+
+            entityType:
+              'RateGuide',
+
+            entityId:
+              savedRateGuide.id,
+
+            metadata: {
+              imageUrl:
+                savedRateGuide.imageUrl,
+
+              originalName:
+                savedRateGuide.originalName,
+
+              mimeType:
+                savedRateGuide.mimeType,
+
+              fileSize:
+                savedRateGuide.fileSize
+            }
+          });
+
+        }
+      );
+
+    } catch (error) {
+
+      /*
+       * The database was not updated.
+       * Remove the newly uploaded physical file.
+       */
+      await deleteMulterFilesSafely(
+        req.file,
+        'Could not remove Rate Guide after database failure:'
+      );
+
+      throw error;
+    }
+
+
+    /*
+     * Only delete the previous physical image after
+     * PostgreSQL successfully points to the new one.
+     */
+    if (
+      previousImageUrl &&
+      previousImageUrl !==
+        newImageUrl
+    ) {
+      await deleteStoredFileSafely(
+        previousImageUrl,
+        rateGuideUploadDirectory,
+        'Rate Guide was replaced, but the previous image could not be removed:'
+      );
+    }
+
+
+    return res.redirect(
+      '/admin/rate-guide?updated=1'
+    );
+  })
+);
 
 router.get(
   '/news',
@@ -2194,6 +3479,36 @@ router.post(
         ? req.body.description.trim()
         : '';
 
+    const responsibilities =
+      typeof req.body.responsibilities === 'string'
+    ? req.body.responsibilities.trim() || null
+    : null;
+
+    const qualifications =
+      typeof req.body.qualifications === 'string'
+        ? req.body.qualifications.trim() || null
+        : null;
+
+    const experience =
+      typeof req.body.experience === 'string'
+        ? req.body.experience.trim() || null
+        : null;
+
+    const competencies =
+      typeof req.body.competencies === 'string'
+        ? req.body.competencies.trim() || null
+        : null;
+
+    const jobCategory =
+      typeof req.body.jobCategory === 'string'
+        ? req.body.jobCategory.trim() || null
+        : null;
+
+    const jobType =
+      typeof req.body.jobType === 'string'
+        ? req.body.jobType.trim() || null
+        : null;
+        
     const deadline =
       typeof req.body.deadline === 'string'
         ? req.body.deadline.trim()
@@ -2249,15 +3564,23 @@ await prisma.$transaction(
         .jobPosting
         .create({
           data: {
-            title,
-            department,
-            location,
-            description,
+                  title,
+                  department,
+                  location,
+                  description,
 
-            deadline:
-              parsedDeadline,
+                  responsibilities,
+                  qualifications,
+                  experience,
+                  competencies,
 
-            status:
+                  jobCategory,
+                  jobType,
+
+                  deadline:
+                    parsedDeadline,
+
+                  status:
               submittedStatus ===
               'open'
                 ? 'open'
@@ -2289,6 +3612,12 @@ await prisma.$transaction(
 
         location:
           createdJob.location,
+
+        jobCategory:
+          createdJob.jobCategory,
+
+        jobType:
+          createdJob.jobType,
 
         status:
           createdJob.status,
@@ -2397,6 +3726,36 @@ router.post(
         ? req.body.description.trim()
         : '';
 
+    const responsibilities =
+      typeof req.body.responsibilities === 'string'
+        ? req.body.responsibilities.trim() || null
+        : null;
+
+    const qualifications =
+      typeof req.body.qualifications === 'string'
+        ? req.body.qualifications.trim() || null
+        : null;
+
+    const experience =
+      typeof req.body.experience === 'string'
+        ? req.body.experience.trim() || null
+        : null;
+
+    const competencies =
+      typeof req.body.competencies === 'string'
+        ? req.body.competencies.trim() || null
+        : null;
+
+    const jobCategory =
+      typeof req.body.jobCategory === 'string'
+        ? req.body.jobCategory.trim() || null
+        : null;
+
+    const jobType =
+      typeof req.body.jobType === 'string'
+        ? req.body.jobType.trim() || null
+        : null;
+
     const deadline =
       typeof req.body.deadline === 'string'
         ? req.body.deadline.trim()
@@ -2467,6 +3826,14 @@ await prisma.$transaction(
             location,
             description,
 
+            responsibilities,
+            qualifications,
+            experience,
+            competencies,
+
+            jobCategory,
+            jobType,
+
             deadline:
               parsedDeadline,
 
@@ -2501,6 +3868,12 @@ await prisma.$transaction(
           location:
             existingJob.location,
 
+          jobCategory:
+            existingJob.jobCategory,
+
+          jobType:
+            existingJob.jobType,
+
           status:
             existingJob.status,
 
@@ -2517,6 +3890,12 @@ await prisma.$transaction(
 
           location:
             updatedJob.location,
+
+          jobCategory:
+            updatedJob.jobCategory,
+
+          jobType:
+            updatedJob.jobType,
 
           status:
             updatedJob.status,
@@ -3267,34 +4646,339 @@ router.get(
 
 router.get(
   '/audit-logs',
+
   superAdminOnly,
 
   asyncHandler(async (
     req,
     res
   ) => {
-    const auditLogs =
-      await prisma.auditLog.findMany({
-        include: {
-          admin: {
-            select: {
-              email: true
-            }
-          }
-        },
 
-        orderBy: {
-          createdAt:
-            'desc'
-        },
+    /*
+     * ==========================================================
+     * FILTER VALUES
+     * ==========================================================
+     */
 
-        take: 200
+    const action =
+      typeof req.query.action ===
+      'string'
+        ? req.query.action
+            .trim()
+            .slice(0, 100)
+        : '';
+
+
+    const entityType =
+      typeof req.query.entityType ===
+      'string'
+        ? req.query.entityType
+            .trim()
+            .slice(0, 100)
+        : '';
+
+
+    const from =
+      typeof req.query.from ===
+      'string'
+        ? req.query.from.trim()
+        : '';
+
+
+    const to =
+      typeof req.query.to ===
+      'string'
+        ? req.query.to.trim()
+        : '';
+
+
+    const submittedAdminId =
+      Number(
+        req.query.adminId
+      );
+
+
+    const adminId =
+      Number.isInteger(
+        submittedAdminId
+      ) &&
+      submittedAdminId > 0
+        ? submittedAdminId
+        : null;
+
+
+    /*
+     * ==========================================================
+     * PAGINATION
+     * ==========================================================
+     */
+
+    const submittedPage =
+      Number(
+        req.query.page
+      );
+
+
+    const requestedPage =
+      Number.isInteger(
+        submittedPage
+      ) &&
+      submittedPage > 0
+        ? submittedPage
+        : 1;
+
+
+    const pageSize =
+      25;
+
+
+    /*
+     * ==========================================================
+     * BUILD PRISMA FILTER
+     * ==========================================================
+     */
+
+    const where = {};
+
+
+    if (action) {
+      where.action =
+        action;
+    }
+
+
+    if (entityType) {
+      where.entityType =
+        entityType;
+    }
+
+
+    if (adminId) {
+      where.adminId =
+        adminId;
+    }
+
+
+    const createdAtFilter =
+      {};
+
+
+    if (from) {
+      const fromDate =
+        new Date(
+          `${from}T00:00:00.000`
+        );
+
+
+      if (
+        !Number.isNaN(
+          fromDate.getTime()
+        )
+      ) {
+        createdAtFilter.gte =
+          fromDate;
+      }
+    }
+
+
+    if (to) {
+      const toDate =
+        new Date(
+          `${to}T23:59:59.999`
+        );
+
+
+      if (
+        !Number.isNaN(
+          toDate.getTime()
+        )
+      ) {
+        createdAtFilter.lte =
+          toDate;
+      }
+    }
+
+
+    if (
+      Object.keys(
+        createdAtFilter
+      ).length > 0
+    ) {
+      where.createdAt =
+        createdAtFilter;
+    }
+
+
+    /*
+     * Count matching records first so we can calculate
+     * a safe page number.
+     */
+    const totalLogs =
+      await prisma.auditLog.count({
+        where
       });
+
+
+    const totalPages =
+      Math.max(
+        1,
+        Math.ceil(
+          totalLogs /
+          pageSize
+        )
+      );
+
+
+    const currentPage =
+      Math.min(
+        requestedPage,
+        totalPages
+      );
+
+
+    const skip =
+      (
+        currentPage - 1
+      ) *
+      pageSize;
+
+
+    /*
+     * ==========================================================
+     * RETRIEVE PAGE + FILTER OPTIONS
+     * ==========================================================
+     */
+
+    const [
+      auditLogs,
+      actionOptions,
+      admins,
+      entityTypeOptions
+    ] =
+      await Promise.all([
+
+        prisma.auditLog.findMany({
+          where,
+
+          include: {
+            admin: {
+              select: {
+                id: true,
+                email: true
+              }
+            }
+          },
+
+          orderBy: {
+            createdAt:
+              'desc'
+          },
+
+          skip,
+
+          take:
+            pageSize
+        }),
+
+
+        prisma.auditLog.findMany({
+          select: {
+            action:
+              true
+          },
+
+          distinct: [
+            'action'
+          ],
+
+          orderBy: {
+            action:
+              'asc'
+          }
+        }),
+
+
+        prisma.admin.findMany({
+          select: {
+            id: true,
+            email: true
+          },
+
+          orderBy: {
+            email:
+              'asc'
+          }
+        }),
+
+
+        prisma.auditLog.findMany({
+          where: {
+            entityType: {
+              not:
+                null
+            }
+          },
+
+          select: {
+            entityType:
+              true
+          },
+
+          distinct: [
+            'entityType'
+          ],
+
+          orderBy: {
+            entityType:
+              'asc'
+          }
+        })
+
+      ]);
+
 
     return res.render(
       'admin/audit-logs',
       {
-        auditLogs
+        auditLogs,
+
+        actionOptions:
+          actionOptions.map(
+            (item) =>
+              item.action
+          ),
+
+        admins,
+
+        entityTypeOptions:
+          entityTypeOptions
+            .map(
+              (item) =>
+                item.entityType
+            )
+            .filter(Boolean),
+
+        filters: {
+          action,
+
+          adminId:
+            adminId
+              ? String(adminId)
+              : '',
+
+          entityType,
+
+          from,
+
+          to
+        },
+
+        pagination: {
+          currentPage,
+          totalPages,
+          pageSize,
+          totalLogs
+        }
       }
     );
   })

@@ -4,47 +4,45 @@
   "description": "Corporate website for an asset management firm - Node/Express/EJS/Prisma",
   "main": "server.js",
   "engines": {
-  "node": ">=24 <25"
-},
-"scripts": {
-  "start": "node server.js",
-  "dev": "nodemon server.js",
-
-  "check:syntax": "node scripts/check-syntax.js",
-  "check": "npm run check:syntax && npm run prisma:validate",
-  "ci:verify": "npm run prisma:generate && npm run check",
-
-  "prisma:generate": "prisma generate",
-  "prisma:format": "prisma format",
-  "prisma:validate": "prisma validate",
-  "prisma:migrate:dev": "prisma migrate dev",
-  "prisma:migrate:deploy": "prisma migrate deploy",
-  "prisma:migrate:status": "prisma migrate status",
-  "prisma:studio": "prisma studio",
-
-  "security:audit": "npm audit --omit=dev --audit-level=high"
-},
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "check:syntax": "node scripts/check-syntax.js",
+    "check": "npm run check:syntax && npm run prisma:validate",
+    "ci:verify": "npm run prisma:generate && npm run check",
+    "prisma:generate": "prisma generate",
+    "prisma:format": "prisma format",
+    "prisma:validate": "prisma validate",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:migrate:status": "prisma migrate status",
+    "prisma:studio": "prisma studio",
+    "security:audit": "npm audit --omit=dev --audit-level=high"
+  },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
-    "bcrypt": "^5.1.1",
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "bcrypt": "^6.0.0",
     "connect-pg-simple": "^10.0.0",
     "csrf-sync": "^4.2.1",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
-    "express-rate-limit": "^8.3.2",
+    "express-rate-limit": "^8.6.2",
     "express-session": "^1.18.0",
     "helmet": "^8.1.0",
+    "lucide": "^1.27.0",
     "multer": "^2.0.1",
-    "nodemailer": "^6.9.14",
+    "nodemailer": "^9.0.4",
     "pg": "^8.22.0",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.4",
-    "prisma": "^7.8.0",
+    "prisma": "^7.9.1",
     "typescript": "^7.0.2"
   }
 }

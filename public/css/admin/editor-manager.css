@@ -1,0 +1,498 @@
+/* ============================================================
+   EDITOR MANAGEMENT PAGE
+============================================================ */
+
+.editor-admin-page {
+  min-height: 100vh;
+  padding: 52px 20px 80px;
+  background: #f5f7fa;
+}
+
+
+.editor-admin-shell {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+
+/* ============================================================
+   PAGE HEADER
+============================================================ */
+
+.editor-admin-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+
+.editor-admin-eyebrow {
+  color: #f68634;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+
+.editor-admin-heading h1 {
+  margin: 7px 0 8px;
+  color: #033669;
+}
+
+
+.editor-admin-heading p,
+.editor-section-heading p {
+  margin: 0;
+  color: #667085;
+  line-height: 1.6;
+}
+
+
+.editor-back-link {
+  color: #033669;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+
+.editor-back-link:hover {
+  color: #f68634;
+}
+
+
+/* ============================================================
+   ALERTS
+============================================================ */
+
+.editor-alert {
+  margin-bottom: 20px;
+  padding: 13px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+}
+
+
+.editor-alert-success {
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+
+.editor-alert-error {
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+
+/* ============================================================
+   CARDS
+============================================================ */
+
+.editor-create-card,
+.editor-account-card {
+  background: #ffffff;
+
+  border:
+    1px solid
+    rgba(3, 54, 105, 0.1);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 8px 25px
+    rgba(3, 54, 105, 0.05);
+}
+
+
+.editor-create-card {
+  margin-bottom: 35px;
+  padding: 24px;
+}
+
+
+.editor-section-heading h2 {
+  margin: 0 0 6px;
+  color: #033669;
+}
+
+
+/* ============================================================
+   CREATE FORM
+============================================================ */
+
+.editor-create-form {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    )
+    auto;
+
+  gap: 14px;
+  align-items: end;
+  margin-top: 22px;
+}
+
+
+.editor-create-form label,
+.editor-password-form label {
+  display: block;
+  color: #344054;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+
+.editor-create-form input,
+.editor-password-form input {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  margin-top: 7px;
+  padding: 9px 11px;
+
+  border:
+    1px solid
+    #d0d5dd;
+
+  border-radius: 7px;
+  background: #ffffff;
+  font: inherit;
+}
+
+
+.editor-create-form input:focus,
+.editor-password-form input:focus {
+  outline: none;
+
+  border-color:
+    #033669;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(3, 54, 105, 0.08);
+}
+
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+
+.editor-primary-button,
+.editor-secondary-button,
+.editor-danger-button {
+  min-height: 42px;
+  padding: 9px 15px;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.editor-primary-button {
+  color: #ffffff;
+  background: #033669;
+  border: 1px solid #033669;
+}
+
+
+.editor-primary-button:hover {
+  background: #f68634;
+  border-color: #f68634;
+}
+
+
+.editor-secondary-button {
+  color: #033669;
+  background: #ffffff;
+
+  border:
+    1px solid
+    rgba(3, 54, 105, 0.2);
+}
+
+
+.editor-secondary-button:hover {
+  background: #f5f8fb;
+}
+
+
+.editor-danger-button {
+  color: #b42318;
+  background: #ffffff;
+
+  border:
+    1px solid
+    #fecdca;
+}
+
+
+.editor-danger-button:hover {
+  background: #fef3f2;
+}
+
+
+/* ============================================================
+   EDITOR ACCOUNT LIST
+============================================================ */
+
+.editor-account-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+
+.editor-account-card {
+  padding: 20px;
+}
+
+
+.editor-account-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+
+.editor-account-summary h3 {
+  margin: 0 0 8px;
+  color: #172b3a;
+  font-size: 1rem;
+}
+
+
+.editor-account-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+
+/* ============================================================
+   BADGES
+============================================================ */
+
+.editor-role-badge,
+.editor-status-badge,
+.editor-lock-badge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+
+  font-size: 0.65rem;
+  font-weight: 800;
+
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+
+.editor-role-badge {
+  color: #033669;
+
+  background:
+    rgba(3, 54, 105, 0.08);
+}
+
+
+.editor-status-badge.is-active {
+  color: #166534;
+  background: #dcfce7;
+}
+
+
+.editor-status-badge.is-inactive {
+  color: #475467;
+  background: #f2f4f7;
+}
+
+
+.editor-lock-badge {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+
+/* ============================================================
+   ACCOUNT INFORMATION
+============================================================ */
+
+.editor-account-meta {
+  text-align: right;
+}
+
+
+.editor-account-meta span {
+  display: block;
+  margin-bottom: 3px;
+  color: #98a2b3;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+
+.editor-account-meta strong {
+  color: #344054;
+  font-size: 0.78rem;
+}
+
+
+/* ============================================================
+   ACTIONS
+============================================================ */
+
+.editor-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+
+  margin-top: 18px;
+  padding-top: 17px;
+
+  border-top:
+    1px solid
+    rgba(3, 54, 105, 0.08);
+}
+
+
+.editor-password-panel {
+  flex: 1 1 100%;
+}
+
+
+.editor-password-panel summary {
+  width: max-content;
+  color: #033669;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+.editor-password-panel summary:hover {
+  color: #f68634;
+}
+
+
+.editor-password-form {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr auto;
+
+  gap: 12px;
+  align-items: end;
+
+  margin-top: 15px;
+  padding: 16px;
+
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+
+/* ============================================================
+   EMPTY STATE
+============================================================ */
+
+.editor-empty-state {
+  margin-top: 18px;
+  padding: 40px;
+
+  text-align: center;
+  background: #ffffff;
+
+  border:
+    1px solid
+    rgba(3, 54, 105, 0.1);
+
+  border-radius: 12px;
+}
+
+
+.editor-empty-state h3 {
+  margin-top: 0;
+  color: #033669;
+}
+
+
+.editor-empty-state p {
+  margin-bottom: 0;
+  color: #667085;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 900px) {
+
+  .editor-create-form {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .editor-admin-heading,
+  .editor-account-summary {
+    display: block;
+  }
+
+
+  .editor-back-link {
+    display: inline-block;
+    margin-top: 14px;
+  }
+
+
+  .editor-create-form,
+  .editor-password-form {
+    grid-template-columns: 1fr;
+  }
+
+
+  .editor-account-meta {
+    margin-top: 14px;
+    text-align: left;
+  }
+
+
+  .editor-account-actions {
+    flex-direction: column;
+  }
+
+
+  .editor-account-actions form {
+    width: 100%;
+  }
+
+
+  .editor-account-actions button {
+    width: 100%;
+  }
+
+}

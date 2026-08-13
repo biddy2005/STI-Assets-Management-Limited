@@ -1,4 +1,6 @@
-<%- include('partials/header') %>
+<%- include('partials/header', {
+  pageCss: '/css/pages/home.css'
+}) %>
 
 <!-- ============================================================
      1. HERO SECTION (hero-v2: image background, gradient overlay,
@@ -20,47 +22,73 @@
         </a>
       </div>
 
-    <!-- Hero Trust Badges / Highlights -->
-<div class="hero-trust-bar">
+<!-- Hero Trust Highlights -->
+<div
+  class="hero-trust-bar"
+  aria-label="Why clients choose STI Assets Management"
+>
   <span class="hero-trust-item">SEC Regulated</span>
-  <span class="hero-trust-divider">|</span>
+
+  <span class="hero-trust-divider" aria-hidden="true">|</span>
+
   <span class="hero-trust-item">Professional Fund Managers</span>
-  <span class="hero-trust-divider">|</span>
-  <span class="hero-trust-item">Serving Individuals & Institutions</span>
+
+  <span class="hero-trust-divider" aria-hidden="true">|</span>
+
+  <span class="hero-trust-item">
+    Serving Individuals &amp; Institutions
+  </span>
 </div>
 
     </div>
   </div>
 </section>
 
-<div class="hero-v2-stats">
-  <div class="hero-v2-stats-col">
+<div
+  class="hero-v2-stats"
+  role="list"
+  aria-label="STI Assets Management key statistics"
+>
+  <div class="hero-v2-stats-col" role="listitem">
     <span class="hero-v2-stats-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6"/><path d="M5 10v9"/><path d="M9 10v9"/><path d="M15 10v9"/><path d="M19 10v9"/><path d="M3 19h18"/></svg>
+      <i
+        data-lucide="landmark"
+        class="ui-icon ui-icon-md"
+        aria-hidden="true"
+      ></i>
     </span>
     <div class="hero-v2-stats-number"><span class="counter" data-target="250" data-prefix="₦" data-suffix="B+">0</span></div>
     <div class="hero-v2-stats-label">Assets Under Management</div>
   </div>
-  <div class="hero-v2-stats-col">
+  <div class="hero-v2-stats-col" role="listitem">
     <span class="hero-v2-stats-icon" aria-hidden="true">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-</svg>
-
+      <i
+        data-lucide="users"
+        class="ui-icon ui-icon-md"
+        aria-hidden="true"
+      ></i>
     </span>
     <div class="hero-v2-stats-number"><span class="counter" data-target="1500" data-suffix="+">0</span></div>
     <div class="hero-v2-stats-label">Happy Clients</div>
   </div>
-  <div class="hero-v2-stats-col">
+  <div class="hero-v2-stats-col" role="listitem">
     <span class="hero-v2-stats-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.25"/><path d="M3.5 19.5v-1.3a4.2 4.2 0 0 1 4.2-4.2h2.6a4.2 4.2 0 0 1 4.2 4.2v1.3"/><path d="M16 11l2 2 3.5-3.5"/></svg>
+      <i
+        data-lucide="user-check"
+        class="ui-icon ui-icon-md"
+        aria-hidden="true"
+      ></i>
     </span>
     <div class="hero-v2-stats-number"><span class="counter" data-target="25" data-suffix="+">0</span></div>
     <div class="hero-v2-stats-label">Investment Professionals</div>
   </div>
-  <div class="hero-v2-stats-col">
+  <div class="hero-v2-stats-col" role="listitem">
     <span class="hero-v2-stats-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17"/><path d="M8 3v4M16 3v4"/><path d="M7.5 14h3M13.5 14h3M7.5 17.5h3"/></svg>
+      <i
+        data-lucide="calendar-days"
+        class="ui-icon ui-icon-md"
+        aria-hidden="true"
+      ></i>
     </span>
     <div class="hero-v2-stats-number"><span class="counter" data-target="18">0</span></div>
     <div class="hero-v2-stats-label">Years in Business</div>
@@ -76,9 +104,9 @@
 
 <div class="services-modern-header">
   <div class="values-eyebrow-row">
-    <span class="values-eyebrow-line"></span>
+    
     <span class="eyebrow">What We Do</span>
-    <span class="values-eyebrow-line"></span>
+    
   </div>
   <h2 class="services-modern-heading">Our Services</h2>
   <p class="services-modern-subheading">
@@ -90,24 +118,24 @@
 
       <div class="services-modern-card">
         <div class="services-modern-image-wrapper">
-          <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80" alt="Business professionals reviewing financial reports" class="services-modern-image">
-        </div>
-        <div class="services-modern-icon-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f68634" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="32" height="32">
-            <path d="M17 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1"/>
-            <circle cx="10" cy="7" r="3.5"/>
-            <path d="M20 20v-1a4 4 0 0 0-3-3.87"/>
-            <path d="M15.5 3.6a3.5 3.5 0 0 1 0 6.8"/>
-          </svg>
+          <img src="/financialadvisory.jpg" alt="Business professionals reviewing financial reports" class="services-modern-image" loading="lazy" decoding="async">
         </div>
         <div class="services-modern-body">
           <h3 class="services-modern-title">Financial Advisory Services</h3>
-          <div class="services-modern-title-accent"></div>
+          
           <p class="services-modern-description">Our financial advisory services are the cornerstone of our commitment to your financial success, built around your objectives and risk tolerance.</p>
-          <a href="/services/financial-advisory" class="services-modern-link">
+          <a
+            href="/services#financial-advisory"
+            class="services-modern-link"
+            aria-label="Learn more about Financial Advisory Services"
+          >
             Learn More
             <span class="services-modern-link-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+             <i
+              data-lucide="arrow-right"
+              class="ui-icon ui-icon-sm"
+              aria-hidden="true"
+            ></i>
             </span>
           </a>
         </div>
@@ -115,21 +143,24 @@
 
       <div class="services-modern-card">
         <div class="services-modern-image-wrapper">
-          <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80" alt="Stock market charts and trading dashboard" class="services-modern-image">
-        </div>
-        <div class="services-modern-icon-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f68634" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="32" height="32">
-            <path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20v-3"/>
-          </svg>
+          <img src="/marketresearch.jpg" alt="Stock market charts and trading dashboard" class="services-modern-image" loading="lazy" decoding="async">
         </div>
         <div class="services-modern-body">
           <h3 class="services-modern-title">Market Research</h3>
-          <div class="services-modern-title-accent"></div>
+          
           <p class="services-modern-description">Our market research services provide clients with actionable insights, market intelligence, and comprehensive analysis.</p>
-          <a href="/services/market-research" class="services-modern-link">
+          <a
+            href="/services#market-research"
+            class="services-modern-link"
+            aria-label="Learn more about Market Research"
+          >
             Learn More
             <span class="services-modern-link-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+              <i
+                data-lucide="arrow-right"
+                class="ui-icon ui-icon-sm"
+                aria-hidden="true"
+              ></i>
             </span>
           </a>
         </div>
@@ -137,21 +168,33 @@
 
       <div class="services-modern-card">
         <div class="services-modern-image-wrapper">
-          <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80" alt="Investment documents and financial reports" class="services-modern-image">
-        </div>
-        <div class="services-modern-icon-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f68634" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="32" height="32">
-            <path d="M12 3l8.5 4.6v9L12 21l-8.5-4.4v-9L12 3z"/><path d="M3.5 7.6L12 12l8.5-4.4"/><path d="M12 12v9"/>
-          </svg>
+          <img
+            src="/portfoliomanagement.jpg"
+            alt="Investment professionals reviewing portfolio allocation charts"
+            class="services-modern-image"
+            loading="lazy"
+            decoding="async"
+          >
         </div>
         <div class="services-modern-body">
           <h3 class="services-modern-title">Portfolio and Fund Management</h3>
-          <div class="services-modern-title-accent"></div>
-          <p class="services-modern-description">Our portfolio and fund management services are designed to optimize investments while delivering sustainable long-term returns.</p>
-          <a href="/services/portfolio-fund-management" class="services-modern-link">
+          
+          <p class="services-modern-description">
+            Professionally managed portfolios designed to preserve capital,
+            manage risk and support sustainable long-term growth.
+          </p>
+          <a
+            href="/services#portfolio-fund-management"
+            class="services-modern-link"
+            aria-label="Learn more about Portfolio and Fund Management"
+          >
             Learn More
             <span class="services-modern-link-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+              <i
+                data-lucide="arrow-right"
+                class="ui-icon ui-icon-sm"
+                aria-hidden="true"
+              ></i>
             </span>
           </a>
         </div>
@@ -159,21 +202,24 @@
 
       <div class="services-modern-card">
         <div class="services-modern-image-wrapper">
-          <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800&q=80" alt="Modern corporate office glass skyscraper" class="services-modern-image">
-        </div>
-        <div class="services-modern-icon-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f68634" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="32" height="32">
-            <rect x="4" y="3" width="10" height="18" rx="1"/><path d="M14 8h6v13h-6"/><path d="M7 7h1M10 7h1M7 11h1M10 11h1M7 15h1M10 15h1"/>
-          </svg>
+          <img src="/corporate.jpg" alt="Modern corporate office glass skyscraper" class="services-modern-image" loading="lazy" decoding="async">
         </div>
         <div class="services-modern-body">
           <h3 class="services-modern-title">Corporate Investment Schemes</h3>
-          <div class="services-modern-title-accent"></div>
+          
           <p class="services-modern-description">Tailored investment solutions helping businesses maximize corporate assets and improve financial performance.</p>
-          <a href="/services/corporate-investment-schemes" class="services-modern-link">
+          <a
+            href="/services#corporate-investment-schemes"
+            class="services-modern-link"
+            aria-label="Learn more about Corporate Investment Schemes"
+          >
             Learn More
             <span class="services-modern-link-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+              <i
+                data-lucide="arrow-right"
+                class="ui-icon ui-icon-sm"
+                aria-hidden="true"
+              ></i>
             </span>
           </a>
         </div>
@@ -183,207 +229,527 @@
   </div>
 </section>
 <!-- ============================================================
-     3. ABOUT SECTION
-     Two-column: left image, right text + badges
+     3. ABOUT PREVIEW
 ============================================================ -->
-<section class="section about-section" id="about">
-  <div class="about-grid">
-    <div class="about-image">
-      <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="STI Assets Management team collaborating">
-    </div>
-   <div class="about-text">
-      <div class="values-eyebrow-row about-eyebrow-row">
-        <span class="values-eyebrow-line"></span>
-        <span class="eyebrow">About Us</span>
-        <span class="values-eyebrow-line"></span>
+<section
+  class="home-about-section"
+  id="about"
+  aria-labelledby="home-about-title"
+>
+  <div class="home-about-container">
+
+    <div class="home-about-grid">
+
+      <!-- About image -->
+      <div class="home-about-visual">
+
+        <div class="home-about-image">
+          <img
+            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80"
+            alt="STI Assets Management professionals collaborating"
+            loading="lazy"
+            decoding="async"
+          >
+        </div>
+
+        <div
+          class="home-about-year"
+          aria-label="STI Assets Management was incorporated in 2008"
+        >
+          <span class="home-about-year-label">Incorporated</span>
+          <strong class="home-about-year-number">2008</strong>
+        </div>
+
       </div>
-      <h2 class="services-modern-heading">Built for Scale and Efficiency</h2>
-      <p>STI Assets Management Limited is a non-bank financial company incorporated in 2008 to provide extensive financial services in Nigeria with a focus on Asset Management and Financial Advisory. We are a wholly owned Nigerian company dedicated to delivering innovative financial services that empower individuals and businesses. Our identity is rooted in being an exceptional financial hub where opportunities flourish through expert people, technology, and integrity.</p>
-      <br>
-      <a href="/who-we-are" class="btn-contact-cta">Read More</a>
+
+      <!-- About content -->
+      <div class="home-about-content">
+
+        <div class="values-eyebrow-row home-about-eyebrow-row">
+          
+          <span class="eyebrow">About Us</span>
+          
+        </div>
+
+        <h2 class="home-about-heading" id="home-about-title">
+          Built for Scale and Efficiency
+        </h2>
+
+        <p class="home-about-lead">
+          STI Assets Management Limited is a wholly Nigerian-owned,
+          non-bank financial company providing asset management and
+          financial advisory services.
+        </p>
+
+        <p class="home-about-description">
+          We deliver innovative financial services
+          to individuals and businesses through expert people, technology
+          and integrity.
+        </p>
+
+        <a
+          href="/who-we-are"
+          class="btn-contact-cta home-about-link"
+          aria-label="Discover more about STI Assets Management"
+        >
+          <span>Discover Who We Are</span>
+        </a>
+
+      </div>
+
     </div>
+
   </div>
 </section>
 
 <!-- ============================================================
-     4. PRODUCTS SECTION (Modern redesign, isolated: products-modern-*)
+     4. PRODUCTS PREVIEW
 ============================================================ -->
-<section class="products-modern-section" id="products">
-  <span class="products-modern-bg-dots products-modern-bg-dots-left" aria-hidden="true"></span>
-  <span class="products-modern-bg-dots products-modern-bg-dots-right" aria-hidden="true"></span>
+<section
+  class="products-modern-section"
+  id="products"
+  aria-labelledby="home-products-title"
+>
+  <span
+    class="products-modern-bg-dots products-modern-bg-dots-left"
+    aria-hidden="true"
+  ></span>
+
+  <span
+    class="products-modern-bg-dots products-modern-bg-dots-right"
+    aria-hidden="true"
+  ></span>
 
   <div class="products-modern-container">
-    <div class="services-modern-header">
+
+    <!-- Products section heading -->
+    <div class="services-modern-header products-modern-header">
+
       <div class="values-eyebrow-row">
-        <span class="values-eyebrow-line"></span>
+        
         <span class="eyebrow">Investment Solutions</span>
-        <span class="values-eyebrow-line"></span>
+        
       </div>
-      <h2 class="services-modern-heading">STIAM Products</h2>
-      <p class="products-modern-subheading">Explore a diverse range of investment products designed to grow, protect, and diversify your wealth across risk profiles and time horizons.</p>
+
+      <h2
+        class="services-modern-heading"
+        id="home-products-title"
+      >
+        STIAM Products
+      </h2>
+
+      <p class="products-modern-subheading">
+        Explore investment solutions designed to preserve capital,
+        generate income and diversify your wealth across different
+        currencies and time horizons.
+      </p>
+
     </div>
 
+    <!-- Products grid -->
     <div class="products-modern-grid">
 
-      <div class="services-modern-card">
-        <div class="products-modern-image-wrapper">
-          <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80" alt="Modern financial district investment growth chart" class="products-modern-image">
-        </div>
-        <div class="products-modern-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f68634" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="34" height="34">
-            <path d="M3 10l9-7 9 7"/><path d="M4 10v10h16V10"/><path d="M9 20v-6h6v6"/>
-          </svg>
-        </div>
-        <div class="products-modern-content">
-          <h3 class="products-modern-title">Money Market Fund</h3>
-          <div class="products-modern-title-accent"></div>
-          <p class="products-modern-description">High-liquidity, low-risk investment solution tailored for capital preservation and competitive short-term yields.</p>
-        </div>
-      </div>
+      <!-- Money Market Fund -->
+      <article class="products-modern-card">
 
-      <div class="products-modern-card">
         <div class="products-modern-image-wrapper">
-          <img src="https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&w=800&q=80" alt="USD currency close-up" class="products-modern-image">
-        </div>
-        <div class="products-modern-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f68634" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="34" height="34">
-            <circle cx="12" cy="12" r="9"/><path d="M12 6v12"/><path d="M9.5 9c0-1.1 1.1-2 2.5-2s2.5.8 2.5 1.8c0 2.5-5 1.1-5 3.6 0 1 1.1 1.8 2.5 1.8s2.5-.8 2.5-1.8"/>
-          </svg>
+          <img
+           src="/moneymarket.jpg"
+            alt="Financial documents and calculator representing short-term investment planning"
+            class="products-modern-image"
+            loading="lazy"
+            decoding="async"
+          >
         </div>
         <div class="products-modern-content">
-          <h3 class="products-modern-title">Fixed Income Dollar Note</h3>
-          <div class="products-modern-title-accent"></div>
-          <p class="products-modern-description">USD-denominated fixed income vehicle protecting wealth against local currency depreciation with steady yields.</p>
-        </div>
-      </div>
 
-      <div class="products-modern-card">
-        <div class="products-modern-image-wrapper">
-          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80" alt="Modern corporate office tower" class="products-modern-image">
+          <h3 class="products-modern-title">
+            STIAM Money Market Fund
+          </h3>
+
+          <p class="products-modern-description">
+            A high-liquidity, low-risk investment solution designed
+            to preserve capital while delivering competitive
+            short-term returns.
+          </p>
+
+          <a
+            href="/products#money-market-note"
+            class="products-modern-card-link"
+            aria-label="Explore the Money Market Fund"
+          >
+            <span>Explore Product</span>
+
+            <i
+              data-lucide="arrow-right"
+              class="ui-icon ui-icon-sm"
+              aria-hidden="true"
+            ></i>
+          </a>
+
         </div>
-        <div class="products-modern-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f68634" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="34" height="34">
-            <path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><path d="M9 13l2 2 4-4"/>
-          </svg>
+
+      </article>
+
+      <!-- Fixed Income Dollar Note -->
+      <article class="products-modern-card">
+
+        <div class="products-modern-image-wrapper">
+          <img
+            src="https://images.unsplash.com/photo-1768839721776-038d3070721e?auto=format&fit=crop&w=800&q=80"
+            alt="US dollar notes and calculator representing dollar-denominated investments"
+            class="products-modern-image"
+            loading="lazy"
+            decoding="async"
+          >
         </div>
         <div class="products-modern-content">
-          <h3 class="products-modern-title">Fixed Income Note</h3>
-          <div class="products-modern-title-accent"></div>
-          <p class="products-modern-description">Medium-to-long-term structured corporate and sovereign debt obligations offering predictable income streams.</p>
+
+          <h3 class="products-modern-title">
+            STIAM Fixed Income Dollar Note
+          </h3>
+
+          <p class="products-modern-description">
+            A USD-denominated fixed-income solution designed to
+            provide steady returns and help protect wealth against
+            local currency depreciation.
+          </p>
+
+          <a
+            href="/products#fixed-income-dollar-note"
+            class="products-modern-card-link"
+            aria-label="Explore the Fixed Income Dollar Note"
+          >
+            <span>Explore Product</span>
+
+            <i
+              data-lucide="arrow-right"
+              class="ui-icon ui-icon-sm"
+              aria-hidden="true"
+            ></i>
+          </a>
+
         </div>
-      </div>
+
+      </article>
+
+      <!-- Fixed Income Note -->
+      <article class="products-modern-card">
+
+        <div class="products-modern-image-wrapper">
+          <img
+            src="/fixedincomenote.jpg"
+            alt="Corporate office building representing fixed-income investments"
+            class="products-modern-image"
+            loading="lazy"
+            decoding="async"
+          >
+        </div>
+        <div class="products-modern-content">
+
+          <h3 class="products-modern-title">
+            STIAM Fixed Income Note
+          </h3>
+
+          <p class="products-modern-description">
+            A medium-to-long-term investment in structured corporate
+            and sovereign debt obligations offering predictable
+            income streams.
+          </p>
+
+          <a
+            href="/products#fixed-income-note"
+            class="products-modern-card-link"
+            aria-label="Explore the Fixed Income Note"
+          >
+            <span>Explore Product</span>
+
+            <i
+              data-lucide="arrow-right"
+              class="ui-icon ui-icon-sm"
+              aria-hidden="true"
+            ></i>
+          </a>
+
+        </div>
+
+      </article>
 
     </div>
 
-    <div class="products-modern-cta-row">
-      <span class="products-modern-cta-line"><span class="products-modern-cta-dot"></span></span>
-      <a href="/products" class="products-modern-btn">
-        View All Investment Products
-        <span class="products-modern-btn-arrow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-        </span>
-      </a>
-      <span class="products-modern-cta-line"><span class="products-modern-cta-dot"></span></span>
-    </div>
   </div>
 </section>
 
-
 <!-- ============================================================
-     6. COMMUNITY / INSIGHTS SECTION
+     5. COMMUNITY & INSIGHTS
      Featured news carousel
 ============================================================ -->
-<section class="home-insights-section" id="insights">
-  <div class="home-insights-decor home-insights-decor-tl" aria-hidden="true"></div>
-  <div class="home-insights-decor home-insights-decor-tr" aria-hidden="true"></div>
-  <div class="home-insights-decor home-insights-decor-curve" aria-hidden="true"></div>
+<section
+  class="home-insights-section"
+  id="insights"
+  aria-labelledby="home-insights-heading"
+>
+  <div
+    class="home-insights-decor home-insights-decor-tl"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="home-insights-decor home-insights-decor-tr"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="home-insights-decor home-insights-decor-curve"
+    aria-hidden="true"
+  ></div>
 
   <div class="home-insights-container">
 
+    <!-- Section heading -->
     <div class="services-modern-header home-insights-header">
+
       <div class="values-eyebrow-row">
-        <span class="values-eyebrow-line"></span>
+        
         <span class="eyebrow">Community &amp; Insights</span>
-        <span class="values-eyebrow-line"></span>
+        
       </div>
-      <h2 class="services-modern-heading">Latest Updates From Our Community</h2>
-      <p class="services-modern-subheading home-insights-subheading">
-        Stay informed with our latest news, market insights, and perspectives from our team of investment experts.
+
+      <h2
+        class="services-modern-heading"
+        id="home-insights-heading"
+      >
+        Latest Updates From Our Community
+      </h2>
+
+      <p class="home-insights-subheading">
+        Stay informed with company news, market insights and perspectives
+        from our investment professionals.
       </p>
+
     </div>
 
     <% if (!articles || articles.length === 0) { %>
+
+      <!-- Empty state -->
       <div class="home-insights-empty">
-        <p>No updates are available at the moment. Please check back soon.</p>
+
+        <span
+          class="home-insights-empty-icon"
+          aria-hidden="true"
+        >
+          <i
+            data-lucide="newspaper"
+            class="ui-icon ui-icon-lg"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <h3>No Updates Available</h3>
+
+        <p>
+          New company updates and market insights will appear here
+          when they are published.
+        </p>
+
       </div>
+
     <% } else { %>
-      <div class="home-insights-carousel"
-           data-home-insights-carousel
-           aria-roledescription="carousel"
-           aria-label="Community and Insights articles">
+
+      <!-- Carousel -->
+      <div
+        class="home-insights-carousel"
+        data-home-insights-carousel
+        aria-roledescription="carousel"
+        aria-label="Community and Insights articles"
+      >
 
         <% if (articles.length > 1) { %>
-        <button type="button" class="home-insights-arrow home-insights-arrow-prev" data-home-insights-prev aria-label="Previous article">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
+
+          <button
+            type="button"
+            class="home-insights-arrow home-insights-arrow-prev"
+            data-home-insights-prev
+            aria-label="Show previous article"
+          >
+            <i
+              data-lucide="chevron-left"
+              class="ui-icon"
+              aria-hidden="true"
+            ></i>
+          </button>
+
         <% } %>
 
         <div class="home-insights-viewport">
-          <div class="home-insights-track" data-home-insights-track>
+
+          <div
+            class="home-insights-track"
+            data-home-insights-track
+          >
+
             <% articles.forEach(function (article, index) { %>
-              <div class="home-insights-slide"
-                   role="group"
-                   aria-roledescription="slide"
-                   aria-label="<%= index + 1 %> of <%= articles.length %>"
-                   aria-hidden="<%= index === 0 ? 'false' : 'true' %>"
-                   data-home-insights-slide>
-                <article class="home-insights-card">
+
+              <div
+                class="home-insights-slide"
+                role="group"
+                aria-roledescription="slide"
+                aria-label="<%= index + 1 %> of <%= articles.length %>"
+                aria-hidden="<%= index === 0 ? 'false' : 'true' %>"
+                data-home-insights-slide
+              >
+
+                <article
+                  class="home-insights-card"
+                  aria-labelledby="home-insights-title-<%= index %>"
+                  aria-describedby="home-insights-excerpt-<%= index %>"
+                >
+
                   <div class="home-insights-image-wrap">
                     <img
                       class="home-insights-image"
-                      src="<%= (article.coverImage && article.coverImage.trim() !== '') ? article.coverImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80' %>"
-                      alt="<%= article.title %>"
+                      src="<%= (
+                        article.coverImage &&
+                        String(article.coverImage).trim() !== ''
+                      )
+                        ? article.coverImage
+                        : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80'
+                      %>"
+                      alt="<%= article.title || 'STI Assets Management update' %>"
                       loading="lazy"
+                      decoding="async"
                     >
                   </div>
+
                   <div class="home-insights-content">
-                    <span class="home-insights-category"><%= (article.category || 'INSIGHTS').toUpperCase() %></span>
-                    <% if (article.date) { %>
-                    <span class="home-insights-date">
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17"/><path d="M8 3v4M16 3v4"/></svg>
-                      <%= article.date %>
-                    </span>
-                    <% } %>
-                    <h3 class="home-insights-title"><%= article.title %></h3>
-                    <p class="home-insights-excerpt"><%= article.excerpt %></p>
-                    <a href="/resources/news/<%= article.slug %>" class="home-insights-link" tabindex="<%= index === 0 ? '0' : '-1' %>">
+
+                    <div class="home-insights-meta">
+
+                      <span class="home-insights-category">
+                        <%= String(article.category || 'Insights').toUpperCase() %>
+                      </span>
+
+                      <% if (article.date) { %>
+                        <span class="home-insights-date">
+                          <i
+                            data-lucide="calendar-days"
+                            class="ui-icon ui-icon-sm"
+                            aria-hidden="true"
+                          ></i>
+
+                          <%= article.date %>
+                        </span>
+                      <% } %>
+
+                    </div>
+
+                    <h3
+                      class="home-insights-title"
+                      id="home-insights-title-<%= index %>"
+                    >
+                      <%= article.title || 'STI Assets Management Update' %>
+                    </h3>
+
+                    <p
+                      class="home-insights-excerpt"
+                      id="home-insights-excerpt-<%= index %>"
+                    >
+                      <%= article.excerpt || 'Read the latest update from STI Assets Management.' %>
+                    </p>
+
+                    <a
+                      href="/resources/news/<%= article.slug %>"
+                      class="home-insights-link"
+                      tabindex="<%= index === 0 ? '0' : '-1' %>"
+                      aria-label="Read article: <%= article.title || 'STI Assets Management Update' %>"
+                    >
                       <span class="home-insights-link-text">Read Article</span>
-                      <svg class="home-insights-link-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+
+                      <i
+                        data-lucide="arrow-right"
+                        class="home-insights-link-arrow ui-icon ui-icon-sm"
+                        aria-hidden="true"
+                      ></i>
                     </a>
+
                   </div>
+
                 </article>
+
               </div>
+
             <% }); %>
+
           </div>
+
         </div>
 
         <% if (articles.length > 1) { %>
-        <button type="button" class="home-insights-arrow home-insights-arrow-next" data-home-insights-next aria-label="Next article">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
 
-        <div class="home-insights-controls" data-home-insights-dots>
-          <% articles.forEach(function (article, index) { %>
-            <button type="button" class="home-insights-dot<%= index === 0 ? ' is-active' : '' %>" data-home-insights-dot data-index="<%= index %>" aria-label="Go to article <%= index + 1 %>"></button>
-          <% }); %>
-        </div>
+          <button
+            type="button"
+            class="home-insights-arrow home-insights-arrow-next"
+            data-home-insights-next
+            aria-label="Show next article"
+          >
+            <i
+              data-lucide="chevron-right"
+              class="ui-icon"
+              aria-hidden="true"
+            ></i>
+          </button>
+
+          <div
+            class="home-insights-controls"
+            data-home-insights-dots
+            aria-label="Choose an article"
+          >
+
+            <% articles.forEach(function (article, index) { %>
+
+              <button
+                type="button"
+                class="home-insights-dot<%= index === 0 ? ' is-active' : '' %>"
+                data-home-insights-dot
+                data-index="<%= index %>"
+                aria-label="Go to article <%= index + 1 %>"
+              ></button>
+
+            <% }); %>
+
+          </div>
+
         <% } %>
+
       </div>
+
     <% } %>
+
+    <!-- View all news -->
+    <div class="home-insights-footer">
+
+      <a
+        href="/resources/news"
+        class="home-insights-view-all"
+      >
+        <span>View All News &amp; Insights</span>
+
+      </a>
+
+    </div>
 
   </div>
 </section>
+<!-- Lucide icon library -->
+<script
+  src="/vendor/lucide/lucide.min.js"
+  defer
+></script>
 
-<script src="/js/homepage.js"></script>
+<!-- Homepage functionality and icon initialisation -->
+<script
+  src="/js/homepage.js"
+  defer
+></script>
 
 <%- include('partials/footer') %>

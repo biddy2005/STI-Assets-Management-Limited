@@ -1,6 +1,8 @@
-<%- include('partials/header') %>
+<%- include('partials/header', {
+  pageCss: '/css/pages/careers.css'
+}) %>
 
-<section class="inner-page-hero digest-hero">
+<section class="inner-page-hero careers-page-hero">
   <div class="inner-page-hero-inner">
     <span class="hero-eyebrow">Join Our Team</span>
     <h1>Careers at STIAM</h1>
@@ -8,101 +10,423 @@
   </div>
 </section>
 
-<section class="section careers-section">
-  <% if (typeof applied !== 'undefined' && applied) { %>
-    <div class="careers-success-banner">
-      <p>Your application was submitted successfully. Our team will be in touch shortly.</p>
-    </div>
-  <% } %>
+<!-- ============================================================
+     CAREERS CONTENT
+============================================================ -->
+<section class="careers-section">
 
-  <div class="careers-split">
-    <div class="careers-jobs-column">
-      <h2>Open Roles</h2>
-      <% if (jobs.length === 0) { %>
-        <p class="careers-empty">There are no open positions at this time. Please check back soon.</p>
-      <% } else { %>
-        <% jobs.forEach(function(job) { %>
-          <div class="job-card">
-            <span class="job-department-tag"><%= job.department %></span>
-            <h3><%= job.title %></h3>
-            <div class="job-meta">
-              <span class="job-meta-item">📍 <%= job.location %></span>
-              <% if (job.deadline) { %>
-                <span class="job-meta-item">🗓 Apply by <%= job.deadline.toDateString() %></span>
-              <% } %>
-            </div>
-            <p class="job-description"><%= job.description %></p>
-          </div>
-        <% }) %>
-      <% } %>
-    </div>
+  <div class="careers-shell">
 
-    <div class="careers-form-column">
-      <div class="careers-form-card">
-        <h2>Apply Now</h2>
-        <% if (typeof error !== 'undefined' && error) { %>
-          <p class="form-error"><%= error %></p>
-        <% } %>
-        <form action="/api/careers/apply" method="POST" enctype="multipart/form-data" class="careers-form">
-          <input
-            type="hidden"
-            name="_csrf"
-            value="<%= csrfToken %>"
-          >
-          <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
 
-          <label>Full Name
-            <input type="text" name="applicantName" required>
-          </label>
-          <label>Email
-            <input type="email" name="email" required>
-          </label>
-          <label>Phone
-            <input type="tel" name="phone">
-          </label>
-          <label>Job
-            <select name="jobId" required>
-              <option value="">Select an open role</option>
-              <% jobs.forEach(function(job) { %>
-                <option value="<%= job.id %>"><%= job.title %> — <%= job.location %></option>
-              <% }) %>
-            </select>
-          </label>
-          <label>Cover Note
-            <textarea name="coverNote" rows="4"></textarea>
-          </label>
-         <label>
-            Résumé
-            <input
-              type="file"
-              name="resume"
-              accept=".pdf,application/pdf" 
-              required
-            >
-            <small>
-              PDF only. Maximum file size: 5 MB.
-            </small>
-          </label>
-                  <label class="privacy-consent">
-                  <input
-                    type="checkbox"
-                    name="privacyAcknowledgement"
-                    value="yes"
-                    required
-                  >
+    <% if (
+      typeof applied !== 'undefined' &&
+      applied
+    ) { %>
 
-                  <span>
-                    I acknowledge that my information and résumé
-                    will be processed for recruitment purposes in
-                    accordance with the Privacy Policy.
-                  </span>
-                </label>
+      <div
+        class="careers-success-banner"
+        role="status"
+      >
 
-          <button type="submit" class="btn-careers-submit">Submit Application</button>
-        </form>
+        <svg
+          class="ui-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="m8.5 12 2.3 2.3 4.7-4.8"></path>
+        </svg>
+
+        <p>
+          Your application was submitted successfully. Our team will be in touch shortly.
+        </p>
+
       </div>
+
+    <% } %>
+
+
+    <div class="careers-layout">
+
+
+      <!-- ========================================================
+           OPEN ROLES
+      ========================================================= -->
+      <div class="careers-jobs-column">
+
+        <header class="careers-column-header">
+
+          <h2>
+            Open Roles
+          </h2>
+
+        </header>
+
+
+        <% if (jobs.length === 0) { %>
+
+          <div class="careers-empty">
+
+            <span
+              class="careers-empty-icon"
+              aria-hidden="true"
+            >
+
+              <svg
+                class="ui-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                focusable="false"
+              >
+                <rect
+                  x="4"
+                  y="6"
+                  width="16"
+                  height="13"
+                  rx="2"
+                ></rect>
+
+                <path d="M9 6V4h6v2"></path>
+                <path d="M4 11h16"></path>
+              </svg>
+
+            </span>
+
+            <p>
+              There are no open positions at this time. Please check back soon.
+            </p>
+
+          </div>
+
+        <% } else { %>
+
+          <div class="careers-jobs-list">
+
+            <% jobs.forEach(function (job) { %>
+
+              <article class="job-card">
+
+                <div class="job-department">
+
+                  <span class="job-department-label">
+                    Department:
+                  </span>
+
+                  <span class="job-department-value">
+                    <%= job.department %>
+                  </span>
+
+                </div>
+
+
+                <h3 class="job-card-title">
+                  <%= job.title %>
+                </h3>
+
+
+                <div class="job-meta">
+
+                  <span class="job-meta-item">
+
+                    <svg
+                      class="ui-icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path
+                        d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+                      ></path>
+
+                      <circle
+                        cx="12"
+                        cy="10"
+                        r="2.5"
+                      ></circle>
+                    </svg>
+
+                    <span>
+                      <%= job.location %>
+                    </span>
+
+                  </span>
+
+
+                  <% if (job.deadline) { %>
+
+                    <span class="job-meta-item">
+
+                      <svg
+                        class="ui-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <rect
+                          x="3"
+                          y="5"
+                          width="18"
+                          height="16"
+                          rx="2"
+                        ></rect>
+
+                        <path d="M3 10h18"></path>
+                        <path d="M8 3v4"></path>
+                        <path d="M16 3v4"></path>
+                      </svg>
+
+                      <span>
+                        Apply by
+                        <%= job.deadline.toDateString() %>
+                      </span>
+
+                    </span>
+
+                  <% } %>
+
+                </div>
+
+
+                <p class="job-description">
+                  <%= job.summary %>
+                </p>
+
+                <a
+                  href="/careers/jobs/<%= job.id %>"
+                  class="job-details-link"
+                >
+                  <span>
+                    View Job Details
+                  </span>
+
+                </a>
+
+              </article>
+
+            <% }); %>
+
+          </div>
+
+        <% } %>
+
+      </div>
+
+
+      <!-- ========================================================
+           APPLICATION FORM
+      ========================================================= -->
+      <div
+        id="apply"
+        class="careers-form-column"
+      >
+
+        <div class="careers-form-card">
+
+          <header class="careers-form-header">
+
+            <h2>
+              Apply Now
+            </h2>
+
+          </header>
+
+
+          <% if (
+            typeof error !== 'undefined' &&
+            error
+          ) { %>
+
+            <p
+              class="form-error"
+              role="alert"
+            >
+              <%= error %>
+            </p>
+
+          <% } %>
+
+
+          <form
+            action="/api/careers/apply"
+            method="POST"
+            enctype="multipart/form-data"
+            class="careers-form"
+          >
+
+            <input
+              type="hidden"
+              name="_csrf"
+              value="<%= csrfToken %>"
+            >
+
+
+            <label
+              class="honeypot"
+              aria-hidden="true"
+            >
+              Website
+
+              <input
+                type="text"
+                name="website"
+                tabindex="-1"
+                autocomplete="off"
+              >
+            </label>
+
+
+            <label>
+              Full Name
+
+              <input
+                type="text"
+                name="applicantName"
+                autocomplete="name"
+                required
+              >
+            </label>
+
+
+            <label>
+              Email
+
+              <input
+                type="email"
+                name="email"
+                autocomplete="email"
+                required
+              >
+            </label>
+
+
+            <label>
+              Phone
+
+              <input
+                type="tel"
+                name="phone"
+                autocomplete="tel"
+              >
+            </label>
+
+
+            <label>
+              Job
+
+              <select
+                name="jobId"
+                required
+              >
+
+                <option value="">
+                  Select an open role
+                </option>
+
+                <% jobs.forEach(function (job) { %>
+
+                  <option
+                    value="<%= job.id %>"
+                    <%= (
+                      typeof selectedJobId !== 'undefined' &&
+                      selectedJobId === job.id
+                    ) ? 'selected' : '' %>
+                  >
+                    <%= job.title %> | <%= job.location %>
+                  </option>
+
+                <% }); %>
+
+              </select>
+            </label>
+
+
+            <label>
+              Cover Note
+
+              <textarea
+                name="coverNote"
+                rows="4"
+              ></textarea>
+            </label>
+
+
+            <label class="careers-resume-field">
+
+              Résumé
+
+              <input
+                type="file"
+                name="resume"
+                accept=".pdf,application/pdf"
+                required
+              >
+
+              <small>
+                PDF only. Maximum file size: 5 MB.
+              </small>
+
+            </label>
+
+
+            <label class="privacy-consent">
+
+              <input
+                type="checkbox"
+                name="privacyAcknowledgement"
+                value="yes"
+                required
+              >
+
+              <span>
+                I acknowledge that my information and résumé
+                will be processed for recruitment purposes in
+                accordance with the Privacy Policy.
+              </span>
+
+            </label>
+
+
+            <button
+              type="submit"
+              class="btn-careers-submit"
+            >
+
+              <span>
+                Submit Application
+              </span>
+
+            </button>
+
+          </form>
+
+        </div>
+
+      </div>
+
     </div>
+
   </div>
+
 </section>
 
 <%- include('partials/footer') %>

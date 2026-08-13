@@ -36,12 +36,82 @@
       <label>Department
         <input type="text" name="department" value="<%= job ? job.department : '' %>" required>
       </label>
-      <label>Location
-        <input type="text" name="location" value="<%= job ? job.location : '' %>" required>
+      <label>
+        Location
+        <input
+          type="text"
+          name="location"
+          value="<%= job ? job.location : '' %>"
+          required
+        >
       </label>
-      <label>Description
-        <textarea name="description" rows="6" required><%= job ? job.description : '' %></textarea>
+
+      <label>
+        Job Category
+        <input
+          type="text"
+          name="jobCategory"
+          value="<%= job && job.jobCategory ? job.jobCategory : '' %>"
+          placeholder="e.g. Hybrid, On-site or Remote"
+        >
       </label>
+
+      <label>
+        Job Type
+        <input
+          type="text"
+          name="jobType"
+          value="<%= job && job.jobType ? job.jobType : '' %>"
+          placeholder="e.g. Full Time, Part Time or Internship"
+        >
+      </label>
+
+      <label>
+        Job Summary
+        <textarea
+          name="description"
+          rows="5"
+          required
+          placeholder="Provide a short overview of the role."
+        ><%= job ? job.description : '' %></textarea>
+      </label>
+
+      <label>
+        Duties and Responsibilities
+        <textarea
+          name="responsibilities"
+          rows="10"
+          placeholder="Enter one responsibility per line."
+        ><%= job && job.responsibilities ? job.responsibilities : '' %></textarea>
+      </label>
+
+      <label>
+        Educational &amp; Professional Qualifications
+        <textarea
+          name="qualifications"
+          rows="6"
+          placeholder="Enter one qualification per line."
+        ><%= job && job.qualifications ? job.qualifications : '' %></textarea>
+      </label>
+
+      <label>
+        Experience
+        <textarea
+          name="experience"
+          rows="5"
+          placeholder="Enter one experience requirement per line."
+        ><%= job && job.experience ? job.experience : '' %></textarea>
+      </label>
+
+      <label>
+        Competency Requirements
+        <textarea
+          name="competencies"
+          rows="8"
+          placeholder="Enter one competency per line."
+        ><%= job && job.competencies ? job.competencies : '' %></textarea>
+      </label>
+
       <label>Application Deadline
         <input type="date" name="deadline" value="<%= job && job.deadline ? job.deadline.toISOString().slice(0,10) : '' %>">
       </label>

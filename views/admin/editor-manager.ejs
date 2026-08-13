@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Editor Management</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="/css/admin/editor-manager.css"
+  >
+
+</head>
+
+
+<body>
+
+  <header class="site-header">
+
+    <div class="nav-wrap">
+
+      <a
+        href="/admin/dashboard"
+        class="logo"
+      >
+        AssetCo Admin
+      </a>
+
+
+      <form
+        action="/auth/logout"
+        method="POST"
+      >
+
+        <input
+          type="hidden"
+          name="_csrf"
+          value="<%= csrfToken %>"
+        >
+
+        <button
+          class="btn-nav"
+          type="submit"
+        >
+          Log Out
+        </button>
+
+      </form>
+
+    </div>
+
+  </header>
+
+
+  <main class="editor-admin-page">
+
+    <div class="editor-admin-shell">
+
+
+      <!-- =====================================================
+           PAGE HEADER
+      ====================================================== -->
+
+      <div class="editor-admin-heading">
+
+        <div>
+
+          <span class="editor-admin-eyebrow">
+            Administration
+          </span>
+
+          <h1>
+            Editor Management
+          </h1>
+
+          <p>
+            Create and manage accounts that can maintain
+            public website content.
+          </p>
+
+        </div>
+
+
+        <a
+          href="/admin/dashboard"
+          class="editor-back-link"
+        >
+          &larr; Back to Dashboard
+        </a>
+
+      </div>
+
+
+
+      <!-- =====================================================
+           SUCCESS / ERROR MESSAGES
+      ====================================================== -->
+
+      <% if (success) { %>
+
+        <div
+          class="editor-alert editor-alert-success"
+          role="status"
+        >
+          <%= success %>
+        </div>
+
+      <% } %>
+
+
+      <% if (error) { %>
+
+        <div
+          class="editor-alert editor-alert-error"
+          role="alert"
+        >
+          <%= error %>
+        </div>
+
+      <% } %>
+
+
+
+      <!-- =====================================================
+           CREATE EDITOR
+      ====================================================== -->
+
+      <section class="editor-create-card">
+
+        <div class="editor-section-heading">
+
+          <h2>
+            Create Editor
+          </h2>
+
+          <p>
+            Editors can manage public website content,
+            but they cannot access sensitive administration
+            records or Editor management.
+          </p>
+
+        </div>
+
+
+        <form
+          action="/admin/editors"
+          method="POST"
+          class="editor-create-form"
+        >
+
+          <input
+            type="hidden"
+            name="_csrf"
+            value="<%= csrfToken %>"
+          >
+
+
+          <label>
+
+            Email Address
+
+            <input
+              type="email"
+              name="email"
+              maxlength="254"
+              autocomplete="email"
+              required
+            >
+
+          </label>
+
+
+          <label>
+
+            Temporary Password
+
+            <input
+              type="password"
+              name="password"
+              minlength="14"
+              maxlength="128"
+              autocomplete="new-password"
+              required
+            >
+
+          </label>
+
+
+          <label>
+
+            Confirm Password
+
+            <input
+              type="password"
+              name="confirmPassword"
+              minlength="14"
+              maxlength="128"
+              autocomplete="new-password"
+              required
+            >
+
+          </label>
+
+
+          <button
+            type="submit"
+            class="editor-primary-button"
+          >
+            Create Editor
+          </button>
+
+        </form>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           EXISTING EDITORS
+      ====================================================== -->
+
+      <section class="editor-list-section">
+
+        <div class="editor-section-heading">
+
+          <h2>
+            Editor Accounts
+          </h2>
+
+          <p>
+            <%= editors.length %>
+            <%= editors.length === 1
+              ? 'account'
+              : 'accounts'
+            %>
+          </p>
+
+        </div>
+
+
+        <% if (editors.length === 0) { %>
+
+          <div class="editor-empty-state">
+
+            <h3>
+              No Editor accounts
+            </h3>
+
+            <p>
+              Create the first Editor account using
+              the form above.
+            </p>
+
+          </div>
+
+        <% } %>
+
+
+
+        <div class="editor-account-list">
+
+          <% editors.forEach(function(editor) {
+
+            const currentlyLocked =
+              Boolean(
+                editor.lockedUntil &&
+                new Date(
+                  editor.lockedUntil
+                ) > new Date()
+              );
+
+          %>
+
+
+            <article class="editor-account-card">
+
+
+              <!-- =============================================
+                   ACCOUNT SUMMARY
+              ============================================== -->
+
+              <div class="editor-account-summary">
+
+                <div>
+
+                  <h3>
+                    <%= editor.email %>
+                  </h3>
+
+
+                  <div class="editor-account-badges">
+
+                    <span class="editor-role-badge">
+                      Editor
+                    </span>
+
+
+                    <span
+                      class="editor-status-badge <%= editor.isActive ? 'is-active' : 'is-inactive' %>"
+                    >
+                      <%= editor.isActive
+                        ? 'Active'
+                        : 'Inactive'
+                      %>
+                    </span>
+
+
+                    <% if (currentlyLocked) { %>
+
+                      <span class="editor-lock-badge">
+                        Locked
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+                </div>
+
+
+                <div class="editor-account-meta">
+
+                  <span>
+                    Last Login
+                  </span>
+
+                  <strong>
+
+                    <%= editor.lastLoginAt
+                      ? new Intl.DateTimeFormat(
+                          'en-GB',
+                          {
+                            dateStyle: 'medium',
+                            timeStyle: 'short'
+                          }
+                        ).format(
+                          new Date(
+                            editor.lastLoginAt
+                          )
+                        )
+                      : 'Never'
+                    %>
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- =============================================
+                   ACTIONS
+              ============================================== -->
+
+              <div class="editor-account-actions">
+
+
+                <!-- ACTIVATE / DEACTIVATE -->
+
+                <form
+                  action="/admin/editors/<%= editor.id %>/status"
+                  method="POST"
+                >
+
+                  <input
+                    type="hidden"
+                    name="_csrf"
+                    value="<%= csrfToken %>"
+                  >
+
+                  <input
+                    type="hidden"
+                    name="status"
+                    value="<%= editor.isActive ? 'inactive' : 'active' %>"
+                  >
+
+
+                  <button
+                    type="submit"
+                    class="<%= editor.isActive ? 'editor-danger-button' : 'editor-secondary-button' %>"
+                  >
+                    <%= editor.isActive
+                      ? 'Deactivate'
+                      : 'Reactivate'
+                    %>
+                  </button>
+
+                </form>
+
+
+
+                <!-- UNLOCK -->
+
+                <% if (
+                  currentlyLocked ||
+                  editor.failedLogins > 0
+                ) { %>
+
+                  <form
+                    action="/admin/editors/<%= editor.id %>/unlock"
+                    method="POST"
+                  >
+
+                    <input
+                      type="hidden"
+                      name="_csrf"
+                      value="<%= csrfToken %>"
+                    >
+
+
+                    <button
+                      type="submit"
+                      class="editor-secondary-button"
+                    >
+                      Unlock Account
+                    </button>
+
+                  </form>
+
+                <% } %>
+
+
+
+                <!-- PASSWORD RESET -->
+
+                <details class="editor-password-panel">
+
+                  <summary>
+                    Reset Password
+                  </summary>
+
+
+                  <form
+                    action="/admin/editors/<%= editor.id %>/password"
+                    method="POST"
+                    class="editor-password-form"
+                  >
+
+                    <input
+                      type="hidden"
+                      name="_csrf"
+                      value="<%= csrfToken %>"
+                    >
+
+
+                    <label>
+
+                      New Password
+
+                      <input
+                        type="password"
+                        name="password"
+                        minlength="14"
+                        maxlength="128"
+                        autocomplete="new-password"
+                        required
+                      >
+
+                    </label>
+
+
+                    <label>
+
+                      Confirm Password
+
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        minlength="14"
+                        maxlength="128"
+                        autocomplete="new-password"
+                        required
+                      >
+
+                    </label>
+
+
+                    <button
+                      type="submit"
+                      class="editor-primary-button"
+                    >
+                      Update Password
+                    </button>
+
+                  </form>
+
+                </details>
+
+
+              </div>
+
+            </article>
+
+          <% }); %>
+
+        </div>
+
+      </section>
+
+
+    </div>
+
+  </main>
+
+</body>
+
+</html>

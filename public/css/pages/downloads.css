@@ -1,0 +1,540 @@
+/* ============================================================
+   STI ASSETS MANAGEMENT
+   DAILY MARKET DIGEST PAGE
+============================================================ */
+
+
+/* ============================================================
+   DOWNLOADS HERO
+============================================================ */
+
+.downloads-page-hero {
+  --hero-bg-image:
+    url(
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80"
+    );
+}
+
+.downloads-page-hero
+  .inner-page-hero-inner {
+  max-width: 850px;
+}
+
+.downloads-page-hero p {
+  max-width: 760px;
+}
+
+/* ============================================================
+   DOWNLOADS HERO ENTRANCE
+============================================================ */
+
+.downloads-page-hero
+  .hero-eyebrow {
+  animation:
+    downloads-hero-enter 620ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    80ms both;
+}
+
+.downloads-page-hero h1 {
+  animation:
+    downloads-hero-enter 680ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    160ms both;
+}
+
+.downloads-page-hero p {
+  animation:
+    downloads-hero-enter 680ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    240ms both;
+}
+
+@keyframes downloads-hero-enter {
+  from {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0);
+  }
+}
+
+/* ============================================================
+   DOWNLOADS HERO REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .downloads-page-hero
+    .hero-eyebrow,
+
+  .downloads-page-hero h1,
+
+  .downloads-page-hero p {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   WEEKLY DIGEST SECTION
+============================================================ */
+
+.downloads-section {
+  width: 100%;
+  max-width: none;
+
+  padding:
+    clamp(72px, 8vw, 104px)
+    20px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      #ffffff 100%
+    );
+}
+
+.downloads-shell {
+  width: 100%;
+  max-width: var(--max-width);
+
+  margin: 0 auto;
+}
+
+/* ============================================================
+   DIGEST GRID
+============================================================ */
+
+.downloads-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr);
+
+  gap: 18px;
+
+  width: 100%;
+}
+
+/* ============================================================
+   DIGEST CARD
+============================================================ */
+
+.downloads-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+  min-height: 285px;
+
+  padding: 22px;
+
+  background: #ffffff;
+
+  border:
+    1px solid rgba(3, 54, 105, 0.09);
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 12px 32px
+    rgba(3, 54, 105, 0.05);
+
+  overflow: hidden;
+
+  transition:
+    transform 260ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    border-color 260ms ease,
+
+    box-shadow 260ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ============================================================
+   DIGEST DAY LABEL
+============================================================ */
+
+.downloads-card-header {
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 30px;
+}
+
+.downloads-day {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 28px;
+
+  padding:
+    6px 11px;
+
+  color: var(--color-primary);
+
+  background:
+    rgba(3, 54, 105, 0.06);
+
+  border-radius: 999px;
+
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   DIGEST CONTENT
+============================================================ */
+
+.downloads-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap: 18px;
+
+  min-width: 0;
+
+  margin-bottom: 28px;
+}
+
+.downloads-icon-frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 46px;
+
+  color: var(--color-accent);
+
+  background:
+    rgba(246, 134, 52, 0.09);
+
+  border-radius: 14px;
+
+  flex: 0 0 auto;
+}
+
+.downloads-icon-frame
+  .ui-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.downloads-card-copy {
+  min-width: 0;
+}
+
+.downloads-card-copy h3 {
+  margin:
+    0 0 8px;
+
+  color: var(--color-primary);
+
+  font-size: 0.98rem;
+  font-weight: 750;
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
+}
+
+.downloads-card-copy p {
+  margin: 0;
+
+  color: var(--color-text-muted);
+
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   DOWNLOAD ACTION
+============================================================ */
+
+.downloads-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  width: 100%;
+
+  margin-top: auto;
+
+  padding:
+    12px 15px;
+
+  color: #ffffff;
+
+  background:
+    var(--color-accent);
+
+  border:
+    1px solid
+    var(--color-accent);
+
+  border-radius: 12px;
+
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.3;
+
+  text-decoration: none;
+
+  transition:
+    background-color 240ms ease,
+
+    border-color 240ms ease,
+
+    box-shadow 240ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.downloads-btn
+  .ui-icon {
+  width: 18px;
+  height: 18px;
+
+  flex: 0 0 auto;
+
+  transition:
+    translate 240ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .downloads-card.is-available:hover {
+    transform:
+      translateY(-4px);
+
+    border-color:
+      rgba(246, 134, 52, 0.28);
+
+    box-shadow:
+      0 18px 44px
+      rgba(3, 54, 105, 0.09);
+  }
+
+  .downloads-btn:hover {
+    background: #e97827;
+
+    border-color: #e97827;
+
+    box-shadow:
+      0 9px 20px
+      rgba(246, 134, 52, 0.2);
+  }
+
+  .downloads-btn:hover
+    .ui-icon {
+    translate: 3px 0;
+  }
+}
+
+/* ============================================================
+   UNAVAILABLE DIGEST
+============================================================ */
+
+.downloads-card.is-unavailable {
+  background: #f8fafc;
+
+  border-color:
+    rgba(3, 54, 105, 0.065);
+
+  box-shadow: none;
+}
+
+.downloads-card.is-unavailable
+  .downloads-day {
+  color:
+    var(--color-text-muted);
+
+  background:
+    rgba(91, 107, 120, 0.07);
+}
+
+.downloads-icon-frame-muted {
+  color: #83919c;
+
+  background:
+    rgba(91, 107, 120, 0.075);
+}
+
+.downloads-btn-disabled {
+  color: #7d8b96;
+
+  background: transparent;
+
+  border:
+    1px solid rgba(3, 54, 105, 0.12);
+
+  cursor: default;
+}
+/* ============================================================
+   TABLET
+============================================================ */
+
+@media (min-width: 560px) {
+  .downloads-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+@media (min-width: 820px) {
+  .downloads-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* ============================================================
+   DESKTOP
+============================================================ */
+
+@media (min-width: 1100px) {
+  .downloads-grid {
+    grid-template-columns:
+      repeat(5, minmax(0, 1fr));
+  }
+
+  .downloads-card {
+    padding: 20px;
+
+    min-height: 300px;
+  }
+}
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 559px) {
+  .downloads-section {
+    padding:
+      64px 16px;
+  }
+  .downloads-card {
+    min-height: 0;
+
+    padding: 20px;
+
+    border-radius: 17px;
+  }
+
+  .downloads-card-header {
+    margin-bottom: 24px;
+  }
+
+  .downloads-card-content {
+    margin-bottom: 24px;
+  }
+}
+
+
+@media (max-width: 360px) {
+  .downloads-section {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+}
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 559px) {
+  .downloads-section {
+    padding:
+      64px 16px;
+  }
+
+  .downloads-card {
+    min-height: 0;
+
+    padding: 20px;
+
+    border-radius: 17px;
+  }
+
+  .downloads-card-header {
+    margin-bottom: 24px;
+  }
+
+  .downloads-card-content {
+    margin-bottom: 24px;
+  }
+}
+
+
+@media (max-width: 360px) {
+  .downloads-section {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+}
+
+/* ============================================================
+   DOWNLOADS SCROLL REVEALS
+============================================================ */
+
+.downloads-reveal {
+  opacity: 0;
+
+  translate:
+    0 22px;
+
+  transition:
+    opacity 660ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    translate 660ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+
+  transition-delay:
+    var(--reveal-delay, 0ms);
+
+  will-change:
+    opacity,
+    translate;
+}
+
+.downloads-reveal.is-visible {
+  opacity: 1;
+
+  translate:
+    0 0;
+}
+
+
+/* ============================================================
+   DOWNLOADS REVEAL REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .downloads-reveal {
+    opacity: 1;
+
+    translate: none;
+
+    transition: none;
+
+    will-change: auto;
+  }
+}

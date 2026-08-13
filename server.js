@@ -626,7 +626,13 @@ app.use(
       '404',
       {
         title:
-          'Page Not Found'
+          'Page Not Found',
+
+        description:
+          'The page you requested could not be found on the STI Assets Management website.',
+
+        robots:
+          'noindex,follow'
       }
     );
   }
@@ -718,7 +724,13 @@ app.use(
       '500',
       {
         title:
-          'Server Error'
+          'Server Error',
+
+        description:
+          'An unexpected error occurred while processing your request.',
+
+        robots:
+          'noindex,nofollow'
       }
     );
   }
