@@ -16,6 +16,12 @@ const {
 );
 
 const {
+  sendNewsletterNotification
+} = require(
+  '../services/email.service'
+);
+
+const {
   cleanText,
   isHoneypotTriggered,
   isValidEmail
@@ -138,6 +144,31 @@ router.post(
         email
       }
     });
+
+
+    /*
+     * The subscription has already been stored successfully.
+     *
+     * Email notification failure must never undo or reject the
+     * valid subscription.
+     */
+    try {
+      await sendNewsletterNotification({
+        email
+      });
+    } catch (error) {
+      req.log.error(
+        {
+          err:
+            error,
+
+          subscriberEmail:
+            email
+        },
+
+        'Newsletter notification email failed'
+      );
+    }
 
     return safeRedirectBack(
       req,

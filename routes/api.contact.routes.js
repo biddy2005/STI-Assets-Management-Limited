@@ -158,12 +158,6 @@ try {
   );
 }
 
-    /*
-     * Email notification will be integrated later.
-     *
-     * The database record should be saved successfully before
-     * attempting any notification email.
-     */
 
     return res.redirect(
       '/contact?success=1'

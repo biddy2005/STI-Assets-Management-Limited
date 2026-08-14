@@ -59,7 +59,6 @@ function buildAdminApplicationsUrl() {
  * skipped result rather than throwing an error.
  */
 async function sendNotificationEmail({
-  replyTo,
   subject,
   text
 }) {
@@ -85,13 +84,10 @@ async function sendNotificationEmail({
        * mailbox.
        */
       from:
-        smtpUser,
+       `STI Assets Management Website <${smtpUser}>`,
 
       to:
         notificationRecipient,
-
-      replyTo:
-        replyTo || undefined,
 
       subject:
         cleanEmailSubject(
@@ -138,11 +134,8 @@ async function sendContactNotification({
       : 'New website contact message';
 
   return sendNotificationEmail({
-    replyTo:
-      email,
-
-    subject:
-      notificationSubject,
+  subject:
+    notificationSubject,
 
     text: [
       'A new contact message was submitted through the website.',
@@ -199,10 +192,7 @@ async function sendJobApplicationNotification({
     );
   }
 
-  return sendNotificationEmail({
-    replyTo:
-      email,
-
+    return sendNotificationEmail({
     subject:
       `New job application: ${jobTitle}`,
 
@@ -211,7 +201,27 @@ async function sendJobApplicationNotification({
   });
 }
 
+/**
+ * Sends an internal notification when someone submits the
+ * website newsletter subscription form.
+ */
+async function sendNewsletterNotification({
+  email
+}) {
+  return sendNotificationEmail({
+    subject:
+      'New website newsletter subscription',
+
+    text: [
+      'A new newsletter subscription was submitted through the website.',
+      '',
+      `Subscriber email: ${email}`
+    ].join('\n')
+  });
+}
+
 module.exports = {
   sendContactNotification,
-  sendJobApplicationNotification
+  sendJobApplicationNotification,
+  sendNewsletterNotification
 };

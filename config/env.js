@@ -7,6 +7,12 @@ const allowedNodeEnvironments =
     'production'
   ]);
 
+const allowedStorageDrivers =
+  new Set([
+    'local',
+    'r2'
+  ]);
+
 const allowedLogLevels =
   new Set([
     'fatal',
@@ -253,6 +259,223 @@ if (
   );
 }
 
+/*
+ * ============================================================
+ * FILE / OBJECT STORAGE
+ * ============================================================
+ *
+ * Development and automated tests may use the local
+ * filesystem.
+ *
+ * Production will use Cloudflare R2 so uploaded files survive
+ * application redeployments and do not depend on one server's
+ * filesystem.
+ */
+
+const storageDriver =
+  readTrimmedEnvironmentValue(
+    'STORAGE_DRIVER'
+  ) ||
+  'local';
+
+
+if (
+  !allowedStorageDrivers.has(
+    storageDriver
+  )
+) {
+  throw new Error(
+    'STORAGE_DRIVER must be either local or r2.'
+  );
+}
+
+
+/*
+ * Cloudflare R2 S3-compatible endpoint.
+ *
+ * Example:
+ *
+ * https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+ */
+const r2Endpoint =
+  readTrimmedEnvironmentValue(
+    'R2_ENDPOINT'
+  );
+
+
+const r2AccessKeyId =
+  readTrimmedEnvironmentValue(
+    'R2_ACCESS_KEY_ID'
+  );
+
+
+/*
+ * Do not trim the secret key.
+ *
+ * Credentials should be treated as opaque values rather than
+ * modified by application code.
+ */
+const r2SecretAccessKey =
+  typeof process.env
+    .R2_SECRET_ACCESS_KEY ===
+    'string'
+    ? process.env
+        .R2_SECRET_ACCESS_KEY
+    : '';
+
+
+const r2PublicBucket =
+  readTrimmedEnvironmentValue(
+    'R2_PUBLIC_BUCKET'
+  );
+
+
+const r2PrivateBucket =
+  readTrimmedEnvironmentValue(
+    'R2_PRIVATE_BUCKET'
+  );
+
+
+/*
+ * Remove trailing slashes so later code can safely construct:
+ *
+ * `${r2PublicBaseUrl}/${objectKey}`
+ *
+ * without creating double slashes.
+ */
+const r2PublicBaseUrl =
+  readTrimmedEnvironmentValue(
+    'R2_PUBLIC_BASE_URL'
+  ).replace(
+    /\/+$/,
+    ''
+  );
+
+
+/*
+ * R2 credentials are required only when the R2 storage driver
+ * is enabled.
+ *
+ * This allows development and automated tests to continue
+ * using local filesystem storage without Cloudflare
+ * credentials.
+ */
+if (
+  storageDriver ===
+    'r2'
+) {
+  const missingR2Variables =
+    [];
+
+
+  if (!r2Endpoint) {
+    missingR2Variables.push(
+      'R2_ENDPOINT'
+    );
+  }
+
+
+  if (!r2AccessKeyId) {
+    missingR2Variables.push(
+      'R2_ACCESS_KEY_ID'
+    );
+  }
+
+
+  if (!r2SecretAccessKey) {
+    missingR2Variables.push(
+      'R2_SECRET_ACCESS_KEY'
+    );
+  }
+
+
+  if (!r2PublicBucket) {
+    missingR2Variables.push(
+      'R2_PUBLIC_BUCKET'
+    );
+  }
+
+
+  if (!r2PrivateBucket) {
+    missingR2Variables.push(
+      'R2_PRIVATE_BUCKET'
+    );
+  }
+
+
+  if (!r2PublicBaseUrl) {
+    missingR2Variables.push(
+      'R2_PUBLIC_BASE_URL'
+    );
+  }
+
+
+  if (
+    missingR2Variables.length >
+    0
+  ) {
+    throw new Error(
+      `Missing R2 configuration: ${missingR2Variables.join(', ')}`
+    );
+  }
+
+
+  /*
+   * Validate the R2 API endpoint.
+   */
+  let parsedR2Endpoint;
+
+
+  try {
+    parsedR2Endpoint =
+      new URL(
+        r2Endpoint
+      );
+  } catch (error) {
+    throw new Error(
+      'R2_ENDPOINT must be a valid absolute URL.'
+    );
+  }
+
+
+  if (
+    parsedR2Endpoint.protocol !==
+      'https:'
+  ) {
+    throw new Error(
+      'R2_ENDPOINT must use HTTPS.'
+    );
+  }
+
+
+  /*
+   * Validate the public browser-facing asset URL.
+   */
+  let parsedPublicBaseUrl;
+
+
+  try {
+    parsedPublicBaseUrl =
+      new URL(
+        r2PublicBaseUrl
+      );
+  } catch (error) {
+    throw new Error(
+      'R2_PUBLIC_BASE_URL must be a valid absolute URL.'
+    );
+  }
+
+
+  if (
+    parsedPublicBaseUrl.protocol !==
+      'https:'
+  ) {
+    throw new Error(
+      'R2_PUBLIC_BASE_URL must use HTTPS.'
+    );
+  }
+}
+
 module.exports = {
   nodeEnv,
   isProduction,
@@ -267,5 +490,12 @@ module.exports = {
   smtpPass,
   notifyEmail,
   mailerConfigured,
-  logLevel
+  logLevel,
+  storageDriver,
+  r2Endpoint,
+  r2AccessKeyId,
+  r2SecretAccessKey,
+  r2PublicBucket,
+  r2PrivateBucket,
+  r2PublicBaseUrl
 };

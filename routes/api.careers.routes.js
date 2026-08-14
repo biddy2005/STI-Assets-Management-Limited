@@ -59,9 +59,6 @@ async function hasValidPdfSignature(
 ) {
   let fileHandle;
 
-  let selectedJob;
-  let createdApplication;
-
   try {
     fileHandle =
       await fs.open(
@@ -402,6 +399,15 @@ router.post(
      * Keep this local try/catch because the résumé must be
      * removed when a database operation fails.
      */
+
+    /*
+     * These values belong only to this application request.
+     *
+     * They are later used for the notification email after the
+     * database record has been created successfully.
+     */
+    let selectedJob;
+    let createdApplication;
     try {
       /*
        * Confirm that the selected job still exists and is

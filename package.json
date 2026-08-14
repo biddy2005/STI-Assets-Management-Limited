@@ -9,6 +9,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "email:test": "node --use-system-ca scripts/verify-email.js",
     "check:syntax": "node scripts/check-syntax.js",
     "test": "node --env-file-if-exists=.env.test --test --test-concurrency=1",
     "test:db:migrate": "node scripts/migrate-test-db.js",
