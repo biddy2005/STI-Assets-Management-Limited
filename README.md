@@ -12,7 +12,7 @@ Express test run.
 
 ## 1. Prerequisites (install these first)
 
-1. **Node.js LTS** — download from https://nodejs.org (v20 or v22). Verify:
+1. **Node.js 24** — this project currently targets Node.js 24. Verify: Verify:
    ```
    node -v
    npm -v
@@ -56,8 +56,8 @@ Open `.env` and fill in:
 With `DATABASE_URL` set in `.env`, run:
 
 ```bash
-npx prisma generate
-npx prisma migrate dev --name init
+npm run prisma:generate
+npm run prisma:migrate:deploy
 ```
 
 This creates every table defined in `prisma/schema.prisma` (NewsArticle, JobPosting, FAQ, etc.).
@@ -68,9 +68,9 @@ Then seed your first admin login:
 node prisma/seed.js
 ```
 
-This prints an email/password to the terminal — use it to log in at `/admin/login`, and
-**change the password immediately** (we'll build the "change password" screen in the admin
-panel phase).
+The seed reads `INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD` from `.env`.
+It creates the initial SUPERADMIN only when that email does not already exist.
+The password itself is never printed or stored in source code.
 
 Optional: run `npx prisma studio` any time to view/edit your database in a browser GUI.
 
@@ -203,4 +203,3 @@ Only do this if you already have a bcrypt hash ready (e.g. generated with `bcryp
 ### Notes
 
 - Never store a plain-text password in the database — always hash it with `bcrypt` first, as shown above.
-- The default seeded account (`admin@assetco.com` / `ChangeMe123!`) should be changed before deploying this site anywhere public.

@@ -30,3 +30,6 @@ build/
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Local release archives
+*.zip

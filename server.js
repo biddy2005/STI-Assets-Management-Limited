@@ -475,6 +475,13 @@ sessionStore.on(
   }
 );
 
+/*
+ * Expose the store internally so automated integration tests
+ * can close its PostgreSQL connection cleanly.
+ */
+app.locals.sessionStore =
+  sessionStore;
+
 app.use(
   session({
     name:
@@ -740,6 +747,19 @@ app.use(
 // SERVER STARTUP
 // ============================================================
 
+/*
+ * Start the HTTP server only when server.js is executed
+ * directly.
+ *
+ * Integration tests can therefore require this file and test
+ * the Express application without opening the normal
+ * application port.
+ */
+if (
+  require.main ===
+  module
+) {
+
 const PORT =
   env.port;
 
@@ -935,3 +955,14 @@ process.on(
     );
   }
 );
+}
+
+
+/*
+ * Export the Express application for integration tests.
+ *
+ * Running `node server.js` still starts the normal server
+ * because require.main === module in that situation.
+ */
+module.exports =
+  app;

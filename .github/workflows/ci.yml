@@ -24,6 +24,8 @@ env:
   APP_BASE_URL: http://127.0.0.1:3000
   DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/asset_mgmt_test
   SESSION_SECRET: ci-only-session-secret-never-use-this-value-outside-github-actions-1234567890abcdef
+  INITIAL_ADMIN_EMAIL: ci-superadmin@example.com
+  INITIAL_ADMIN_PASSWORD: "CI-only-Strong-Administrator-Password-2026!"
   LOG_LEVEL: silent
 
 jobs:
@@ -76,11 +78,19 @@ jobs:
       - name: Check JavaScript and Prisma schema
         run: npm run check
 
+      - name: Run automated tests
+        run: npm test
+
       - name: Apply database migrations
         run: npm run prisma:migrate:deploy
 
       - name: Check migration status
         run: npm run prisma:migrate:status
+
+      - name: Verify initial administrator seed
+        run: |
+          node prisma/seed.js
+          node prisma/seed.js
 
       - name: Start application and run smoke tests
         shell: bash
