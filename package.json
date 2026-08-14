@@ -25,6 +25,7 @@
     "security:audit": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1110.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "bcrypt": "^6.0.0",
