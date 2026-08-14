@@ -37,7 +37,10 @@ const allowedApplicationStatuses =
   ]);
 
 const {
-  resumeDirectory
+  resumeDirectory,
+  digestUploadDirectory,
+  newsUploadDirectory,
+  rateGuideUploadDirectory
 } = require('../config/storage');
 const { DAY_ORDER, DAY_LABELS, getActiveWeekRange, getDateForDay } = require('../utils/digestWeek');
 const { slugify } = require('../utils/slugify');
@@ -156,31 +159,6 @@ async function renderEditorManager(
 
 }
 
-/*
- * Physical folders used for public digest and news uploads.
- *
- * Using constants prevents us from repeating the complete
- * folder path throughout the route file.
- */
-const digestUploadDirectory =
-  path.join(
-    __dirname,
-    '../public/uploads/digests'
-  );
-
-
-const newsUploadDirectory =
-  path.join(
-    __dirname,
-    '../public/uploads/news'
-  );
-
-
-const rateGuideUploadDirectory =
-  path.join(
-    __dirname,
-    '../public/uploads/rate-guide'
-  );
 
   /*
  * Only these image formats are accepted for news cover and

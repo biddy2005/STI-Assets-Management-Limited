@@ -1,30 +1,92 @@
-const fs = require('fs');
-const path = require('path');
+const fs =
+  require('fs');
+
+const path =
+  require('path');
+
 
 /*
- * This folder is outside the public directory.
- *
- * Express only exposes files inside /public, so files stored
- * here cannot be accessed using a normal public URL.
+ * ============================================================
+ * PRIVATE STORAGE
+ * ============================================================
  */
-const resumeDirectory = path.join(
-  __dirname,
-  '..',
-  'storage',
-  'private',
-  'resumes'
+
+const resumeDirectory =
+  path.join(
+    __dirname,
+    '..',
+    'storage',
+    'private',
+    'resumes'
+  );
+
+
+/*
+ * ============================================================
+ * PUBLIC UPLOAD STORAGE
+ * ============================================================
+ */
+
+const publicUploadDirectory =
+  path.join(
+    __dirname,
+    '..',
+    'public',
+    'uploads'
+  );
+
+
+const digestUploadDirectory =
+  path.join(
+    publicUploadDirectory,
+    'digests'
+  );
+
+
+const newsUploadDirectory =
+  path.join(
+    publicUploadDirectory,
+    'news'
+  );
+
+
+const rateGuideUploadDirectory =
+  path.join(
+    publicUploadDirectory,
+    'rate-guide'
+  );
+
+
+/*
+ * These directories are intentionally ignored by Git.
+ *
+ * Create them when the application starts so a clean checkout,
+ * CI environment or new deployment can accept uploads.
+ */
+const requiredStorageDirectories =
+  [
+    resumeDirectory,
+    digestUploadDirectory,
+    newsUploadDirectory,
+    rateGuideUploadDirectory
+  ];
+
+
+requiredStorageDirectories.forEach(
+  (directory) => {
+    fs.mkdirSync(
+      directory,
+      {
+        recursive: true
+      }
+    );
+  }
 );
 
-/*
- * Create the folder automatically when the application starts.
- *
- * recursive: true means Node will create all missing parent
- * folders, including storage/private/resumes.
- */
-fs.mkdirSync(resumeDirectory, {
-  recursive: true
-});
 
 module.exports = {
-  resumeDirectory
+  resumeDirectory,
+  digestUploadDirectory,
+  newsUploadDirectory,
+  rateGuideUploadDirectory
 };
