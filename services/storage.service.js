@@ -246,6 +246,48 @@ async function r2BodyToBuffer(
   );
 }
 
+/**
+ * Create one provider-independent not-found error.
+ *
+ * Routes should not need to know whether the missing file came
+ * from the local filesystem or Cloudflare R2.
+ */
+function createStorageFileNotFoundError() {
+  const error =
+    new Error(
+      'The stored file could not be found.'
+    );
+
+  error.code =
+    'STORAGE_FILE_NOT_FOUND';
+
+  return error;
+}
+
+
+/**
+ * Detect the normal R2/S3 not-found response.
+ */
+function isR2MissingObjectError(
+  error
+) {
+  return Boolean(
+    error &&
+    (
+      error.name ===
+        'NoSuchKey' ||
+
+      error.Code ===
+        'NoSuchKey' ||
+
+      Number(
+        error.$metadata
+          ?.httpStatusCode
+      ) === 404
+    )
+  );
+}
+
 
 /**
  * Write one local file.
@@ -625,10 +667,25 @@ async function getPrivateFile({
       );
 
 
-    const body =
-      await fs.readFile(
-        localPath
-      );
+ let body;
+
+
+    try {
+      body =
+        await fs.readFile(
+          localPath
+        );
+    } catch (error) {
+      if (
+        error.code ===
+          'ENOENT'
+      ) {
+        throw createStorageFileNotFoundError();
+      }
+
+
+      throw error;
+    }
 
 
     return {
@@ -657,13 +714,29 @@ async function getPrivateFile({
     `${privateResumeObjectPrefix}/${key}`;
 
 
-  const object =
-    await getR2Object({
-      visibility:
-        'private',
+    let object;
 
-    objectKey
-  });
+
+  try {
+    object =
+      await getR2Object({
+        visibility:
+          'private',
+
+        objectKey
+      });
+  } catch (error) {
+    if (
+      isR2MissingObjectError(
+        error
+      )
+    ) {
+      throw createStorageFileNotFoundError();
+    }
+
+
+    throw error;
+  }
 
 
   const body =

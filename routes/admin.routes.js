@@ -37,11 +37,19 @@ const allowedApplicationStatuses =
   ]);
 
 const {
-  resumeDirectory,
   digestUploadDirectory,
   newsUploadDirectory,
   rateGuideUploadDirectory
-} = require('../config/storage');
+} = require(
+  '../config/storage'
+);
+
+const {
+  getPrivateFile,
+  deletePrivateFile
+} = require(
+  '../services/storage.service'
+);
 const { DAY_ORDER, DAY_LABELS, getActiveWeekRange, getDateForDay } = require('../utils/digestWeek');
 const { slugify } = require('../utils/slugify');
 const {
@@ -4056,10 +4064,14 @@ router.get(
 );
 
 /*
- * Download an applicant's résumé.
+ * Download an applicant's private résumé.
  *
- * Everything in admin.routes.js after router.use(requireAuth)
- * already requires an authenticated administrator.
+ * Only SUPERADMIN accounts can reach this route.
+ *
+ * storage.service.js decides whether the file comes from:
+ *
+ * - storage/private/resumes when STORAGE_DRIVER=local
+ * - private Cloudflare R2 when STORAGE_DRIVER=r2
  */
 router.get(
   '/applications/:id/resume',
@@ -4067,14 +4079,18 @@ router.get(
 
   asyncHandler(async (
     req,
-    res,
-    next
+    res
   ) => {
     const applicationId =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
+
 
     if (
-      !Number.isInteger(applicationId) ||
+      !Number.isInteger(
+        applicationId
+      ) ||
       applicationId < 1
     ) {
       return res.status(400).send(
@@ -4082,12 +4098,17 @@ router.get(
       );
     }
 
+
     const application =
-      await prisma.jobApplication.findUnique({
-        where: {
-          id: applicationId
-        }
-      });
+      await prisma
+        .jobApplication
+        .findUnique({
+          where: {
+            id:
+              applicationId
+          }
+        });
+
 
     if (!application) {
       return res.status(404).render(
@@ -4099,73 +4120,113 @@ router.get(
       );
     }
 
-    /*
-     * Use only the filename portion of the stored value.
-     * This prevents directory traversal.
-     */
-    const safeStorageName =
-      path.basename(
-        application.resumeStorageKey
-      );
-
-    const resumePath =
-      path.join(
-        resumeDirectory,
-        safeStorageName
-      );
 
     /*
-     * Confirm that the résumé still exists.
+     * Ask the storage abstraction for the résumé.
+     *
+     * The route no longer knows or cares whether the file is
+     * local or stored in Cloudflare R2.
      */
+    let storedResume;
+
+
     try {
-      await fs.access(resumePath);
-    } catch (fileError) {
+      storedResume =
+        await getPrivateFile({
+          storageKey:
+            application
+              .resumeStorageKey
+        });
+    } catch (error) {
+      /*
+       * storage.service.js converts both:
+       *
+       * local ENOENT
+       * R2 404 / NoSuchKey
+       *
+       * into one application-level error code.
+       */
       if (
-        fileError.code ===
-        'ENOENT'
+        error.code ===
+          'STORAGE_FILE_NOT_FOUND'
       ) {
         return res.status(404).send(
           'The résumé file could not be found.'
         );
       }
 
-      /*
-       * A permission or file-system error is unexpected.
-       * Throw it so asyncHandler forwards it to the global
-       * error handler.
-       */
-      throw fileError;
+
+      throw error;
     }
 
+
+    /*
+     * Applicant résumés contain private information and must
+     * not be cached by the browser or intermediary proxies.
+     */
     res.setHeader(
       'Cache-Control',
       'private, no-store, max-age=0'
     );
+
 
     res.setHeader(
       'Pragma',
       'no-cache'
     );
 
+
     res.setHeader(
       'X-Content-Type-Options',
       'nosniff'
     );
 
+
     /*
-     * res.download() uses a callback, so its callback error
-     * must still be passed manually to next(error).
+     * Preserve the applicant's original filename when the
+     * SUPERADMIN downloads the résumé.
+     *
+     * path.basename() prevents directory information from
+     * being included in Content-Disposition.
      */
-    return res.download(
-      resumePath,
-      application.resumeOriginalName,
-      (downloadError) => {
-        if (downloadError) {
-          return next(
-            downloadError
-          );
-        }
-      }
+    const downloadName =
+      path.basename(
+        application
+          .resumeOriginalName ||
+        'resume.pdf'
+      );
+
+
+    /*
+     * Tell the browser this should be downloaded rather than
+     * rendered as a normal website response.
+     */
+    res.attachment(
+      downloadName
+    );
+
+
+    /*
+     * Prefer the MIME type recorded when the application was
+     * originally accepted.
+     */
+    res.setHeader(
+      'Content-Type',
+
+      application
+        .resumeMimeType ||
+      storedResume
+        .contentType ||
+      'application/octet-stream'
+    );
+
+
+    /*
+     * The storage abstraction returns a Buffer regardless of
+     * whether its source was local disk or private R2.
+     */
+    return res.send(
+      storedResume.body
     );
   })
 );
@@ -4340,39 +4401,40 @@ await prisma.$transaction(
   }
 );
 
-    const safeStorageName =
-      path.basename(
-        application.resumeStorageKey
-      );
-
-    const resumePath =
-      path.join(
-        resumeDirectory,
-        safeStorageName
-      );
-
-    /*
-     * Keep this local catch.
+        /*
+     * The database deletion and audit event have already
+     * succeeded.
      *
-     * It handles the expected situation where the file has
-     * already been removed.
+     * Remove the applicant's résumé from whichever storage
+     * backend is currently configured:
+     *
+     * local → storage/private/resumes
+     * r2    → private Cloudflare R2
+     *
+     * A storage cleanup failure must not make the successful
+     * database deletion appear to have failed.
      */
     try {
-      await fs.unlink(resumePath);
-    } catch (fileError) {
-      if (
-        fileError.code !==
-        'ENOENT'
-      ) {
-        console.error(
-          'Application deleted, but résumé cleanup failed:',
-          {
-            applicationId,
-            resumePath,
-            error: fileError
-          }
-        );
-      }
+      await deletePrivateFile({
+        storageKey:
+          application
+            .resumeStorageKey
+      });
+    } catch (storageError) {
+      req.log.error(
+        {
+          err:
+            storageError,
+
+          applicationId,
+
+          storageKey:
+            application
+              .resumeStorageKey
+        },
+
+        'Application deleted, but résumé storage cleanup failed'
+      );
     }
 
     return res.redirect(
