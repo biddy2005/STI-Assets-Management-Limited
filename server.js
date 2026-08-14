@@ -696,6 +696,124 @@ app.use(
 );
 
 /*
+ * ============================================================
+ * REQUEST BODY PARSER ERRORS
+ * ============================================================
+ *
+ * Malformed or oversized client input is not an internal
+ * application failure.
+ *
+ * Keep these responses out of the generic 500 handler so
+ * monitoring does not mistake invalid client input for a
+ * server outage.
+ */
+app.use(
+  (
+    error,
+    req,
+    res,
+    next
+  ) => {
+    const errorStatus =
+      Number(
+        error?.status ||
+        error?.statusCode
+      );
+
+
+    const payloadTooLarge =
+      errorStatus ===
+        413 ||
+      error?.type ===
+        'entity.too.large' ||
+      error?.type ===
+        'parameters.too.many';
+
+
+    if (payloadTooLarge) {
+      req.log.warn(
+        {
+          requestId:
+            req.requestId,
+
+          method:
+            req.method,
+
+          path:
+            req.originalUrl,
+
+          errorType:
+            error?.type || null
+        },
+
+        'Oversized request body rejected'
+      );
+
+
+      res.setHeader(
+        'Cache-Control',
+        'no-store'
+      );
+
+
+      return res
+        .status(413)
+        .send(
+          'Request body is too large.'
+        );
+    }
+
+
+    const malformedBody =
+      errorStatus ===
+        400 &&
+      (
+        error?.type ===
+          'entity.parse.failed' ||
+        error?.type ===
+          'request.size.invalid'
+      );
+
+
+    if (malformedBody) {
+      req.log.warn(
+        {
+          requestId:
+            req.requestId,
+
+          method:
+            req.method,
+
+          path:
+            req.originalUrl,
+
+          errorType:
+            error?.type || null
+        },
+
+        'Malformed request body rejected'
+      );
+
+
+      res.setHeader(
+        'Cache-Control',
+        'no-store'
+      );
+
+
+      return res
+        .status(400)
+        .send(
+          'Invalid request body.'
+        );
+    }
+
+
+    return next(error);
+  }
+);
+
+/*
  * Global application error handler.
  */
 app.use(
