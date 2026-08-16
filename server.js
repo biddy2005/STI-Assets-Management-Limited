@@ -177,11 +177,30 @@ app.use(
           .getDefaultDirectives(),
 
         'img-src': [
-          "'self'",
-          'data:',
-          'https://images.unsplash.com',
-          'https://stiassetmgt.com'
-        ],
+        "'self'",
+        'data:',
+        'https://images.unsplash.com',
+        'https://stiassetmgt.com',
+
+        /*
+        * Allow images stored in the configured public R2 origin.
+        *
+        * Using the environment value means this automatically
+        * follows us when R2_PUBLIC_BASE_URL is later changed from
+        * the temporary R2 URL to assets.stiassetmgt.com.
+        */
+        ...(
+          env.storageDriver ===
+            'r2' &&
+          env.r2PublicBaseUrl
+            ? [
+                new URL(
+                  env.r2PublicBaseUrl
+                ).origin
+              ]
+            : []
+        )
+      ],
 
         'frame-src': [
           "'self'",
@@ -442,8 +461,23 @@ app.use(
 
 const sessionStore =
   new pgSession({
-    conString:
-      env.databaseUrl,
+    /*
+     * Sessions deliberately use a smaller PostgreSQL pool than
+     * Prisma's application-data pool.
+     */
+    conObject: {
+      connectionString:
+        env.databaseUrl,
+
+      max:
+        env.sessionDbPoolMax,
+
+      idleTimeoutMillis:
+        env.dbIdleTimeoutMs,
+
+      connectionTimeoutMillis:
+        env.dbConnectionTimeoutMs
+    },
 
     schemaName:
       'sessions',

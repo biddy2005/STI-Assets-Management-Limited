@@ -89,6 +89,122 @@ if (
   );
 }
 
+
+/*
+ * Parse the database URL once so production can fail fast when
+ * an obviously incorrect local database URL is configured.
+ */
+let parsedDatabaseUrl;
+
+try {
+  parsedDatabaseUrl =
+    new URL(
+      databaseUrl
+    );
+} catch (error) {
+  throw new Error(
+    'DATABASE_URL must be a valid PostgreSQL connection URL.'
+  );
+}
+
+
+/*
+ * A production deployment must never accidentally point back
+ * at the developer workstation.
+ */
+if (
+  isProduction &&
+  [
+    'localhost',
+    '127.0.0.1',
+    '::1'
+  ].includes(
+    parsedDatabaseUrl.hostname
+  )
+) {
+  throw new Error(
+    'DATABASE_URL must not point to localhost in production.'
+  );
+}
+
+
+/*
+ * ============================================================
+ * POSTGRESQL CONNECTION POOLS
+ * ============================================================
+ *
+ * Prisma and the PostgreSQL-backed session store use separate
+ * connection pools.
+ *
+ * Explicit limits make production database usage predictable
+ * and leave connection capacity available for migrations,
+ * administration and future application instances.
+ */
+
+const dbPoolMax =
+  Number(
+    process.env.DB_POOL_MAX ||
+    10
+  );
+
+const sessionDbPoolMax =
+  Number(
+    process.env
+      .SESSION_DB_POOL_MAX ||
+    5
+  );
+
+const dbIdleTimeoutMs =
+  Number(
+    process.env
+      .DB_IDLE_TIMEOUT_MS ||
+    30000
+  );
+
+const dbConnectionTimeoutMs =
+  Number(
+    process.env
+      .DB_CONNECTION_TIMEOUT_MS ||
+    5000
+  );
+
+
+for (
+  const [
+    variableName,
+    value
+  ] of [
+    [
+      'DB_POOL_MAX',
+      dbPoolMax
+    ],
+
+    [
+      'SESSION_DB_POOL_MAX',
+      sessionDbPoolMax
+    ],
+
+    [
+      'DB_IDLE_TIMEOUT_MS',
+      dbIdleTimeoutMs
+    ],
+
+    [
+      'DB_CONNECTION_TIMEOUT_MS',
+      dbConnectionTimeoutMs
+    ]
+  ]
+) {
+  if (
+    !Number.isInteger(value) ||
+    value < 1
+  ) {
+    throw new Error(
+      `${variableName} must be a positive integer.`
+    );
+  }
+}
+
 const sessionSecret =
   requireEnvironmentValue(
     'SESSION_SECRET'
@@ -481,6 +597,10 @@ module.exports = {
   isProduction,
   port,
   databaseUrl,
+  dbPoolMax,
+  sessionDbPoolMax,
+  dbIdleTimeoutMs,
+  dbConnectionTimeoutMs,
   sessionSecret,
   appBaseUrl,
   trustProxy,
