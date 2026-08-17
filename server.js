@@ -236,6 +236,26 @@ app.use(
   pinoHttp({
     logger,
 
+    /*
+     * External uptime/readiness monitors may call these
+     * endpoints frequently.
+     *
+     * Their normal successful responses do not need to fill
+     * the production logs. Readiness failures are explicitly
+     * logged by the /readyz route itself.
+     */
+    autoLogging: {
+      ignore: (
+        req,
+        res
+      ) => {
+        return (
+          req.url === '/healthz' ||
+          req.url === '/readyz'
+        );
+      }
+    },
+
     genReqId: (
       req,
       res

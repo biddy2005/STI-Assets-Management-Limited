@@ -122,14 +122,18 @@ async function removeRejectedUploads(req) {
         await fs.unlink(file.path);
       } catch (error) {
         if (error.code !== 'ENOENT') {
-          console.error(
-            'Could not remove upload after CSRF rejection:',
-            {
-              path: file.path,
-              error
-            }
-          );
-        }
+        req.log.error(
+          {
+            err:
+              error,
+
+            event:
+              'CSRF_UPLOAD_CLEANUP_FAILED'
+          },
+
+          'Could not remove upload after CSRF rejection'
+        );
+      }
       }
     })
   );

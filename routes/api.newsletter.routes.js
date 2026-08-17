@@ -133,7 +133,9 @@ router.post(
      * When the email does not exist, create adds the new
      * subscriber.
      */
-    await prisma.newsletterSubscriber.upsert({
+    const subscriber =
+    await prisma.newsletterSubscriber
+    .upsert({
       where: {
         email
       },
@@ -158,16 +160,19 @@ router.post(
       });
     } catch (error) {
       req.log.error(
-        {
-          err:
-            error,
+      {
+        err:
+          error,
 
-          subscriberEmail:
-            email
-        },
+        subscriberId:
+          subscriber.id,
 
-        'Newsletter notification email failed'
-      );
+        event:
+          'NEWSLETTER_NOTIFICATION_FAILED'
+      },
+
+      'Newsletter notification email failed'
+    );
     }
 
     return safeRedirectBack(

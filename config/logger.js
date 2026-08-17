@@ -4,6 +4,28 @@ const pino =
 const env =
   require('./env');
 
+
+/*
+ * ============================================================
+ * APPLICATION LOGGER
+ * ============================================================
+ *
+ * Logs are emitted as structured JSON.
+ *
+ * Never deliberately log:
+ * - passwords
+ * - session secrets
+ * - database credentials
+ * - SMTP credentials
+ * - R2 credentials
+ * - CSRF tokens
+ * - contact/application message bodies
+ *
+ * The redact configuration below provides a second layer of
+ * protection in case one of these values is accidentally
+ * included in a structured log object.
+ */
+
 const logger =
   pino({
     level:
@@ -23,27 +45,81 @@ const logger =
 
     redact: {
       paths: [
+        /*
+         * HTTP authentication/session data.
+         */
         'req.headers.authorization',
         'req.headers.cookie',
-        'res.headers.set-cookie',
+        'req.headers["x-csrf-token"]',
+        'res.headers["set-cookie"]',
 
+        /*
+         * Administrator credentials.
+         */
         'password',
         'passwordHash',
+        'currentPassword',
+        'newPassword',
+        'confirmPassword',
         'sessionSecret',
 
-        'SMTP_PASS',
+        /*
+         * Database credentials.
+         */
+        'databaseUrl',
         'DATABASE_URL',
 
+        /*
+         * Email credentials.
+         */
+        'smtpPass',
+        'SMTP_PASS',
+
+        /*
+         * Cloudflare R2 credentials.
+         */
+        'r2AccessKeyId',
+        'r2SecretAccessKey',
+        'R2_ACCESS_KEY_ID',
+        'R2_SECRET_ACCESS_KEY',
+
+        /*
+         * Request-body secrets and personal data.
+         *
+         * pino-http does not log req.body by default, but these
+         * paths provide defence in depth if body logging is ever
+         * introduced elsewhere.
+         */
         'req.body.password',
+        'req.body.currentPassword',
+        'req.body.newPassword',
+        'req.body.confirmPassword',
         'req.body._csrf',
+        'req.body.email',
+        'req.body.phone',
         'req.body.message',
-        'req.body.coverNote'
+        'req.body.coverNote',
+
+        /*
+         * Also protect body objects that may be logged directly
+         * rather than through req.body.
+         */
+        'body.password',
+        'body.currentPassword',
+        'body.newPassword',
+        'body.confirmPassword',
+        'body._csrf',
+        'body.email',
+        'body.phone',
+        'body.message',
+        'body.coverNote'
       ],
 
       censor:
         '[REDACTED]'
     }
   });
+
 
 module.exports =
   logger;

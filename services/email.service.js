@@ -7,6 +7,8 @@ const {
   '../config/mailer'
 );
 
+const logger =
+  require('../config/logger');
 /**
  * Removes line breaks from values used in email subjects.
  *
@@ -66,9 +68,17 @@ async function sendNotificationEmail({
     !isMailerConfigured() ||
     !transporter
   ) {
-    console.warn(
-      'Email notification skipped because SMTP is not configured.'
-    );
+    logger.warn(
+  {
+    event:
+      'EMAIL_NOTIFICATION_SKIPPED',
+
+    reason:
+      'SMTP_NOT_CONFIGURED'
+  },
+
+  'Email notification skipped because SMTP is not configured'
+);
 
     return {
       sent: false,
