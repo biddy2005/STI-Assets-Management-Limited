@@ -1,0 +1,16 @@
+{
+  "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
+
+  "high": true,
+  "critical": true,
+
+  "allowlist": [
+    {
+      "GHSA-ggr8-5vv4-36mx": {
+        "active": true,
+        "notes": "Temporary exception for deepmerge-ts 7.1.5 pulled by @prisma/config 7.9.1. Prisma issue #30052 is open. Remove once Prisma ships a patched stable release.",
+        "expiry": "30 September 2026"
+      }
+    }
+  ]
+}
