@@ -203,5 +203,3 @@ Only do this if you already have a bcrypt hash ready (e.g. generated with `bcryp
 ### Notes
 
 - Never store a plain-text password in the database — always hash it with `bcrypt` first, as shown above.
-
-jsjss

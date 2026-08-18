@@ -254,6 +254,44 @@ app.use(
           req.url === '/readyz'
         );
       }
+      },
+
+    /*
+     * Keep automatic HTTP request logs concise.
+     *
+     * We deliberately avoid logging the complete request and
+     * response headers because they add a large amount of noise
+     * and can contain cookies or other unnecessary information.
+     */
+    serializers: {
+      req: (
+        req
+      ) => {
+        const requestPath =
+          typeof req.url === 'string'
+            ? req.url.split('?')[0]
+            : null;
+
+        return {
+          id:
+            req.id,
+
+          method:
+            req.method,
+
+          path:
+            requestPath
+        };
+      },
+
+      res: (
+        res
+      ) => {
+        return {
+          statusCode:
+            res.statusCode
+        };
+      }
     },
 
     genReqId: (
@@ -295,11 +333,16 @@ app.use(
       return 'info';
     },
 
-    customSuccessMessage: (
+        customSuccessMessage: (
       req,
       res
     ) => {
-      return `${req.method} ${req.url} completed`;
+      const requestPath =
+        typeof req.url === 'string'
+          ? req.url.split('?')[0]
+          : '';
+
+      return `${req.method} ${requestPath} completed`;
     },
 
     customErrorMessage: (
@@ -307,7 +350,12 @@ app.use(
       res,
       error
     ) => {
-      return `${req.method} ${req.url} failed`;
+      const requestPath =
+        typeof req.url === 'string'
+          ? req.url.split('?')[0]
+          : '';
+
+      return `${req.method} ${requestPath} failed`;
     }
   })
 );
