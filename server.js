@@ -227,6 +227,31 @@ app.use(
 );
 
 /*
+ * Return only the pathname portion of a request URL.
+ *
+ * Query strings are deliberately excluded from routine
+ * operational logs.
+ */
+const getRequestPath =
+  (req) => {
+    return typeof req.url === 'string'
+      ? req.url.split('?')[0]
+      : '';
+  };
+
+
+/*
+ * Routine browser assets do not need an INFO log entry when
+ * they are served successfully.
+ *
+ * Failed asset requests are still logged so missing or broken
+ * files remain visible.
+ */
+const routineStaticAssetPattern =
+  /\.(?:css|js|mjs|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|eot|map)$/i;
+
+
+/*
  * Give every request a server-generated identifier.
  *
  * The ID is returned to the browser and included in error
@@ -236,25 +261,7 @@ app.use(
   pinoHttp({
     logger,
 
-    /*
-     * External uptime/readiness monitors may call these
-     * endpoints frequently.
-     *
-     * Their normal successful responses do not need to fill
-     * the production logs. Readiness failures are explicitly
-     * logged by the /readyz route itself.
-     */
-    autoLogging: {
-      ignore: (
-        req,
-        res
-      ) => {
-        return (
-          req.url === '/healthz' ||
-          req.url === '/readyz'
-        );
-      }
-      },
+
 
     /*
      * Keep automatic HTTP request logs concise.
@@ -268,9 +275,9 @@ app.use(
         req
       ) => {
         const requestPath =
-          typeof req.url === 'string'
-            ? req.url.split('?')[0]
-            : null;
+          getRequestPath(
+            req
+          );
 
         return {
           id:
@@ -317,6 +324,41 @@ app.use(
       res,
       error
     ) => {
+      const requestPath =
+        getRequestPath(
+          req
+        );
+
+      /*
+      * Health checks are intentionally quiet during normal
+      * operation.
+      *
+      * /readyz already writes an explicit error log when the
+      * PostgreSQL readiness check fails.
+      */
+      const isHealthCheck =
+        requestPath === '/healthz' ||
+        requestPath === '/readyz';
+
+      /*
+      * Successful static assets create large amounts of routine
+      * log noise and provide little operational value.
+      *
+      * Failed static requests are deliberately NOT silenced.
+      */
+      const isSuccessfulStaticAsset =
+        res.statusCode < 400 &&
+        routineStaticAssetPattern.test(
+          requestPath
+        );
+
+      if (
+        isHealthCheck ||
+        isSuccessfulStaticAsset
+      ) {
+        return 'silent';
+      }
+
       if (
         error ||
         res.statusCode >= 500
@@ -334,16 +376,16 @@ app.use(
     },
 
         customSuccessMessage: (
-      req,
-      res
-    ) => {
-      const requestPath =
-        typeof req.url === 'string'
-          ? req.url.split('?')[0]
-          : '';
+          req,
+          res
+        ) => {
+          const requestPath =
+            getRequestPath(
+              req
+            );
 
-      return `${req.method} ${requestPath} completed`;
-    },
+          return `${req.method} ${requestPath} completed`;
+        },
 
     customErrorMessage: (
       req,
@@ -351,9 +393,9 @@ app.use(
       error
     ) => {
       const requestPath =
-        typeof req.url === 'string'
-          ? req.url.split('?')[0]
-          : '';
+        getRequestPath(
+          req
+        );
 
       return `${req.method} ${requestPath} failed`;
     }
