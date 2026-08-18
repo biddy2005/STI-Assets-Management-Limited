@@ -160,19 +160,28 @@ router.post(
       });
     } catch (error) {
       req.log.error(
-      {
-        err:
-          error,
+        {
+          err:
+            error,
 
-        subscriberId:
-          subscriber.id,
+          event:
+            'EMAIL_SEND_FAILED',
 
-        event:
-          'NEWSLETTER_NOTIFICATION_FAILED'
-      },
+          component:
+            'email',
 
-      'Newsletter notification email failed'
-    );
+          dependency:
+            'smtp',
+
+          notificationType:
+            'newsletter',
+
+          subscriberId:
+            subscriber.id
+        },
+
+        'Newsletter notification email failed'
+      );
     }
 
     return safeRedirectBack(

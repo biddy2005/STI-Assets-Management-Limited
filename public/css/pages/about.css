@@ -607,14 +607,6 @@
     padding-top: 102px;
     padding-bottom: 116px;
   }
-
-  /*
-    The slight offset prevents the section from looking like
-    a rigid dashboard grid.
-  */
-  .about-purpose-card-secondary {
-    margin-top: 28px;
-  }
 }
 
 /* ============================================================

@@ -62,7 +62,8 @@ function buildAdminApplicationsUrl() {
  */
 async function sendNotificationEmail({
   subject,
-  text
+  text,
+  notificationType
 }) {
   if (
     !isMailerConfigured() ||
@@ -73,8 +74,17 @@ async function sendNotificationEmail({
     event:
       'EMAIL_NOTIFICATION_SKIPPED',
 
+    component:
+      'email',
+
+    dependency:
+      'smtp',
+
     reason:
-      'SMTP_NOT_CONFIGURED'
+      'SMTP_NOT_CONFIGURED',
+
+    notificationType:
+      notificationType || null
   },
 
   'Email notification skipped because SMTP is not configured'
@@ -144,10 +154,13 @@ async function sendContactNotification({
       : 'New website contact message';
 
   return sendNotificationEmail({
+  notificationType:
+    'contact',
+
   subject:
     notificationSubject,
 
-    text: [
+  text: [
       'A new contact message was submitted through the website.',
       '',
       `Submission ID: ${submissionId || 'Not available'}`,
@@ -203,8 +216,11 @@ async function sendJobApplicationNotification({
   }
 
     return sendNotificationEmail({
-    subject:
-      `New job application: ${jobTitle}`,
+      notificationType:
+        'job_application',
+
+      subject:
+        `New job application: ${jobTitle}`,
 
     text:
       messageLines.join('\n')
@@ -219,6 +235,9 @@ async function sendNewsletterNotification({
   email
 }) {
   return sendNotificationEmail({
+    notificationType:
+      'newsletter',
+
     subject:
       'New website newsletter subscription',
 

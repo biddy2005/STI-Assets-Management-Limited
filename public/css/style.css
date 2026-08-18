@@ -706,7 +706,7 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
 .footer-newsletter-form input:focus {
   outline: none;
   border-color: #033669;
-  box-shadow: 0 0 0 3px rgba(3, 54, 105, 0.1);
+  box-shadow: none;
 }
 .footer-newsletter-form button {
   height: 48px;
@@ -731,8 +731,33 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
   }
   .footer-newsletter-form {
     flex-direction: row;
-    max-width: 420px;
+    max-width: 560px;
     width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-newsletter-card {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+
+  .footer-newsletter-text {
+    justify-self: start;
+  }
+
+  .footer-newsletter-form {
+    grid-column: 2;
+    justify-self: center;
+    width: 600px;
+    max-width: 100%;
+    transform: translateX(50px);
+  }
+
+  .footer-newsletter-message {
+    grid-column: 2;
+    justify-self: center;
   }
 }
 
@@ -925,10 +950,13 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
 
 .site-footer a:focus-visible,
 .footer-cta-banner a:focus-visible,
-.footer-newsletter-form input:focus-visible,
 .footer-newsletter-form button:focus-visible {
   outline: 3px solid rgba(246, 134, 52, 0.42);
   outline-offset: 4px;
+}
+
+.footer-newsletter-form input:focus-visible {
+  outline: none;
 }
 
 .honeypot {

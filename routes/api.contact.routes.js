@@ -150,6 +150,18 @@ try {
       err:
         error,
 
+      event:
+        'EMAIL_SEND_FAILED',
+
+      component:
+        'email',
+
+      dependency:
+        'smtp',
+
+      notificationType:
+        'contact',
+
       submissionId:
         submission.id
     },

@@ -494,6 +494,18 @@ router.post(
           err:
             error,
 
+          event:
+            'EMAIL_SEND_FAILED',
+
+          component:
+            'email',
+
+          dependency:
+            'smtp',
+
+          notificationType:
+            'job_application',
+
           applicationId:
             createdApplication.id
         },

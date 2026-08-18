@@ -425,7 +425,7 @@
       rgba(3, 54, 105, 0.72) 64%,
       rgba(3, 54, 105, 0.3) 100%
     ),
-    url("https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=80");
+    url("/pexels-taiwo-samson-1239982962-38511754.jpg");
 
   background-size: cover;
   background-position: center;
@@ -681,7 +681,7 @@
         rgba(3, 54, 105, 0.9) 55%,
         rgba(3, 54, 105, 0.76) 100%
       ),
-      url("https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80");
+      url("/pexels-taiwo-samson-1239982962-38511754.jpg");
   }
 
   .hero-v2-inner {

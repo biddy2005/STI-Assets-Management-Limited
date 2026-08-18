@@ -16,6 +16,84 @@ const {
   '../config/r2'
 );
 
+const logger =
+require('../config/logger');
+
+/**
+ * Return the HTTP status code supplied by the S3-compatible
+ * R2 API when one is available.
+ */
+function getR2ErrorStatusCode(
+  error
+) {
+  const statusCode =
+    Number(
+      error?.$metadata
+        ?.httpStatusCode
+    );
+
+  return Number.isFinite(
+    statusCode
+  )
+    ? statusCode
+    : null;
+}
+
+
+/**
+ * Detect the normal S3/R2 representation of a missing object.
+ */
+function isR2MissingObjectError(
+  error
+) {
+  return Boolean(
+    error &&
+    (
+      error.name ===
+        'NoSuchKey' ||
+
+      error.Code ===
+        'NoSuchKey' ||
+
+      getR2ErrorStatusCode(
+        error
+      ) === 404
+    )
+  );
+}
+
+
+/**
+ * Return only the controlled storage category from an object
+ * key.
+ *
+ * We deliberately do not log the complete object key because
+ * private object names should not become operational log data.
+ *
+ * Examples:
+ *
+ * news/example.jpg       -> news
+ * digests/file.pdf       -> digests
+ * rate-guide/file.webp   -> rate-guide
+ * resumes/random.pdf     -> resumes
+ */
+function getR2ObjectCategory(
+  objectKey
+) {
+  if (
+    typeof objectKey !==
+      'string'
+  ) {
+    return null;
+  }
+
+  const [
+    category
+  ] =
+    objectKey.split('/');
+
+  return category || null;
+}
 
 /*
  * ============================================================
@@ -113,6 +191,9 @@ function validateObjectKey(
 /**
  * Upload one object to either the public or private R2 bucket.
  */
+/**
+ * Upload one object to either the public or private R2 bucket.
+ */
 async function putR2Object({
   visibility,
   objectKey,
@@ -120,71 +201,107 @@ async function putR2Object({
   contentType,
   cacheControl
 }) {
-  const client =
-    requireR2Client();
+  try {
+    const client =
+      requireR2Client();
 
-  const bucket =
-    resolveBucket(
-      visibility
-    );
+    const bucket =
+      resolveBucket(
+        visibility
+      );
 
-  const key =
-    validateObjectKey(
-      objectKey
-    );
+    const key =
+      validateObjectKey(
+        objectKey
+      );
 
+    if (
+      body === undefined ||
+      body === null
+    ) {
+      throw new Error(
+        'An object body is required.'
+      );
+    }
 
-  if (
-    body === undefined ||
-    body === null
-  ) {
-    throw new Error(
-      'An object body is required.'
-    );
-  }
+    const commandInput = {
+      Bucket:
+        bucket,
 
+      Key:
+        key,
 
-  const commandInput = {
-    Bucket:
+      Body:
+        body
+    };
+
+    if (contentType) {
+      commandInput.ContentType =
+        contentType;
+    }
+
+    if (cacheControl) {
+      commandInput.CacheControl =
+        cacheControl;
+    }
+
+    const result =
+      await client.send(
+        new PutObjectCommand(
+          commandInput
+        )
+      );
+
+    return {
       bucket,
 
-    Key:
-      key,
+      objectKey:
+        key,
 
-    Body:
-      body
-  };
+      etag:
+        result.ETag || null
+    };
+  } catch (error) {
+    logger.error(
+      {
+        err:
+          error,
 
+        event:
+          'STORAGE_UPLOAD_FAILED',
 
-  if (contentType) {
-    commandInput.ContentType =
-      contentType;
-  }
+        component:
+          'storage',
 
+        dependency:
+          'cloudflare-r2',
 
-  if (cacheControl) {
-    commandInput.CacheControl =
-      cacheControl;
-  }
+        driver:
+          'r2',
 
+        operation:
+          'upload',
 
-  const result =
-    await client.send(
-      new PutObjectCommand(
-        commandInput
-      )
+        visibility,
+
+        category:
+          getR2ObjectCategory(
+            objectKey
+          ),
+
+        httpStatusCode:
+          getR2ErrorStatusCode(
+            error
+          )
+      },
+
+      'Cloudflare R2 upload failed'
     );
 
-
-  return {
-    bucket,
-    objectKey:
-      key,
-
-    etag:
-      result.ETag || null
-  };
+    throw error;
+  }
 }
+
 
 
 /**
@@ -196,29 +313,89 @@ async function getR2Object({
   visibility,
   objectKey
 }) {
-  const client =
-    requireR2Client();
+  try {
+    const client =
+      requireR2Client();
 
-  const bucket =
-    resolveBucket(
-      visibility
+    const bucket =
+      resolveBucket(
+        visibility
+      );
+
+    const key =
+      validateObjectKey(
+        objectKey
+      );
+
+    return await client.send(
+      new GetObjectCommand({
+        Bucket:
+          bucket,
+
+        Key:
+          key
+      })
     );
+  } catch (error) {
+    const logContext = {
+      err:
+        error,
 
-  const key =
-    validateObjectKey(
-      objectKey
-    );
+      component:
+        'storage',
 
+      dependency:
+        'cloudflare-r2',
 
-  return client.send(
-    new GetObjectCommand({
-      Bucket:
-        bucket,
+      driver:
+        'r2',
 
-      Key:
-        key
-    })
-  );
+      operation:
+        'read',
+
+      visibility,
+
+      category:
+        getR2ObjectCategory(
+          objectKey
+        ),
+
+      httpStatusCode:
+        getR2ErrorStatusCode(
+          error
+        )
+    };
+
+    if (
+      isR2MissingObjectError(
+        error
+      )
+    ) {
+      logger.warn(
+        {
+          ...logContext,
+
+          event:
+            'STORAGE_OBJECT_NOT_FOUND'
+        },
+
+        'Cloudflare R2 object was not found'
+      );
+    } else {
+      logger.error(
+        {
+          ...logContext,
+
+          event:
+            'STORAGE_READ_FAILED'
+        },
+
+        'Cloudflare R2 read failed'
+      );
+    }
+
+    throw error;
+  }
 }
 
 
@@ -229,40 +406,78 @@ async function deleteR2Object({
   visibility,
   objectKey
 }) {
-  const client =
-    requireR2Client();
+  try {
+    const client =
+      requireR2Client();
 
-  const bucket =
-    resolveBucket(
-      visibility
+    const bucket =
+      resolveBucket(
+        visibility
+      );
+
+    const key =
+      validateObjectKey(
+        objectKey
+      );
+
+    await client.send(
+      new DeleteObjectCommand({
+        Bucket:
+          bucket,
+
+        Key:
+          key
+      })
     );
 
-  const key =
-    validateObjectKey(
-      objectKey
-    );
+    return {
+      deleted:
+        true,
 
+      bucket,
 
-  await client.send(
-    new DeleteObjectCommand({
-      Bucket:
-        bucket,
-
-      Key:
+      objectKey:
         key
-    })
-  );
+    };
+  } catch (error) {
+    logger.error(
+      {
+        err:
+          error,
 
+        event:
+          'STORAGE_DELETE_FAILED',
 
-  return {
-    deleted:
-      true,
+        component:
+          'storage',
 
-    bucket,
+        dependency:
+          'cloudflare-r2',
 
-    objectKey:
-      key
-  };
+        driver:
+          'r2',
+
+        operation:
+          'delete',
+
+        visibility,
+
+        category:
+          getR2ObjectCategory(
+            objectKey
+          ),
+
+        httpStatusCode:
+          getR2ErrorStatusCode(
+            error
+          )
+      },
+
+      'Cloudflare R2 delete failed'
+    );
+
+    throw error;
+  }
 }
 
 

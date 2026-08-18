@@ -454,6 +454,15 @@ app.get(
           err:
             error,
 
+          event:
+            'DATABASE_READINESS_FAILED',
+
+          component:
+            'database',
+
+          dependency:
+            'postgresql',
+
           requestId:
             req.requestId
         },
@@ -611,7 +620,16 @@ sessionStore.on(
     logger.error(
       {
         err:
-          error
+          error,
+
+        event:
+          'SESSION_STORE_ERROR',
+
+        component:
+          'session',
+
+        dependency:
+          'postgresql'
       },
 
       'Session store error'
@@ -976,13 +994,30 @@ app.use(
     }
 
     req.log.error(
-      {
-        err:
-          error
-      },
+  {
+    err:
+      error,
 
-      'Unhandled application error'
-    );
+    event:
+      'APPLICATION_UNHANDLED_ERROR',
+
+    component:
+      'application',
+
+    requestId:
+      req.requestId,
+
+    method:
+      req.method,
+
+    path:
+      getRequestPath(
+        req
+      )
+  },
+
+  'Unhandled application error'
+);
 
     res.setHeader(
       'Cache-Control',
@@ -1073,7 +1108,16 @@ async function disconnectPrisma() {
     logger.error(
       {
         err:
-          error
+          error,
+
+        event:
+          'DATABASE_DISCONNECT_FAILED',
+
+        component:
+          'database',
+
+        dependency:
+          'postgresql'
       },
 
       'Prisma disconnection failed'
@@ -1107,12 +1151,21 @@ function shutdown(
     setTimeout(
     async () => {
       logger.error(
-        {
-          signal
-        },
+  {
+    event:
+      'PROCESS_SHUTDOWN_TIMEOUT',
 
-        'Graceful shutdown timed out'
-      );
+    component:
+      'process',
+
+    signal,
+
+    timeoutMs:
+      10_000
+  },
+
+  'Graceful shutdown timed out'
+);
 
       await disconnectPrisma();
 
@@ -1179,7 +1232,13 @@ process.on(
     logger.fatal(
       {
         err:
-          error
+          error,
+
+        event:
+          'PROCESS_UNCAUGHT_EXCEPTION',
+
+        component:
+          'process'
       },
 
       'Uncaught exception'
@@ -1205,7 +1264,13 @@ process.on(
     logger.fatal(
       {
         err:
-          rejectionError
+          rejectionError,
+
+        event:
+          'PROCESS_UNHANDLED_REJECTION',
+
+        component:
+          'process'
       },
 
       'Unhandled Promise rejection'
