@@ -3,45 +3,204 @@
 }) %>
 
 <!-- ============================================================
-     1. HERO SECTION (hero-v2: image background, gradient overlay,
-        left-aligned content, trust strip, floating stats card)
+     1. HERO SECTION
 ============================================================ -->
 <section class="hero-v2">
+
   <div class="hero-v2-inner">
+
     <div class="hero-v2-content">
-      <h1 class="hero-v2-heading">Simplified Finance Management Services</h1>
 
-      <p class="hero-v2-paragraph">We are a wholly owned Nigerian company dedicated to delivering innovative financial services that empower the country's business landscape, catering to the needs of both individuals and corporations.</p>
-
-      <div class="hero-v2-actions">
-        <a href="/contact" class="hero-v2-btn-primary">
-          Get Started 
-        </a>
-        <a href="/services" class="hero-v2-btn-outline">
-          Our Services 
-        </a>
+      <div class="hero-v2-kicker">
+        <span>
+          Investment Management &bull; Financial Advisory
+        </span>
       </div>
 
-<!-- Hero Trust Highlights -->
-<div
-  class="hero-trust-bar"
-  aria-label="Why clients choose STI Assets Management"
->
-  <span class="hero-trust-item">SEC Regulated</span>
 
-  <span class="hero-trust-divider" aria-hidden="true">|</span>
+      <!-- Rotating Hero Message -->
+      <div
+        class="hero-message-stage"
+        data-hero-rotator
+        role="group"
+        aria-label="STI Assets Management introduction"
+        aria-live="off"
+      >
 
-  <span class="hero-trust-item">Professional Fund Managers</span>
+        <!-- Message 1 -->
+        <h1
+          class="hero-message hero-v2-heading is-active"
+          data-duration="2500"
+          aria-hidden="false"
+        >
+          <span
+            class="hero-word"
+            style="--word-index: 0"
+          >
+            Simplified
+          </span>
 
-  <span class="hero-trust-divider" aria-hidden="true">|</span>
+          <span
+            class="hero-word"
+            style="--word-index: 1"
+          >
+            Finance
+          </span>
 
-  <span class="hero-trust-item">
-    Serving Individuals &amp; Institutions
-  </span>
-</div>
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 2"
+          >
+            Management
+          </span>
+
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 3"
+          >
+            Services
+          </span>
+        </h1>
+
+
+        <!-- Message 2 -->
+        <p
+          class="hero-message hero-message-support"
+          data-duration="2400"
+          aria-hidden="true"
+        >
+          <span class="hero-word" style="--word-index: 0">
+            Serving
+          </span>
+
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 1"
+          >
+            Individuals
+          </span>
+
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 2"
+          >
+            &amp;
+          </span>
+
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 3"
+          >
+            Institutions
+          </span>
+        </p>
+
+
+        <!-- Message 3 -->
+        <p
+          class="hero-message hero-message-support"
+          data-duration="2600"
+          aria-hidden="true"
+        >
+          <span class="hero-word" style="--word-index: 0">
+            Delivering
+          </span>
+
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 1"
+          >
+            Superior
+          </span>
+
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 2"
+          >
+            Investment
+          </span>
+
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 3"
+          >
+            Outcomes
+          </span>
+        </p>
+
+
+        <!-- Message 4 / CTA -->
+        <a
+          href="/contact"
+          class="hero-message hero-message-cta"
+          data-duration="3200"
+          aria-hidden="true"
+          tabindex="-1"
+          aria-label="Get started with STI Assets Management"
+        >
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 0"
+          >
+            Get
+          </span>
+
+          <span
+            class="hero-word hero-word-highlight"
+            style="--word-index: 1"
+          >
+            started
+          </span>
+
+          <span class="hero-word" style="--word-index: 2">
+            with
+          </span>
+
+          <span class="hero-word" style="--word-index: 3">
+            us
+          </span>
+
+          <span class="hero-word" style="--word-index: 4">
+            now
+          </span>
+
+          <span
+            class="hero-word hero-cta-arrow"
+            style="--word-index: 5"
+            aria-hidden="true"
+          >
+            →
+          </span>
+        </a>
+
+      </div>
+
+
+      <!-- Trust Highlights -->
+      <div
+        class="hero-trust-bar"
+        aria-label="Why clients choose STI Assets Management"
+      >
+        <span class="hero-trust-item">
+          SEC Regulated
+        </span>
+
+        <span
+          class="hero-trust-divider"
+          aria-hidden="true"
+        >
+          |
+        </span>
+
+        <span class="hero-trust-item">
+          Professional Fund Managers
+        </span>
+      </div>
 
     </div>
+
   </div>
+
 </section>
 
 <div
@@ -245,7 +404,7 @@
 
         <div class="home-about-image">
           <img
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80"
+            src="/photo-1522071820081-009f0129c71c.jpg"
             alt="STI Assets Management professionals collaborating"
             loading="lazy"
             decoding="async"

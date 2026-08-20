@@ -1518,68 +1518,175 @@
 }
 
 /* ============================================================
-   ABOUT PAGE REVEAL ANIMATIONS
+   ABOUT PAGE SCROLL REVEALS
+   Matches homepage animation language
 ============================================================ */
 
 .about-reveal {
+  --reveal-x: 0px;
+  --reveal-y: 28px;
+  --reveal-scale: 1;
+
   opacity: 0;
 
-  transform: translate3d(0, 34px, 0);
+  translate:
+    var(--reveal-x)
+    var(--reveal-y);
+
+  scale:
+    var(--reveal-scale);
 
   transition:
-    opacity 760ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity
+      480ms
+      cubic-bezier(0.22, 1, 0.36, 1),
 
-  transition-delay: var(--reveal-delay, 0ms);
+    translate
+      560ms
+      cubic-bezier(0.22, 1, 0.36, 1),
 
-  will-change: opacity, transform;
+    scale
+      560ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+
+  transition-delay:
+    var(--reveal-delay, 0ms);
+
+  will-change:
+    opacity,
+    translate,
+    scale;
 }
+
+
+/* Standard upward reveal */
+
+.about-reveal.reveal-up {
+  --reveal-x: 0px;
+  --reveal-y: 28px;
+}
+
+
+/* Strong section heading reveal */
+
+.about-reveal.reveal-heading {
+  --reveal-x: 0px;
+  --reveal-y: 34px;
+
+  --reveal-scale: 0.99;
+}
+
+
+/* Directional reveals */
 
 .about-reveal.reveal-left {
-  transform: translate3d(-42px, 0, 0);
+  --reveal-x: -38px;
+  --reveal-y: 0px;
 }
 
+
 .about-reveal.reveal-right {
-  transform: translate3d(42px, 0, 0);
+  --reveal-x: 38px;
+  --reveal-y: 0px;
 }
+
+
+/* Cards */
+
+.about-reveal.reveal-card {
+  --reveal-x: 0px;
+  --reveal-y: 34px;
+
+  --reveal-scale: 0.975;
+}
+
+
+/* Visible state */
 
 .about-reveal.is-visible {
   opacity: 1;
-  transform: translate3d(0, 0, 0);
+
+  translate: 0 0;
+
+  scale: 1;
+}
+
+/* ============================================================
+   ABOUT REVEALS: MOBILE
+============================================================ */
+
+@media (max-width: 767px) {
+
+  .about-reveal {
+    --reveal-x: 0px;
+    --reveal-y: 24px;
+  }
+
+
+  .about-reveal.reveal-heading {
+    --reveal-x: 0px;
+    --reveal-y: 28px;
+  }
+
+
+  /*
+    Avoid sideways travel on narrow screens.
+    Elements should naturally rise into view.
+  */
+  .about-reveal.reveal-left,
+  .about-reveal.reveal-right {
+    --reveal-x: 0px;
+    --reveal-y: 26px;
+  }
+
+
+  .about-reveal.reveal-card {
+    --reveal-x: 0px;
+    --reveal-y: 28px;
+
+    --reveal-scale: 0.985;
+  }
+
 }
 
 /* Hero entrance */
 
 .about-page-hero .hero-eyebrow {
   animation:
-    about-hero-enter 720ms
+    about-hero-enter 460ms
     cubic-bezier(0.22, 1, 0.36, 1)
-    180ms both;
+    60ms both;
 }
+
 
 .about-page-hero h1 {
   animation:
-    about-hero-enter 760ms
+    about-hero-enter 520ms
     cubic-bezier(0.22, 1, 0.36, 1)
-    320ms both;
+    120ms both;
 }
 
-.digest-hero p {
+
+.about-page-hero p {
   animation:
-    about-hero-enter 760ms
+    about-hero-enter 500ms
     cubic-bezier(0.22, 1, 0.36, 1)
-    460ms both;
+    190ms both;
 }
 
 @keyframes about-hero-enter {
   from {
     opacity: 0;
-    transform: translate3d(0, 18px, 0);
+
+    transform:
+      translate3d(0, 26px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+
+    transform:
+      translate3d(0, 0, 0);
   }
 }
 
@@ -1594,18 +1701,28 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .about-reveal,
+  .about-reveal.reveal-up,
+  .about-reveal.reveal-heading,
   .about-reveal.reveal-left,
   .about-reveal.reveal-right,
+  .about-reveal.reveal-card,
   .about-reveal.is-visible {
     opacity: 1;
-    transform: none;
+
+    translate: none;
+
+    scale: 1;
+
     transition: none;
   }
 
+
   .about-page-hero .hero-eyebrow,
-  .about-page-hero p,
-  .digest-hero p {
+  .about-page-hero h1,
+  .about-page-hero p {
     animation: none;
   }
+
 }

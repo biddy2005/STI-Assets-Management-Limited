@@ -412,32 +412,110 @@
 
 .hero-v2 {
   position: relative;
+
   display: flex;
   align-items: center;
-  min-height: 590px;
+
+  min-height: 550px;
+
   overflow: hidden;
 
+  background: #033669;
+
+  isolation: isolate;
+}
+
+
+/* ============================================================
+   HERO BACKGROUND IMAGE
+   Slight entrance animation on initial page load
+============================================================ */
+
+.hero-v2::before {
+  content: "";
+
+  position: absolute;
+  z-index: -2;
+
+  inset: -10px;
+
   background-image:
-    linear-gradient(
-      90deg,
-      rgba(3, 54, 105, 0.97) 0%,
-      rgba(3, 54, 105, 0.92) 34%,
-      rgba(3, 54, 105, 0.72) 64%,
-      rgba(3, 54, 105, 0.3) 100%
-    ),
     url("/pexels-taiwo-samson-1239982962-38511754.jpg");
 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+
+  transform: scale(1.04);
+
+  animation:
+    hero-background-enter 1400ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+
+  will-change: transform, opacity;
 }
+
+
+/* ============================================================
+   HERO GRADIENT
+   Dark enough for readability, but lighter than the old version
+============================================================ */
+
+.hero-v2::after {
+  content: "";
+
+  position: absolute;
+  z-index: -1;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 54, 105, 0.92) 0%,
+      rgba(3, 54, 105, 0.84) 32%,
+      rgba(3, 54, 105, 0.62) 58%,
+      rgba(3, 54, 105, 0.24) 82%,
+      rgba(3, 54, 105, 0.10) 100%
+    );
+
+  pointer-events: none;
+}
+
+
+@keyframes hero-background-enter {
+  from {
+    opacity: 0.72;
+    transform: scale(1.07);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+
+/* ============================================================
+   HERO INNER
+============================================================ */
 
 .hero-v2-inner {
   width: 100%;
   max-width: var(--max-width);
+
   margin: 0 auto;
-  padding: 72px 24px 108px;
+
+  padding:
+    78px 24px
+    108px;
 }
+
+
+/* ============================================================
+   HERO CONTENT
+============================================================ */
 
 .hero-v2-content {
   display: flex;
@@ -445,94 +523,47 @@
   align-items: flex-start;
 
   width: 100%;
-  max-width: 680px;
+  max-width: 920px;
 
   text-align: left;
 }
 
-.hero-v2-heading {
-  max-width: 670px;
-  margin: 0 0 18px;
 
-  color: #ffffff;
-  font-size: clamp(2.75rem, 4.5vw, 3.75rem);
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
-}
+/* ============================================================
+   HERO KICKER
+============================================================ */
 
-.hero-v2-paragraph {
-  max-width: 580px;
-  margin: 0 0 28px;
-
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 1rem;
-  line-height: 1.75;
-}
-
-.hero-v2-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-bottom: 0;
-}
-
-.hero-v2-btn-primary,
-.hero-v2-btn-outline {
+.hero-v2-kicker {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
 
-  min-height: 48px;
-  padding: 12px 25px;
+  gap: 11px;
 
-  border-radius: 8px;
+  margin-bottom: 24px;
 
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
-  text-decoration: none;
+  color:
+    rgba(255, 255, 255, 0.9);
 
-  cursor: pointer;
+  font-size: 0.73rem;
+  font-weight: 800;
+  line-height: 1.4;
 
-  transition:
-    transform 250ms ease,
-    box-shadow 250ms ease,
-    background-color 250ms ease,
-    border-color 250ms ease,
-    color 250ms ease;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
-.hero-v2-btn-primary {
-  color: #ffffff;
+
+.hero-v2-kicker-line {
+  display: inline-block;
+
+  width: 28px;
+  height: 2px;
+
+  flex: 0 0 auto;
+
   background: var(--color-accent);
-  border: 1.5px solid var(--color-accent);
-}
 
-.hero-v2-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(246, 134, 52, 0.34);
-}
-
-.hero-v2-btn-outline {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
-}
-
-.hero-v2-btn-outline:hover {
-  color: var(--color-primary);
-  background: #ffffff;
-  border-color: #ffffff;
-  transform: translateY(-2px);
-}
-
-.hero-v2-btn-primary:focus-visible,
-.hero-v2-btn-outline:focus-visible {
-  outline: 3px solid rgba(255, 255, 255, 0.9);
-  outline-offset: 3px;
+  border-radius: 999px;
 }
 
 /* ============================================================
@@ -624,130 +655,237 @@
 ============================================================ */
 
 @media (max-width: 1023px) {
+
   .hero-v2 {
-    min-height: 540px;
-    background-position: 56% center;
+    min-height: 530px;
   }
+
+
+  .hero-v2::before {
+    background-position: 58% center;
+  }
+
 
   .hero-v2-inner {
-    padding-top: 68px;
-    padding-bottom: 104px;
+    padding:
+      70px 24px
+      104px;
   }
 
-  .hero-v2-heading {
-    max-width: 590px;
-    font-size: clamp(2.5rem, 6vw, 3.25rem);
-  }
 
   .hero-v2-content {
-    max-width: 620px;
+    max-width: 650px;
   }
 
-  .hero-v2-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+   .hero-v2-stats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
     padding: 12px 16px;
   }
 
   .hero-v2-stats-col {
-    min-height: 100px;
-    padding: 18px 14px;
+    min-height: 104px;
+    padding: 16px 14px;
 
     border-right: none;
     border-bottom: none;
   }
 
   .hero-v2-stats-col:nth-child(odd) {
-    border-right: 1px solid rgba(3, 54, 105, 0.09);
+    border-right:
+      1px solid
+      rgba(3, 54, 105, 0.09);
   }
 
   .hero-v2-stats-col:nth-child(-n + 2) {
-    border-bottom: 1px solid rgba(3, 54, 105, 0.09);
+    border-bottom:
+      1px solid
+      rgba(3, 54, 105, 0.09);
   }
+
+}
+@media (max-width: 767px) {
+
+  /* ==========================================================
+     MOBILE HERO
+  ========================================================== */
+
+  .hero-v2 {
+  min-height: 610px;
+
+  align-items: center;
 }
 
-/* ============================================================
-   HERO: MOBILE
-============================================================ */
 
-@media (max-width: 767px) {
-  .hero-v2 {
-    min-height: 0;
-    background-position: 62% center;
+  /*
+    The photograph remains visible,
+    but text readability takes priority.
+  */
+  .hero-v2::before {
+    inset: -8px;
 
-    background-image:
+    background-position:
+      58% center;
+  }
+
+
+  /*
+    Mobile needs a more even overlay because
+    the text occupies the centre of the photograph.
+  */
+  .hero-v2::after {
+    background:
       linear-gradient(
         180deg,
-        rgba(3, 54, 105, 0.96) 0%,
-        rgba(3, 54, 105, 0.9) 55%,
-        rgba(3, 54, 105, 0.76) 100%
-      ),
-      url("/pexels-taiwo-samson-1239982962-38511754.jpg");
+        rgba(3, 54, 105, 0.66) 0%,
+        rgba(3, 54, 105, 0.76) 36%,
+        rgba(3, 54, 105, 0.88) 72%,
+        rgba(3, 54, 105, 0.94) 100%
+      );
   }
+
 
   .hero-v2-inner {
-    padding: 68px 20px 96px;
-  }
+  display: flex;
+  align-items: center;
+
+  min-height: 610px;
+
+  padding:
+    50px 20px
+    104px;
+}
+
 
   .hero-v2-content {
-    max-width: 100%;
     align-items: center;
+
+    max-width: 100%;
+
     margin: 0 auto;
+
     text-align: center;
   }
 
-  .hero-v2-heading {
-    max-width: 560px;
-    margin-bottom: 18px;
 
-    font-size: clamp(2.15rem, 10vw, 3rem);
+  /*
+    Remove some secondary visual noise on mobile.
+    The rotating statement becomes the hero.
+  */
+  .hero-v2-kicker {
+    justify-content: center;
+
+    margin-bottom: 24px;
+
+    font-size: 0.66rem;
+  }
+
+
+  /* ==========================================================
+     MOBILE ROTATING MESSAGE
+  ========================================================== */
+
+  .hero-message-stage {
+    width: 100%;
+    max-width: 100%;
+
+    min-height: 220px;
+
+    align-items: center;
+  }
+
+
+  .hero-message {
+    width: 100%;
+
+    font-size:
+      clamp(2.05rem, 9.5vw, 2.55rem);
+
+    line-height: 1.08;
+
+    text-align: center;
+  }
+
+
+  .hero-message-support {
+    font-size:
+      clamp(2rem, 9vw, 2.45rem);
+
     line-height: 1.1;
   }
 
-  .hero-v2-paragraph {
-    max-width: 520px;
-    margin-bottom: 24px;
 
-    font-size: 0.96rem;
-    line-height: 1.7;
+  .hero-message-cta {
+    width: 100%;
+
+    font-size:
+      clamp(1.9rem, 8.2vw, 2.25rem);
+
+    line-height: 1.15;
+
+    text-align: center;
   }
 
-  .hero-v2-actions {
+
+  /* ==========================================================
+     MOBILE TRUST ITEMS
+  ========================================================== */
+
+  .hero-trust-bar {
+    justify-content: center;
+
     width: 100%;
-    max-width: 430px;
+    max-width: 360px;
+
+    margin:
+      28px auto 0;
+
+    gap: 7px 10px;
+
+    text-align: center;
   }
 
-  .hero-v2-btn-primary,
-  .hero-v2-btn-outline {
-    flex: 1 1 100%;
-    width: 100%;
-    min-height: 46px;
-    padding: 11px 20px;
+
+  .hero-trust-item {
+    font-size: 0.72rem;
+  }
+
+
+  .hero-trust-divider {
+    font-size: 0.82rem;
   }
 
   .hero-v2-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
 
-    width: calc(100% - 32px);
+    width:
+      calc(100% - 32px);
+
     margin-top: -48px;
+
     padding: 8px;
 
     border-radius: 14px;
   }
 
   .hero-v2-stats-col {
-    min-height: 106px;
-    padding: 16px 9px;
+    min-height: 108px;
+
+    padding: 15px 10px;
   }
 
   .hero-v2-stats-icon {
-    width: 29px;
-    height: 29px;
+    width: 28px;
+    height: 28px;
+
     margin-bottom: 6px;
   }
 
   .hero-v2-stats-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 23px;
+    height: 23px;
   }
 
   .hero-v2-stats-number {
@@ -756,59 +894,11 @@
 
   .hero-v2-stats-label {
     max-width: 140px;
-    font-size: 0.75rem;
-  }
-}
 
-@media (min-width: 480px) and (max-width: 767px) {
-  .hero-v2-actions {
-    flex-direction: row;
+    font-size: 0.74rem;
+    line-height: 1.35;
   }
 
-  .hero-v2-btn-primary,
-  .hero-v2-btn-outline {
-    flex: 1 1 0;
-    width: auto;
-  }
-}
-
-@media (max-width: 360px) {
-  .hero-v2-inner {
-    padding-right: 16px;
-    padding-left: 16px;
-  }
-
-  .hero-v2-heading {
-    font-size: 2rem;
-  }
-
-  .hero-v2-stats {
-    width: calc(100% - 24px);
-  }
-
-  .hero-v2-stats-col {
-    padding-right: 6px;
-    padding-left: 6px;
-  }
-
-  .hero-v2-stats-number {
-    font-size: 1.2rem;
-  }
-
-  .hero-v2-stats-label {
-    font-size: 0.7rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-v2-stats {
-    animation: none;
-  }
-
-  .hero-v2-btn-primary,
-  .hero-v2-btn-outline {
-    transition: none;
-  }
 }
 
 /* ============================================================
@@ -819,34 +909,30 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
   gap: 12px;
 
   width: 100%;
 
-
-  margin-top: 44px;
+  margin-top: 34px;
 }
+
 
 .hero-trust-item {
-  min-width: 0;
+  color:
+    rgba(255, 255, 255, 0.9);
 
-  color: rgba(255, 255, 255, 0.94);
-
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.4;
-  letter-spacing: 0.01em;
-
-  white-space: normal;
 }
+
 
 .hero-trust-divider {
   color: var(--color-accent);
+
   font-size: 1rem;
   font-weight: 700;
-  line-height: 1;
-
-  user-select: none;
 }
 
 /* Tablet */
@@ -890,6 +976,32 @@
     display: none;
   }
 }
+
+@media (max-width: 360px) {
+
+  .hero-v2-inner {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .hero-message-stage {
+    min-height: 255px;
+  }
+
+  .hero-message {
+    font-size: 2.45rem;
+  }
+
+  .hero-message-support {
+    font-size: 2.3rem;
+  }
+
+  .hero-message-cta {
+    font-size: 2.15rem;
+  }
+
+}
+
 /* ============================================================
    HOMEPAGE SERVICES
 ============================================================ */
@@ -2519,89 +2631,503 @@
 }
 
 /* ============================================================
-   HOMEPAGE HERO ENTRANCE
+   HOMEPAGE HERO MESSAGE ROTATOR
 ============================================================ */
 
-.hero-v2-heading {
-  animation:
-    home-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    80ms both;
+.hero-message-stage {
+  display: grid;
+  align-items: center;
+
+  width: 100%;
+  max-width: 920px;
+
+  min-height: 190px;
 }
 
-.hero-v2-paragraph {
-  animation:
-    home-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    170ms both;
+
+/* ============================================================
+   SHARED HERO MESSAGE
+============================================================ */
+
+.hero-message {
+  grid-area: 1 / 1;
+
+  width: 100%;
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(3.1rem, 5.4vw, 4.6rem);
+
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+
+  text-wrap: balance;
+
+  visibility: hidden;
+  opacity: 0;
+
+  transform:
+    translate3d(0, 14px, 0);
+
+  pointer-events: none;
+
+  transition:
+    opacity 420ms ease,
+    transform 420ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+
+  will-change:
+    opacity,
+    transform;
 }
 
-.hero-v2-actions {
-  animation:
-    home-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    260ms both;
+
+/* Active message */
+.hero-message.is-active {
+  visibility: visible;
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  pointer-events: auto;
 }
+
+
+/* Message leaving before the next one enters */
+.hero-message.is-leaving {
+  visibility: visible;
+  opacity: 0;
+
+  transform:
+    translate3d(0, -14px, 0);
+
+  pointer-events: none;
+}
+
+
+/* ============================================================
+   SECONDARY MESSAGES
+============================================================ */
+
+.hero-message-support {
+  font-size:
+    clamp(3rem, 5vw, 4.25rem);
+
+  font-weight: 750;
+}
+
+
+/* ============================================================
+   INDIVIDUAL WORD REVEAL
+============================================================ */
+
+.hero-word {
+  display: inline-block;
+
+  opacity: 0;
+
+  -webkit-clip-path:
+    inset(0 100% 0 0);
+
+  clip-path:
+    inset(0 100% 0 0);
+
+  transform:
+    translate3d(0, 26px, 0);
+
+  will-change:
+    opacity,
+    transform,
+    clip-path;
+}
+
+
+/*
+  Each word receives --word-index in the HTML.
+  This makes them enter one after another.
+*/
+.hero-message.is-active:not(.is-leaving)
+  .hero-word {
+  animation:
+    hero-word-enter 720ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+
+  animation-delay:
+    calc(var(--word-index) * 90ms);
+}
+
+
+@keyframes hero-word-enter {
+  0% {
+    opacity: 0;
+
+    -webkit-clip-path:
+      inset(0 100% 0 0);
+
+    clip-path:
+      inset(0 100% 0 0);
+
+    transform:
+      translate3d(0, 26px, 0);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+
+    -webkit-clip-path:
+      inset(0 0 0 0);
+
+    clip-path:
+      inset(0 0 0 0);
+
+    transform:
+      translate3d(0, 0, 0);
+  }
+}
+
+
+/* ============================================================
+   ORANGE EMPHASIS
+============================================================ */
+
+.hero-word-highlight {
+  color: var(--color-accent);
+}
+
+
+/* ============================================================
+   FINAL TEXT CTA
+============================================================ */
+
+.hero-message-cta {
+  width: fit-content;
+  max-width: 100%;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(2.9rem, 4.7vw, 4rem);
+
+  font-weight: 750;
+
+  text-decoration: none;
+}
+
+
+.hero-cta-arrow {
+  color: var(--color-accent);
+
+  transition:
+    transform 250ms ease;
+}
+
+
+.hero-message-cta:hover
+  .hero-cta-arrow {
+  transform:
+    translateX(8px);
+}
+
+
+.hero-message-cta:focus-visible {
+  outline:
+    3px solid
+    rgba(246, 134, 52, 0.55);
+
+  outline-offset: 7px;
+
+  border-radius: 6px;
+}
+
+
+/* ============================================================
+   TRUST BAR ENTRANCE
+============================================================ */
 
 .hero-trust-bar {
   animation:
     home-hero-enter 620ms
     cubic-bezier(0.22, 1, 0.36, 1)
-    350ms both;
+    500ms both;
 }
 
+
+/*
+  Keep this animation because the statistics card also uses
+  home-hero-enter elsewhere in the homepage stylesheet.
+*/
 @keyframes home-hero-enter {
   from {
     opacity: 0;
-    transform: translate3d(0, 20px, 0);
+
+    transform:
+      translate3d(0, 20px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+
+    transform:
+      translate3d(0, 0, 0);
   }
 }
 
-/* ============================================================
-   HOMEPAGE ONE-TIME SCROLL REVEALS
-============================================================ */
-
-.home-reveal {
-  opacity: 0;
-
-  translate: 0 24px;
-
-  transition:
-    opacity 680ms cubic-bezier(0.22, 1, 0.36, 1),
-    translate 680ms cubic-bezier(0.22, 1, 0.36, 1);
-
-  transition-delay: var(--reveal-delay, 0ms);
-
-  will-change: opacity, translate;
-}
-
-.home-reveal.reveal-left {
-  translate: -28px 0;
-}
-
-.home-reveal.reveal-right {
-  translate: 28px 0;
-}
-
-.home-reveal.is-visible {
-  opacity: 1;
-  translate: 0 0;
-}
 
 /* ============================================================
-   HOMEPAGE REVEAL RESPONSIVENESS
+   HERO ROTATOR: MOBILE
 ============================================================ */
 
 @media (max-width: 767px) {
+
+  .hero-message-stage {
+    width: 100%;
+    max-width: 100%;
+    min-height: 270px;
+  }
+
+  .hero-message {
+    width: 100%;
+
+    font-size:
+      clamp(2.7rem, 11vw, 3.4rem);
+
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+
+    text-align: center;
+  }
+
+  .hero-message-support {
+    font-size:
+      clamp(2.55rem, 10.5vw, 3.2rem);
+
+    line-height: 1.04;
+  }
+
+  .hero-message-cta {
+    width: 100%;
+
+    font-size:
+      clamp(2.4rem, 9.8vw, 3rem);
+
+    line-height: 1.06;
+
+    text-align: center;
+  }
+
+}
+
+/* ============================================================
+   HOMEPAGE SCROLL REVEALS
+   Fast, polished and lightweight
+============================================================ */
+
+.home-reveal {
+  --reveal-x: 0px;
+  --reveal-y: 28px;
+  --reveal-scale: 1;
+
+  opacity: 0;
+
+  translate:
+    var(--reveal-x)
+    var(--reveal-y);
+
+  scale:
+    var(--reveal-scale);
+
+  transition:
+    opacity
+      480ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    translate
+      560ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    scale
+      560ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+
+  transition-delay:
+    var(--reveal-delay, 0ms);
+
+  will-change:
+    opacity,
+    translate,
+    scale;
+}
+
+
+/* Standard vertical reveal */
+
+.home-reveal.reveal-up {
+  --reveal-x: 0px;
+  --reveal-y: 28px;
+}
+
+
+/* Large section headings */
+
+.home-reveal.reveal-heading {
+  --reveal-x: 0px;
+  --reveal-y: 34px;
+
+  --reveal-scale: 0.99;
+}
+
+
+/* Left / right editorial sections */
+
+.home-reveal.reveal-left {
+  --reveal-x: -38px;
+  --reveal-y: 0px;
+}
+
+
+.home-reveal.reveal-right {
+  --reveal-x: 38px;
+  --reveal-y: 0px;
+}
+
+
+/* Cards */
+
+.home-reveal.reveal-card {
+  --reveal-x: 0px;
+  --reveal-y: 34px;
+
+  --reveal-scale: 0.975;
+}
+
+
+/* Carousel / large component */
+
+.home-reveal.reveal-scale {
+  --reveal-x: 0px;
+  --reveal-y: 22px;
+
+  --reveal-scale: 0.975;
+}
+
+
+/* Final visible position */
+
+.home-reveal.is-visible {
+  opacity: 1;
+
+  translate: 0 0;
+
+  scale: 1;
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 767px) {
+
+  .home-reveal {
+    --reveal-x: 0px;
+    --reveal-y: 24px;
+  }
+
+
+  .home-reveal.reveal-heading {
+    --reveal-x: 0px;
+    --reveal-y: 28px;
+  }
+
+
   .home-reveal.reveal-left,
   .home-reveal.reveal-right {
-    translate: 0 22px;
+    --reveal-x: 0px;
+    --reveal-y: 26px;
   }
+
+
+  .home-reveal.reveal-card {
+    --reveal-x: 0px;
+    --reveal-y: 28px;
+
+    --reveal-scale: 0.985;
+  }
+
+
+  .home-reveal.reveal-scale {
+    --reveal-x: 0px;
+    --reveal-y: 20px;
+
+    --reveal-scale: 0.985;
+  }
+
+}
+
+
+/* ============================================================
+   HERO STAT ITEMS — STAGGERED ENTRANCE
+============================================================ */
+
+.hero-v2-stats-col {
+  opacity: 0;
+
+  translate:
+    0 18px;
+
+  animation:
+    hero-stat-item-enter
+    620ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+
+.hero-v2-stats-col:nth-child(1) {
+  animation-delay: 650ms;
+}
+
+
+.hero-v2-stats-col:nth-child(2) {
+  animation-delay: 740ms;
+}
+
+
+.hero-v2-stats-col:nth-child(3) {
+  animation-delay: 830ms;
+}
+
+
+.hero-v2-stats-col:nth-child(4) {
+  animation-delay: 920ms;
+}
+
+
+@keyframes hero-stat-item-enter {
+
+  from {
+    opacity: 0;
+
+    translate:
+      0 18px;
+  }
+
+  to {
+    opacity: 1;
+
+    translate:
+      0 0;
+  }
+
 }
 
 /* ============================================================
@@ -2609,21 +3135,108 @@
 ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-v2-heading,
-  .hero-v2-paragraph,
-  .hero-v2-actions,
+
   .hero-trust-bar,
   .hero-v2-stats {
     animation: none;
   }
 
-  .home-reveal,
+
+  /*
+    Instead of rotating, present the entire hero message
+    as normal static content.
+  */
+  .hero-message-stage {
+    display: block;
+  }
+
+
+  .hero-message {
+    position: static;
+
+    visibility: visible;
+    opacity: 1;
+
+    transform: none;
+
+    pointer-events: auto;
+
+    margin-bottom: 14px;
+
+    font-size:
+      clamp(2rem, 3.5vw, 2.75rem);
+  }
+
+
+  .hero-message-support {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+
+  .hero-message-cta {
+    display: inline-block;
+
+    width: auto;
+    margin-top: 8px;
+
+    font-size: 1rem;
+    font-weight: 750;
+  }
+
+
+  .hero-word,
+  .hero-message.is-active
+    .hero-word {
+    opacity: 1;
+
+    -webkit-clip-path: none;
+    clip-path: none;
+
+    transform: none;
+
+    animation: none;
+  }
+
+
+  .home-reveal.reveal-up,
+  .home-reveal.reveal-heading,
   .home-reveal.reveal-left,
   .home-reveal.reveal-right,
+  .home-reveal.reveal-card,
+  .home-reveal.reveal-scale,
   .home-reveal.is-visible {
     opacity: 1;
+
     translate: none;
+
+    scale: 1;
+
     transition: none;
+  }
+
+  .services-modern-card.home-reveal
+    .services-modern-image,
+
+  .products-modern-card.home-reveal
+    .products-modern-image,
+
+  .home-about-visual.home-reveal
+    .home-about-image img {
+
+    scale: 1;
+
+    transition: none;
+  }
+
+
+  .hero-v2-stats-col {
+    opacity: 1;
+
+    translate: none;
+
+    animation: none;
   }
 }
 

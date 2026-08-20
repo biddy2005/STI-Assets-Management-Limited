@@ -1,7 +1,7 @@
 (() => {
   window.__animationsFileLoaded = true;
   window.__animationsFileVersion =
-  'site-animations-23';
+  'site-animations-24';
 
   function initialiseAnimations() {
     if (window.__animationsInitialised) return;
@@ -41,7 +41,255 @@
         { passive: true }
       );
     }
+        // ============================================================
+    // HOMEPAGE HERO MESSAGE ROTATOR
+    // ============================================================
 
+    const heroRotator =
+      document.querySelector(
+        '[data-hero-rotator]'
+      );
+
+    if (heroRotator) {
+
+      const heroMessages = Array.from(
+        heroRotator.querySelectorAll(
+          '.hero-message'
+        )
+      );
+
+
+      const heroReducedMotion =
+        window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches;
+
+
+      const heroExitDuration = 420;
+
+      let heroIndex = 0;
+      let heroTimer = null;
+
+
+      /*
+        Read the amount of time each message
+        should remain visible from data-duration.
+      */
+      const getHeroHoldDuration =
+        (message) => {
+
+          const duration =
+            Number(
+              message.dataset.duration
+            );
+
+          return (
+            Number.isFinite(duration) &&
+            duration > 0
+          )
+            ? duration
+            : 2500;
+        };
+
+
+      /*
+        Make only one message active at a time.
+      */
+      const showHeroMessage =
+        (index) => {
+
+          heroMessages.forEach(
+            (message, messageIndex) => {
+
+              const isActive =
+                messageIndex === index;
+
+
+              message.classList.toggle(
+                'is-active',
+                isActive
+              );
+
+
+              message.classList.remove(
+                'is-leaving'
+              );
+
+
+              message.setAttribute(
+                'aria-hidden',
+                isActive
+                  ? 'false'
+                  : 'true'
+              );
+
+
+              /*
+                The final CTA should only enter
+                the keyboard tab order while visible.
+              */
+              if (
+                message.matches('a')
+              ) {
+                message.tabIndex =
+                  isActive
+                    ? 0
+                    : -1;
+              }
+
+            }
+          );
+
+        };
+
+
+      /*
+        Stop an existing timer safely.
+      */
+      const clearHeroTimer = () => {
+
+        if (heroTimer === null) {
+          return;
+        }
+
+        window.clearTimeout(
+          heroTimer
+        );
+
+        heroTimer = null;
+
+      };
+
+
+      /*
+        Queue the transition to the next message.
+      */
+      const queueNextHeroMessage = () => {
+
+        clearHeroTimer();
+
+
+        const currentMessage =
+          heroMessages[heroIndex];
+
+
+        const holdDuration =
+          getHeroHoldDuration(
+            currentMessage
+          );
+
+
+        heroTimer =
+          window.setTimeout(
+            () => {
+
+              currentMessage.classList.add(
+                'is-leaving'
+              );
+
+
+              heroTimer =
+                window.setTimeout(
+                  () => {
+
+                    heroIndex =
+                      (
+                        heroIndex + 1
+                      ) %
+                      heroMessages.length;
+
+
+                    showHeroMessage(
+                      heroIndex
+                    );
+
+
+                    queueNextHeroMessage();
+
+                  },
+                  heroExitDuration
+                );
+
+            },
+            holdDuration
+          );
+
+      };
+
+
+      /*
+        Establish the starting message.
+      */
+      if (heroMessages.length) {
+
+        showHeroMessage(0);
+
+
+        /*
+          Users who request reduced motion
+          receive the static CSS version
+          instead of an automatic loop.
+        */
+        if (heroReducedMotion) {
+
+          heroMessages.forEach(
+            (message) => {
+
+              message.setAttribute(
+                'aria-hidden',
+                'false'
+              );
+
+
+              if (
+                message.matches('a')
+              ) {
+                message.tabIndex = 0;
+              }
+
+            }
+          );
+
+        } else if (
+          heroMessages.length > 1
+        ) {
+
+          queueNextHeroMessage();
+
+        }
+
+      }
+
+
+      /*
+        Do not continue cycling invisibly
+        while the browser tab is inactive.
+      */
+      document.addEventListener(
+        'visibilitychange',
+        () => {
+
+          clearHeroTimer();
+
+
+          if (
+            !document.hidden &&
+            !heroReducedMotion &&
+            heroMessages.length > 1
+          ) {
+
+            showHeroMessage(
+              heroIndex
+            );
+
+            queueNextHeroMessage();
+
+          }
+
+        }
+      );
+
+    }
     // ============================================================
     // EXISTING GENERAL REVEALS
     // ============================================================
@@ -82,91 +330,330 @@
     // ============================================================
 
     const aboutRevealGroups = [
+
+      // ==========================================================
+      // WHO WE ARE
+      // ==========================================================
+
       {
-        selector: '.about-overview-content',
-        effect: 'reveal-left',
+        selector: '.about-overview-eyebrow',
+        effect: 'reveal-up',
+        delay: 0,
         stagger: 0
       },
+
+      {
+        selector: '.about-overview-content h2',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector: '.about-overview-lead',
+        effect: 'reveal-up',
+        delay: 80,
+        stagger: 0
+      },
+
+      {
+        selector: '.about-overview-text',
+        effect: 'reveal-up',
+        delay: 110,
+        stagger: 45
+      },
+
+      {
+        selector: '.about-overview-facts',
+        effect: 'reveal-up',
+        delay: 150,
+        stagger: 0
+      },
+
       {
         selector: '.about-overview-visual',
         effect: 'reveal-right',
+        delay: 70,
         stagger: 0
       },
+
+
+      // ==========================================================
+      // PURPOSE
+      // ==========================================================
+
       {
         selector:
-          '.about-purpose-header, ' +
-          '.about-direction-header, ' +
-          '.about-values-modern-header',
+          '.about-purpose-header ' +
+          '.values-eyebrow-row',
         effect: 'reveal-up',
+        delay: 0,
         stagger: 0
       },
+
+      {
+        selector: '.about-purpose-header h2',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector: '.about-purpose-header p',
+        effect: 'reveal-up',
+        delay: 80,
+        stagger: 0
+      },
+
       {
         selector: '.about-purpose-card',
-        effect: 'reveal-up',
-        stagger: 100
+        effect: 'reveal-card',
+        delay: 90,
+        stagger: 70
       },
+
+
+      // ==========================================================
+      // VISION & MISSION
+      // ==========================================================
+
+      {
+        selector:
+          '.about-direction-header ' +
+          '.values-eyebrow-row',
+        effect: 'reveal-up',
+        delay: 0,
+        stagger: 0
+      },
+
+      {
+        selector: '.about-direction-header h2',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector: '.about-direction-header p',
+        effect: 'reveal-up',
+        delay: 80,
+        stagger: 0
+      },
+
       {
         selector: '.about-direction-card',
-        effect: 'reveal-up',
-        stagger: 120
+        effect: 'reveal-card',
+        delay: 90,
+        stagger: 75
       },
+
+
+      // ==========================================================
+      // CORE VALUES
+      // ==========================================================
+
+      {
+        selector:
+          '.about-values-modern-header ' +
+          '.values-eyebrow-row',
+        effect: 'reveal-up',
+        delay: 0,
+        stagger: 0
+      },
+
+      {
+        selector: '.about-values-modern-header h2',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector: '.about-values-modern-header p',
+        effect: 'reveal-up',
+        delay: 80,
+        stagger: 0
+      },
+
       {
         selector: '.about-value-card',
-        effect: 'reveal-up',
-        stagger: 80
+        effect: 'reveal-card',
+        delay: 90,
+        stagger: 60
       }
+
     ];
 
     const homeRevealGroups = [
+
+      // ==========================================================
+      // SERVICES
+      // ==========================================================
+
       {
         selector:
           '.services-modern-section ' +
-          '.services-modern-header',
+          '.values-eyebrow-row',
         effect: 'reveal-up',
+        delay: 0,
         stagger: 0
       },
+
+      {
+        selector:
+          '.services-modern-section ' +
+          '.services-modern-heading',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector:
+          '.services-modern-section ' +
+          '.services-modern-subheading',
+        effect: 'reveal-up',
+        delay: 80,
+        stagger: 0
+      },
+
       {
         selector: '.services-modern-card',
-        effect: 'reveal-up',
-        stagger: 90
+        effect: 'reveal-card',
+        delay: 80,
+        stagger: 60
       },
+
+
+      // ==========================================================
+      // ABOUT / WHO WE ARE PREVIEW
+      // ==========================================================
+
       {
         selector: '.home-about-visual',
         effect: 'reveal-left',
+        delay: 0,
         stagger: 0
       },
+
       {
-        selector: '.home-about-content',
-        effect: 'reveal-right',
-        stagger: 0
-      },
-      {
-        selector: '.products-modern-header',
+        selector: '.home-about-eyebrow-row',
         effect: 'reveal-up',
+        delay: 20,
         stagger: 0
       },
+
+      {
+        selector: '.home-about-heading',
+        effect: 'reveal-heading',
+        delay: 50,
+        stagger: 0
+      },
+
+      {
+        selector: '.home-about-lead',
+        effect: 'reveal-right',
+        delay: 90,
+        stagger: 0
+      },
+
+      {
+        selector: '.home-about-description',
+        effect: 'reveal-right',
+        delay: 120,
+        stagger: 0
+      },
+
+      {
+        selector: '.home-about-link',
+        effect: 'reveal-up',
+        delay: 150,
+        stagger: 0
+      },
+
+
+      // ==========================================================
+      // PRODUCTS
+      // ==========================================================
+
+      {
+        selector:
+          '.products-modern-header ' +
+          '.values-eyebrow-row',
+        effect: 'reveal-up',
+        delay: 0,
+        stagger: 0
+      },
+
+      {
+        selector:
+          '.products-modern-header ' +
+          '.services-modern-heading',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector: '.products-modern-subheading',
+        effect: 'reveal-up',
+        delay: 80,
+        stagger: 0
+      },
+
       {
         selector: '.products-modern-card',
-        effect: 'reveal-up',
-        stagger: 100
+        effect: 'reveal-card',
+        delay: 80,
+        stagger: 65
       },
+
+
+      // ==========================================================
+      // COMMUNITY & INSIGHTS
+      // ==========================================================
+
       {
-        selector: '.home-insights-header',
+        selector:
+          '.home-insights-header ' +
+          '.values-eyebrow-row',
         effect: 'reveal-up',
+        delay: 0,
         stagger: 0
       },
+
+      {
+        selector:
+          '.home-insights-header ' +
+          '.services-modern-heading',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector: '.home-insights-subheading',
+        effect: 'reveal-up',
+        delay: 80,
+        stagger: 0
+      },
+
       {
         selector:
           '.home-insights-carousel, ' +
           '.home-insights-empty',
-        effect: 'reveal-up',
+        effect: 'reveal-scale',
+        delay: 100,
         stagger: 0
       },
+
       {
         selector: '.home-insights-footer',
         effect: 'reveal-up',
+        delay: 130,
         stagger: 0
       }
+
     ];
 
     const teamRevealGroups = [
@@ -495,9 +982,15 @@ const legalRevealGroups = [
             element.classList.add(group.effect);
           }
 
+          const baseDelay =
+            Number(group.delay || 0);
+
+          const stagger =
+            Number(group.stagger || 0);
+
           const delay = Math.min(
-            index * group.stagger,
-            320
+            baseDelay + (index * stagger),
+            280
           );
 
           element.style.setProperty(
@@ -657,8 +1150,8 @@ window.__legalAnimationsCount =
         });
       },
       {
-        threshold: 0.18,
-        rootMargin: '0px 0px -12% 0px'
+        threshold: 0.08,
+        rootMargin: '0px 0px -3% 0px'
       }
     );
 
