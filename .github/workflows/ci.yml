@@ -26,6 +26,7 @@ env:
   SESSION_SECRET: ci-only-session-secret-never-use-this-value-outside-github-actions-1234567890abcdef
   INITIAL_ADMIN_EMAIL: ci-superadmin@example.com
   INITIAL_ADMIN_PASSWORD: "CI-only-Strong-Administrator-Password-2026!"
+  NEWSLETTER_UNSUBSCRIBE_SECRET: ci-only-newsletter-unsubscribe-secret-never-use-outside-tests-2026-1234567890abcdef
   LOG_LEVEL: silent
 
 jobs:
