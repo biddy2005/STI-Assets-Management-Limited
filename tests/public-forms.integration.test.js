@@ -93,10 +93,17 @@ const {
 
 
 const {
-  sendContactNotification,
   sendJobApplicationNotification
 } = require(
   '../services/email.service'
+);
+
+const {
+  sendContactToPowerAutomate,
+  sendNewsletterToPowerAutomate,
+  sendNewsletterUnsubscribeToPowerAutomate
+} = require(
+  '../services/powerAutomate.service'
 );
 
 
@@ -308,7 +315,7 @@ test.after(
       typeof app.locals
         .sessionStore
         .close ===
-        'function'
+      'function'
     ) {
       await app.locals
         .sessionStore
@@ -329,7 +336,7 @@ test.after(
  */
 
 test(
-  'email notification service skips safely when SMTP is disabled',
+  'career email notification service skips safely when SMTP is disabled',
   async () => {
     assert.equal(
       isMailerConfigured(),
@@ -344,87 +351,29 @@ test(
     );
 
 
-    /*
-     * The service deliberately logs that delivery was skipped.
-     * Suppress the expected warnings in this test.
-     */
-    const originalWarn =
-      console.warn;
+    const careerResult =
+      await sendJobApplicationNotification({
+        applicationId:
+          999999,
 
+        applicantName:
+          'Phase 2E Applicant',
 
-    let contactResult;
-    let careerResult;
+        email:
+          'phase2e-career@example.com',
 
+        phone:
+          null,
 
-    console.warn =
-      () => {};
+        coverNote:
+          null,
 
+        jobId:
+          999999,
 
-    try {
-      contactResult =
-        await sendContactNotification({
-          submissionId:
-            999999,
-
-          name:
-            'Phase 2E Contact',
-
-          email:
-            'phase2e-contact@example.com',
-
-          phone:
-            null,
-
-          subject:
-            'Test',
-
-          message:
-            'SMTP-disabled integration test.'
-        });
-
-
-      careerResult =
-        await sendJobApplicationNotification({
-          applicationId:
-            999999,
-
-          applicantName:
-            'Phase 2E Applicant',
-
-          email:
-            'phase2e-career@example.com',
-
-          phone:
-            null,
-
-          coverNote:
-            null,
-
-          jobId:
-            999999,
-
-          jobTitle:
-            'Integration Test Role'
-        });
-    } finally {
-      console.warn =
-        originalWarn;
-    }
-
-
-    assert.deepEqual(
-      contactResult,
-      {
-        sent:
-          false,
-
-        skipped:
-          true,
-
-        messageId:
-          null
-      }
-    );
+        jobTitle:
+          'Integration Test Role'
+      });
 
 
     assert.deepEqual(
@@ -443,6 +392,94 @@ test(
   }
 );
 
+test(
+  'Power Automate integrations skip safely when webhooks are disabled',
+  async () => {
+    const contactResult =
+      await sendContactToPowerAutomate({
+        submissionId:
+          999999,
+
+        name:
+          'Power Automate Contact Test',
+
+        email:
+          'power-automate-contact@example.com',
+
+        phone:
+          null,
+
+        subject:
+          'Integration Test',
+
+        message:
+          'Power Automate disabled integration test.',
+
+        submittedAt:
+          new Date(
+            '2026-01-01T00:00:00.000Z'
+          )
+      });
+
+
+    const newsletterResult =
+      await sendNewsletterToPowerAutomate({
+        subscriberId:
+          999999,
+
+        email:
+          'power-automate-newsletter@example.com',
+
+        subscribedAt:
+          new Date(
+            '2026-01-01T00:00:00.000Z'
+          ),
+
+        unsubscribeUrl:
+          'https://example.test/newsletter/unsubscribe/999999/test-token'
+      });
+
+
+    assert.deepEqual(
+      contactResult,
+      {
+        sent:
+          false,
+
+        skipped:
+          true,
+
+        statusCode:
+          null
+      }
+    );
+
+
+    assert.deepEqual(
+      newsletterResult,
+      {
+        sent:
+          false,
+
+        skipped:
+          true,
+
+        statusCode:
+          null
+      }
+    );
+
+    await assert.rejects(
+      () =>
+        sendNewsletterUnsubscribeToPowerAutomate({
+          subscriberId:
+            999999
+        }),
+
+      /not configured/i
+    );
+  }
+);
 
 /*
  * ============================================================
@@ -677,7 +714,7 @@ test(
 
 
     console.warn =
-      () => {};
+      () => { };
 
 
     try {
@@ -726,12 +763,12 @@ test(
 
 
     const submission =
-  await prisma.contactSubmission
-    .findFirst({
-      where: {
-        email
-      }
-    });
+      await prisma.contactSubmission
+        .findFirst({
+          where: {
+            email
+          }
+        });
 
 
     assert.ok(

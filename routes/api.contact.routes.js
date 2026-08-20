@@ -16,9 +16,9 @@ const {
 );
 
 const {
-  sendContactNotification
+  sendContactToPowerAutomate
 } = require(
-  '../services/email.service'
+  '../services/powerAutomate.service'
 );
 
 router.post(
@@ -134,16 +134,51 @@ const submission =
   });
 
 try {
-  await sendContactNotification({
-    submissionId:
-      submission.id,
+  const webhookResult =
+    await sendContactToPowerAutomate({
+      submissionId:
+        submission.id,
 
-    name,
-    email,
-    phone,
-    subject,
-    message
-  });
+      name,
+
+      email,
+
+      phone,
+
+      subject,
+
+      message,
+
+      submittedAt:
+        submission.submittedAt
+    });
+
+
+  if (webhookResult.skipped) {
+    req.log.warn(
+      {
+        event:
+          'POWER_AUTOMATE_WEBHOOK_SKIPPED',
+
+        component:
+          'integration',
+
+        dependency:
+          'power-automate',
+
+        workflow:
+          'contact',
+
+        reason:
+          'NOT_CONFIGURED',
+
+        submissionId:
+          submission.id
+      },
+
+      'Contact Power Automate webhook skipped'
+    );
+  }
 } catch (error) {
   req.log.error(
     {
@@ -151,22 +186,26 @@ try {
         error,
 
       event:
-        'EMAIL_SEND_FAILED',
+        'POWER_AUTOMATE_WEBHOOK_FAILED',
 
       component:
-        'email',
+        'integration',
 
       dependency:
-        'smtp',
+        'power-automate',
 
-      notificationType:
+      workflow:
         'contact',
 
       submissionId:
-        submission.id
+        submission.id,
+
+      httpStatusCode:
+        error?.statusCode ||
+        null
     },
 
-    'Contact notification email failed'
+    'Contact Power Automate webhook failed'
   );
 }
 

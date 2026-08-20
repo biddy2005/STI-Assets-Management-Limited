@@ -50,6 +50,11 @@ const careersRoutes =
 const newsletterRoutes =
   require('./routes/api.newsletter.routes');
 
+const newsletterUnsubscribeRoutes =
+  require(
+    './routes/newsletter-unsubscribe.routes'
+  );
+
 const {
   contactLimiter,
   newsletterLimiter,
@@ -234,9 +239,21 @@ app.use(
  */
 const getRequestPath =
   (req) => {
-    return typeof req.url === 'string'
-      ? req.url.split('?')[0]
-      : '';
+    const requestPath =
+      typeof req.url === 'string'
+        ? req.url.split('?')[0]
+        : '';
+
+
+    /*
+     * Newsletter unsubscribe URLs contain a signed token.
+     *
+     * Never place that token in application or HTTP logs.
+     */
+    return requestPath.replace(
+      /^\/newsletter\/unsubscribe\/\d+\/[^/]+$/,
+      '/newsletter/unsubscribe/:subscriberId/[REDACTED]'
+    );
   };
 
 
@@ -785,6 +802,11 @@ app.use(
   newsletterRoutes
 );
 
+app.use(
+  '/newsletter',
+  newsletterUnsubscribeRoutes
+);
+
 // ============================================================
 // 404 AND ERROR HANDLERS
 // ============================================================
@@ -833,7 +855,9 @@ app.use(
           req.method,
 
         path:
-          req.originalUrl
+        getRequestPath(
+          req
+        )
       },
 
       'CSRF request rejected'
@@ -902,7 +926,9 @@ app.use(
             req.method,
 
           path:
-            req.originalUrl,
+          getRequestPath(
+            req
+          ),
 
           errorType:
             error?.type || null
@@ -947,7 +973,9 @@ app.use(
             req.method,
 
           path:
-            req.originalUrl,
+          getRequestPath(
+            req
+          ),
 
           errorType:
             error?.type || null

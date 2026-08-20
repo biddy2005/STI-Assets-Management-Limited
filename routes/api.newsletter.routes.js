@@ -16,9 +16,15 @@ const {
 );
 
 const {
-  sendNewsletterNotification
+  sendNewsletterToPowerAutomate
 } = require(
-  '../services/email.service'
+  '../services/powerAutomate.service'
+);
+
+const {
+  buildNewsletterUnsubscribeUrl
+} = require(
+  '../utils/newsletterUnsubscribe'
 );
 
 const {
@@ -125,64 +131,127 @@ router.post(
     }
 
     /*
-     * upsert prevents duplicate records.
-     *
-     * When the email already exists, update: {} makes no
-     * changes.
-     *
-     * When the email does not exist, create adds the new
-     * subscriber.
-     */
-    const subscriber =
-    await prisma.newsletterSubscriber
+    * Upsert prevents duplicate subscriber rows.
+    *
+    * For an existing email address, subscribedAt is refreshed to
+    * represent a new explicit subscription request.
+    *
+    * For a new email address, create stores the subscriber and
+    * current subscription timestamp.
+    */
+    const subscriptionTime =
+      new Date();
+
+
+const subscriber =
+  await prisma.newsletterSubscriber
     .upsert({
       where: {
         email
       },
 
-      update: {},
+      update: {
+        subscribedAt:
+          subscriptionTime
+      },
 
       create: {
-        email
+        email,
+
+        subscribedAt:
+          subscriptionTime
       }
     });
 
+    const unsubscribeUrl =
+    buildNewsletterUnsubscribeUrl(
+      subscriber
+    );
+
 
     /*
-     * The subscription has already been stored successfully.
-     *
-     * Email notification failure must never undo or reject the
-     * valid subscription.
-     */
+    * The subscription has already been stored successfully.
+    *
+    * A Microsoft 365 synchronization failure must never remove
+    * or reject the valid PostgreSQL subscription record.
+    */
     try {
-      await sendNewsletterNotification({
-        email
-      });
-    } catch (error) {
-      req.log.error(
-        {
-          err:
-            error,
+  const webhookResult =
+    await sendNewsletterToPowerAutomate({
+      subscriberId:
+        subscriber.id,
 
-          event:
-            'EMAIL_SEND_FAILED',
+      email:
+        subscriber.email,
 
-          component:
-            'email',
+      /*
+       * This represents the current signup event rather than
+       * the historical creation date of the PostgreSQL row.
+       *
+       * This allows an M365-unsubscribed subscriber to
+       * explicitly subscribe again through the website.
+       */
+      subscribedAt:
+        subscriber.subscribedAt,
 
-          dependency:
-            'smtp',
+      unsubscribeUrl
+    });
 
-          notificationType:
-            'newsletter',
 
-          subscriberId:
-            subscriber.id
-        },
+  if (webhookResult.skipped) {
+    req.log.warn(
+      {
+        event:
+          'POWER_AUTOMATE_WEBHOOK_SKIPPED',
 
-        'Newsletter notification email failed'
-      );
-    }
+        component:
+          'integration',
+
+        dependency:
+          'power-automate',
+
+        workflow:
+          'newsletter',
+
+        reason:
+          'NOT_CONFIGURED',
+
+        subscriberId:
+          subscriber.id
+      },
+
+      'Newsletter Power Automate webhook skipped'
+    );
+  }
+} catch (error) {
+  req.log.error(
+    {
+      err:
+        error,
+
+      event:
+        'POWER_AUTOMATE_WEBHOOK_FAILED',
+
+      component:
+        'integration',
+
+      dependency:
+        'power-automate',
+
+      workflow:
+        'newsletter',
+
+      subscriberId:
+        subscriber.id,
+
+      httpStatusCode:
+        error?.statusCode ||
+        null
+    },
+
+    'Newsletter Power Automate webhook failed'
+  );
+}
 
     return safeRedirectBack(
       req,

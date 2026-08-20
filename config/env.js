@@ -355,6 +355,126 @@ if (
 const mailerConfigured =
   smtpConfigurationStarted;
 
+
+/*
+ * ============================================================
+ * POWER AUTOMATE
+ * ============================================================
+ *
+ * The Contact webhook is optional so local development and
+ * automated tests do not require Microsoft 365.
+ *
+ * The complete callback URL is treated as a secret because it
+ * contains the information required to trigger the workflow.
+ */
+
+const powerAutomateContactUrl =
+  readTrimmedEnvironmentValue(
+    'POWER_AUTOMATE_CONTACT_URL'
+  );
+
+const powerAutomateNewsletterUrl =
+  readTrimmedEnvironmentValue(
+    'POWER_AUTOMATE_NEWSLETTER_URL'
+  );
+
+const powerAutomateNewsletterUnsubscribeUrl =
+  readTrimmedEnvironmentValue(
+    'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL'
+  );
+
+
+if (powerAutomateNewsletterUrl) {
+  let parsedPowerAutomateNewsletterUrl;
+
+  try {
+    parsedPowerAutomateNewsletterUrl =
+      new URL(
+        powerAutomateNewsletterUrl
+      );
+  } catch (error) {
+    throw new Error(
+      'POWER_AUTOMATE_NEWSLETTER_URL must be a valid absolute URL.'
+    );
+  }
+
+  if (
+    parsedPowerAutomateNewsletterUrl
+      .protocol !== 'https:'
+  ) {
+    throw new Error(
+      'POWER_AUTOMATE_NEWSLETTER_URL must use HTTPS.'
+    );
+  }
+}
+
+
+if (powerAutomateContactUrl) {
+  let parsedPowerAutomateContactUrl;
+
+  try {
+    parsedPowerAutomateContactUrl =
+      new URL(
+        powerAutomateContactUrl
+      );
+  } catch (error) {
+    throw new Error(
+      'POWER_AUTOMATE_CONTACT_URL must be a valid absolute URL.'
+    );
+  }
+
+  if (
+    parsedPowerAutomateContactUrl
+      .protocol !== 'https:'
+  ) {
+    throw new Error(
+      'POWER_AUTOMATE_CONTACT_URL must use HTTPS.'
+    );
+  }
+}
+
+if (
+  powerAutomateNewsletterUnsubscribeUrl
+) {
+  let parsedPowerAutomateNewsletterUnsubscribeUrl;
+
+  try {
+    parsedPowerAutomateNewsletterUnsubscribeUrl =
+      new URL(
+        powerAutomateNewsletterUnsubscribeUrl
+      );
+  } catch (error) {
+    throw new Error(
+      'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL must be a valid absolute URL.'
+    );
+  }
+
+  if (
+    parsedPowerAutomateNewsletterUnsubscribeUrl
+      .protocol !== 'https:'
+  ) {
+    throw new Error(
+      'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL must use HTTPS.'
+    );
+  }
+}
+
+
+const newsletterUnsubscribeSecret =
+  requireEnvironmentValue(
+    'NEWSLETTER_UNSUBSCRIBE_SECRET'
+  );
+
+
+if (
+  newsletterUnsubscribeSecret.length < 64
+) {
+  throw new Error(
+    'NEWSLETTER_UNSUBSCRIBE_SECRET must contain at least 64 characters.'
+  );
+}
+
+
 const logLevel =
   readTrimmedEnvironmentValue(
     'LOG_LEVEL'
@@ -610,6 +730,10 @@ module.exports = {
   smtpPass,
   notifyEmail,
   mailerConfigured,
+  powerAutomateContactUrl,
+  powerAutomateNewsletterUrl,
+  powerAutomateNewsletterUnsubscribeUrl,
+  newsletterUnsubscribeSecret,
   logLevel,
   storageDriver,
   r2Endpoint,

@@ -136,44 +136,7 @@ async function sendNotificationEmail({
   };
 }
 
-/**
- * Sends an internal notification when someone submits the
- * website contact form.
- */
-async function sendContactNotification({
-  submissionId,
-  name,
-  email,
-  phone,
-  subject,
-  message
-}) {
-  const notificationSubject =
-    subject
-      ? `Website contact: ${subject}`
-      : 'New website contact message';
 
-  return sendNotificationEmail({
-  notificationType:
-    'contact',
-
-  subject:
-    notificationSubject,
-
-  text: [
-      'A new contact message was submitted through the website.',
-      '',
-      `Submission ID: ${submissionId || 'Not available'}`,
-      `Name: ${name}`,
-      `Email: ${email}`,
-      `Phone: ${phone || 'Not provided'}`,
-      `Subject: ${subject || 'Not provided'}`,
-      '',
-      'Message:',
-      message
-    ].join('\n')
-  });
-}
 
 /**
  * Sends an internal notification when a candidate submits a
@@ -227,30 +190,6 @@ async function sendJobApplicationNotification({
   });
 }
 
-/**
- * Sends an internal notification when someone submits the
- * website newsletter subscription form.
- */
-async function sendNewsletterNotification({
-  email
-}) {
-  return sendNotificationEmail({
-    notificationType:
-      'newsletter',
-
-    subject:
-      'New website newsletter subscription',
-
-    text: [
-      'A new newsletter subscription was submitted through the website.',
-      '',
-      `Subscriber email: ${email}`
-    ].join('\n')
-  });
-}
-
 module.exports = {
-  sendContactNotification,
-  sendJobApplicationNotification,
-  sendNewsletterNotification
+  sendJobApplicationNotification
 };

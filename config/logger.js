@@ -112,7 +112,21 @@ const logger =
         'body.email',
         'body.phone',
         'body.message',
-        'body.coverNote'
+        'body.coverNote',
+
+        /*
+        * Power Automate webhook credentials and Newsletter
+        * unsubscribe signing secret.
+        */
+        'powerAutomateContactUrl',
+        'powerAutomateNewsletterUrl',
+        'powerAutomateNewsletterUnsubscribeUrl',
+        'newsletterUnsubscribeSecret',
+        'POWER_AUTOMATE_CONTACT_URL',
+        'POWER_AUTOMATE_NEWSLETTER_URL',
+        'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL',
+        'NEWSLETTER_UNSUBSCRIBE_SECRET'
+
       ],
 
       censor:

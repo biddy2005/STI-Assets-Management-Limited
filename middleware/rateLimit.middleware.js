@@ -169,9 +169,25 @@ const loginLimiter = createFormLimiter({
     'Too many failed login attempts were made from this network. Please wait before trying again.'
 });
 
+const newsletterUnsubscribeLimiter =
+  createFormLimiter({
+    identifier:
+      'newsletter-unsubscribe',
+
+    windowMs:
+      60 * 60 * 1000,
+
+    limit:
+      10,
+
+    message:
+      'You have made too many newsletter preference requests. Please try again later.'
+  });
+
 module.exports = {
   contactLimiter,
   newsletterLimiter,
+  newsletterUnsubscribeLimiter,
   careersLimiter,
   loginLimiter
 };
