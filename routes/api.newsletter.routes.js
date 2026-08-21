@@ -28,11 +28,16 @@ const {
 );
 
 const {
-  cleanText,
   isHoneypotTriggered,
-  isValidEmail
+  validateSchema
 } = require(
   '../middleware/validation.middleware'
+);
+
+const {
+  newsletterSchema
+} = require(
+  '../schemas/newsletter.schema'
 );
 
 function safeRedirectBack(
@@ -108,13 +113,16 @@ router.post(
     }
 
     /*
-     * Clean and normalise the email address.
+     * Validate and normalize the newsletter form.
+     *
+     * The schema preserves the existing trimming,
+     * length limit and lowercase normalization.
      */
-    const email =
-      cleanText(
-        req.body.email,
-        254
-      ).toLowerCase();
+    const validation =
+      validateSchema(
+        newsletterSchema,
+        req.body
+      );
 
     /*
      * Invalid email addresses are expected form errors.
@@ -122,13 +130,17 @@ router.post(
      * Redirect back to the page and show the newsletter error
      * message. This is not a server error.
      */
-    if (!isValidEmail(email)) {
+    if (!validation.success) {
       return safeRedirectBack(
         req,
         res,
         'newsletterError'
       );
     }
+
+    const {
+      email
+    } = validation.data;
 
     /*
     * Upsert prevents duplicate subscriber rows.

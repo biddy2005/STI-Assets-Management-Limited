@@ -15,6 +15,34 @@ const {
   '../utils/asyncHandler'
 );
 const prisma = require('../config/db');
+
+const {
+  validateSchema
+} = require(
+  '../middleware/validation.middleware'
+);
+
+const {
+  jobSchema
+} = require(
+  '../schemas/job.schema'
+);
+
+const {
+  newsSchema
+} = require(
+  '../schemas/news.schema'
+);
+
+const {
+  createEditorSchema,
+  editorStatusSchema,
+  resetEditorPasswordSchema,
+  editorIdSchema
+} = require(
+  '../schemas/editor.schema'
+);
+
 const {
   writeAuditLog
 } = require(
@@ -83,17 +111,6 @@ const superAdminOnly =
     'SUPERADMIN'
   );
 
-/*
- * ============================================================
- * EDITOR ACCOUNT MANAGEMENT
- * ============================================================
- */
-
-const EDITOR_MIN_PASSWORD_LENGTH =
-  14;
-
-const EDITOR_MAX_PASSWORD_LENGTH =
-  128;
 
 const ADMIN_EMAIL_PATTERN =
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -844,100 +861,142 @@ router.post(
     res
   ) => {
 
-    const submittedEmail =
-      typeof req.body.email ===
-      'string'
-        ? req.body.email
-            .trim()
-            .toLowerCase()
-        : '';
+    const validation =
+      validateSchema(
+        createEditorSchema,
+        req.body
+      );
 
 
     const email =
-      submittedEmail.length <=
-        254
-        ? submittedEmail
+      validation.success
+        ? validation.data.email
         : '';
 
 
     const password =
-      typeof req.body.password ===
-      'string'
-        ? req.body.password
+      validation.success
+        ? validation.data.password
         : '';
 
 
     const confirmPassword =
-      typeof req.body.confirmPassword ===
-      'string'
-        ? req.body.confirmPassword
+      validation.success
+        ? validation.data.confirmPassword
         : '';
 
 
-    /*
-     * Validate email.
-     */
     if (
-      !email ||
-      !ADMIN_EMAIL_PATTERN.test(
-        email
-      )
+      !validation.success
     ) {
 
-      return renderEditorManager(
-        res,
-        {
-          error:
-            'Please provide a valid email address.',
-
-          status:
-            400
-        }
-      );
-
-    }
+      const emailError =
+        validation.errors.find(
+          (error) =>
+            error.field ===
+            'email'
+        );
 
 
-    /*
-     * Validate password length.
-     */
-    if (
-      password.length <
-        EDITOR_MIN_PASSWORD_LENGTH ||
-      password.length >
-        EDITOR_MAX_PASSWORD_LENGTH
-    ) {
+      if (emailError) {
+        return renderEditorManager(
+          res,
+          {
+            error:
+              'Please provide a valid email address.',
 
-      return renderEditorManager(
-        res,
-        {
-          error:
-            'The password must be between 14 and 128 characters.',
-
-          status:
-            400
-        }
-      );
+            status:
+              400
+          }
+        );
+      }
 
     }
 
 
     if (
-      password !==
-      confirmPassword
+      !validation.success
     ) {
 
+      const passwordError =
+        validation.errors.find(
+          (error) =>
+            error.field ===
+              'password' ||
+            error.field ===
+              'confirmPassword'
+        );
+
+
+      const passwordsMismatch =
+        validation.errors.some(
+          (error) =>
+            error.field ===
+              'confirmPassword' &&
+            error.message ===
+              'The passwords do not match.'
+        );
+
+
+      if (
+        passwordError &&
+        !passwordsMismatch
+      ) {
+        return renderEditorManager(
+          res,
+          {
+            error:
+              'The password must be between 14 and 128 characters.',
+
+            status:
+              400
+          }
+        );
+      }
+
+    }
+
+
+    if (
+      !validation.success
+    ) {
+
+      const passwordsMismatch =
+        validation.errors.some(
+          (error) =>
+            error.field ===
+              'confirmPassword' &&
+            error.message ===
+              'The passwords do not match.'
+        );
+
+
+      if (passwordsMismatch) {
+        return renderEditorManager(
+          res,
+          {
+            error:
+              'The passwords do not match.',
+
+            status:
+              400
+          }
+        );
+      }
+
+    }
+
+        if (!validation.success) {
       return renderEditorManager(
         res,
         {
           error:
-            'The passwords do not match.',
+            'Please review the submitted Editor account details.',
 
           status:
             400
         }
       );
-
     }
 
 
@@ -1110,10 +1169,16 @@ router.post(
       );
 
 
+    const validation =
+      validateSchema(
+        editorStatusSchema,
+        req.body
+      );
+
+
     const submittedStatus =
-      typeof req.body.status ===
-      'string'
-        ? req.body.status.trim()
+      validation.success
+        ? validation.data.status
         : '';
 
 
@@ -1131,10 +1196,7 @@ router.post(
     }
 
 
-    if (
-      submittedStatus !== 'active' &&
-      submittedStatus !== 'inactive'
-    ) {
+    if (!validation.success) {
 
       return res.status(400).send(
         'Invalid account status.'
@@ -1288,17 +1350,22 @@ router.post(
       );
 
 
+    const validation =
+      validateSchema(
+        resetEditorPasswordSchema,
+        req.body
+      );
+
+
     const password =
-      typeof req.body.password ===
-      'string'
-        ? req.body.password
+      validation.success
+        ? validation.data.password
         : '';
 
 
     const confirmPassword =
-      typeof req.body.confirmPassword ===
-      'string'
-        ? req.body.confirmPassword
+      validation.success
+        ? validation.data.confirmPassword
         : '';
 
 
@@ -1316,43 +1383,76 @@ router.post(
     }
 
 
-    if (
-      password.length <
-        EDITOR_MIN_PASSWORD_LENGTH ||
-      password.length >
-        EDITOR_MAX_PASSWORD_LENGTH
-    ) {
+    if (!validation.success) {
 
-      return renderEditorManager(
-        res,
-        {
-          error:
-            'The new password must be between 14 and 128 characters.',
+      const passwordLengthError =
+        validation.errors.some(
+          (error) =>
+            error.field ===
+              'password' ||
+            (
+              error.field ===
+                'confirmPassword' &&
+              error.message !==
+                'The new passwords do not match.'
+            )
+        );
 
-          status:
-            400
-        }
-      );
+
+      if (passwordLengthError) {
+        return renderEditorManager(
+          res,
+          {
+            error:
+              'The new password must be between 14 and 128 characters.',
+
+            status:
+              400
+          }
+        );
+      }
 
     }
 
 
-    if (
-      password !==
-      confirmPassword
-    ) {
+    if (!validation.success) {
 
+      const passwordsMismatch =
+        validation.errors.some(
+          (error) =>
+            error.field ===
+              'confirmPassword' &&
+            error.message ===
+              'The new passwords do not match.'
+        );
+
+
+      if (passwordsMismatch) {
+        return renderEditorManager(
+          res,
+          {
+            error:
+              'The new passwords do not match.',
+
+            status:
+              400
+          }
+        );
+      }
+
+    }
+
+        if (!validation.success) {
       return renderEditorManager(
         res,
         {
           error:
-            'The new passwords do not match.',
+            'Please review the submitted password details.',
 
           status:
             400
         }
       );
-
     }
 
 
@@ -1481,24 +1581,23 @@ router.post(
     res
   ) => {
 
-    const editorId =
-      Number(
+    const validation =
+      editorIdSchema.safeParse(
         req.params.id
       );
 
 
-    if (
-      !Number.isInteger(
-        editorId
-      ) ||
-      editorId < 1
-    ) {
+    if (!validation.success) {
 
       return res.status(400).send(
         'Invalid Editor ID.'
       );
 
     }
+
+
+    const editorId =
+      validation.data;
 
 
     const editor =
@@ -2558,17 +2657,17 @@ router.post(
   csrfAfterUpload,
 
   asyncHandler(async (req, res) => {
-    const title =
-      typeof req.body.title ===
-        'string'
-        ? req.body.title.trim()
-        : '';
-
-    const body =
-      typeof req.body.body ===
-        'string'
-        ? req.body.body.trim()
-        : '';
+    /*
+     * Validate and normalize the article text fields.
+     *
+     * Publishing and cover-image handling remain separate
+     * so their existing behaviour is preserved.
+     */
+    const validation =
+      validateSchema(
+        newsSchema,
+        req.body
+      );
 
     const isPublished =
       req.body.published ===
@@ -2578,7 +2677,7 @@ router.post(
      * Nothing has been persisted yet because the cover image
      * exists only in memory.
      */
-    if (!title || !body) {
+    if (!validation.success) {
       return res.status(400).render(
         'admin/news-form',
         {
@@ -2589,6 +2688,11 @@ router.post(
         }
       );
     }
+
+    const {
+      title,
+      body
+    } = validation.data;
 
     /*
      * The Multer file filter has already checked extension and
@@ -2829,17 +2933,14 @@ router.post(
     const articleId =
       Number(req.params.id);
 
-    const title =
-      typeof req.body.title ===
-        'string'
-        ? req.body.title.trim()
-        : '';
-
-    const body =
-      typeof req.body.body ===
-        'string'
-        ? req.body.body.trim()
-        : '';
+    /*
+     * Validate and normalize the updated article text.
+     */
+    const validation =
+      validateSchema(
+        newsSchema,
+        req.body
+      );
 
     const isNowPublished =
       req.body.published ===
@@ -2872,14 +2973,24 @@ router.post(
       );
     }
 
-    if (!title || !body) {
+    if (!validation.success) {
       return res.status(400).render(
         'admin/news-form',
         {
           article: {
             ...existing,
-            title,
-            body,
+
+            title:
+              typeof req.body.title ===
+                'string'
+                ? req.body.title.trim()
+                : '',
+
+            body:
+              typeof req.body.body ===
+                'string'
+                ? req.body.body.trim()
+                : '',
 
             published:
               isNowPublished
@@ -2890,6 +3001,11 @@ router.post(
         }
       );
     }
+
+    const {
+      title,
+      body
+    } = validation.data;
 
     /*
      * Validate the real replacement-image bytes before
@@ -3730,72 +3846,19 @@ router.post(
   csrfSynchronisedProtection,
 
   asyncHandler(async (req, res) => {
-    const title =
-      typeof req.body.title === 'string'
-        ? req.body.title.trim()
-        : '';
+    /*
+     * Validate and normalize job form fields.
+     *
+     * Deadline parsing and status normalization remain
+     * separate so existing behaviour is preserved.
+     */
+    const validation =
+      validateSchema(
+        jobSchema,
+        req.body
+      );
 
-    const department =
-      typeof req.body.department === 'string'
-        ? req.body.department.trim()
-        : '';
-
-    const location =
-      typeof req.body.location === 'string'
-        ? req.body.location.trim()
-        : '';
-
-    const description =
-      typeof req.body.description === 'string'
-        ? req.body.description.trim()
-        : '';
-
-    const responsibilities =
-      typeof req.body.responsibilities === 'string'
-    ? req.body.responsibilities.trim() || null
-    : null;
-
-    const qualifications =
-      typeof req.body.qualifications === 'string'
-        ? req.body.qualifications.trim() || null
-        : null;
-
-    const experience =
-      typeof req.body.experience === 'string'
-        ? req.body.experience.trim() || null
-        : null;
-
-    const competencies =
-      typeof req.body.competencies === 'string'
-        ? req.body.competencies.trim() || null
-        : null;
-
-    const jobCategory =
-      typeof req.body.jobCategory === 'string'
-        ? req.body.jobCategory.trim() || null
-        : null;
-
-    const jobType =
-      typeof req.body.jobType === 'string'
-        ? req.body.jobType.trim() || null
-        : null;
-        
-    const deadline =
-      typeof req.body.deadline === 'string'
-        ? req.body.deadline.trim()
-        : '';
-
-    const submittedStatus =
-      typeof req.body.status === 'string'
-        ? req.body.status.trim()
-        : '';
-
-    if (
-      !title ||
-      !department ||
-      !location ||
-      !description
-    ) {
+    if (!validation.success) {
       return res.status(400).render(
         'admin/jobs-form',
         {
@@ -3805,6 +3868,40 @@ router.post(
         }
       );
     }
+
+    const {
+      title,
+      department,
+      location,
+      description,
+      deadline,
+      status:
+        submittedStatus
+    } = validation.data;
+
+    const responsibilities =
+      validation.data.responsibilities ||
+      null;
+
+    const qualifications =
+      validation.data.qualifications ||
+      null;
+
+    const experience =
+      validation.data.experience ||
+      null;
+
+    const competencies =
+      validation.data.competencies ||
+      null;
+
+    const jobCategory =
+      validation.data.jobCategory ||
+      null;
+
+    const jobType =
+      validation.data.jobType ||
+      null;
 
     let parsedDeadline = null;
 
@@ -3977,72 +4074,16 @@ router.post(
       );
     }
 
-    const title =
-      typeof req.body.title === 'string'
-        ? req.body.title.trim()
-        : '';
+    /*
+     * Validate and normalize updated job fields.
+     */
+    const validation =
+      validateSchema(
+        jobSchema,
+        req.body
+      );
 
-    const department =
-      typeof req.body.department === 'string'
-        ? req.body.department.trim()
-        : '';
-
-    const location =
-      typeof req.body.location === 'string'
-        ? req.body.location.trim()
-        : '';
-
-    const description =
-      typeof req.body.description === 'string'
-        ? req.body.description.trim()
-        : '';
-
-    const responsibilities =
-      typeof req.body.responsibilities === 'string'
-        ? req.body.responsibilities.trim() || null
-        : null;
-
-    const qualifications =
-      typeof req.body.qualifications === 'string'
-        ? req.body.qualifications.trim() || null
-        : null;
-
-    const experience =
-      typeof req.body.experience === 'string'
-        ? req.body.experience.trim() || null
-        : null;
-
-    const competencies =
-      typeof req.body.competencies === 'string'
-        ? req.body.competencies.trim() || null
-        : null;
-
-    const jobCategory =
-      typeof req.body.jobCategory === 'string'
-        ? req.body.jobCategory.trim() || null
-        : null;
-
-    const jobType =
-      typeof req.body.jobType === 'string'
-        ? req.body.jobType.trim() || null
-        : null;
-
-    const deadline =
-      typeof req.body.deadline === 'string'
-        ? req.body.deadline.trim()
-        : '';
-
-    const submittedStatus =
-      typeof req.body.status === 'string'
-        ? req.body.status.trim()
-        : '';
-
-    if (
-      !title ||
-      !department ||
-      !location ||
-      !description
-    ) {
+    if (!validation.success) {
       return res.status(400).render(
         'admin/jobs-form',
         {
@@ -4052,6 +4093,40 @@ router.post(
         }
       );
     }
+
+    const {
+      title,
+      department,
+      location,
+      description,
+      deadline,
+      status:
+        submittedStatus
+    } = validation.data;
+
+    const responsibilities =
+      validation.data.responsibilities ||
+      null;
+
+    const qualifications =
+      validation.data.qualifications ||
+      null;
+
+    const experience =
+      validation.data.experience ||
+      null;
+
+    const competencies =
+      validation.data.competencies ||
+      null;
+
+    const jobCategory =
+      validation.data.jobCategory ||
+      null;
+
+    const jobType =
+      validation.data.jobType ||
+      null;
 
     let parsedDeadline = null;
 

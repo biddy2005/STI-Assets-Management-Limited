@@ -1,7 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const prisma = require('../config/db');
-const { cleanText, isHoneypotTriggered, isValidEmail } = require('../middleware/validation.middleware');
+const {
+  isHoneypotTriggered,
+  validateSchema
+} = require(
+  '../middleware/validation.middleware'
+);
+
+const {
+  contactSchema
+} = require(
+  '../schemas/contact.schema'
+);
 
 const {
   csrfSynchronisedProtection
@@ -49,62 +60,19 @@ router.post(
     }
 
     /*
-     * Clean and limit every submitted value.
-     */
-    const firstName =
-      cleanText(
-        req.body.firstName,
-        100
-      );
-
-    const lastName =
-      cleanText(
-        req.body.lastName,
-        100
-      );
-
-    const name =
-      `${firstName} ${lastName}`.trim();
-
-    const email =
-      cleanText(
-        req.body.email,
-        254
-      ).toLowerCase();
-
-    const phone =
-      cleanText(
-        req.body.phone,
-        30
-      ) || null;
-
-    const subject =
-      cleanText(
-        req.body.subject,
-        200
-      ) || null;
-
-    const message =
-      cleanText(
-        req.body.message,
-        5000
-      );
-
-    /*
-     * Required fields:
+     * Validate and normalize the submitted form.
      *
-     * - first name
-     * - last name
-     * - valid email
-     * - message
+     * The schema preserves the existing behaviour:
+     * values are trimmed and limited to their existing
+     * maximum lengths before validation.
      */
-    const submissionIsInvalid =
-      !firstName ||
-      !lastName ||
-      !isValidEmail(email) ||
-      !message;
+    const validation =
+      validateSchema(
+        contactSchema,
+        req.body
+      );
 
-    if (submissionIsInvalid) {
+    if (!validation.success) {
       return res.status(400).render(
         'contact',
         {
@@ -117,6 +85,24 @@ router.post(
         }
       );
     }
+
+    const {
+      firstName,
+      lastName,
+      email,
+      message
+    } = validation.data;
+
+    const phone =
+      validation.data.phone ||
+      null;
+
+    const subject =
+      validation.data.subject ||
+      null;
+
+    const name =
+      `${firstName} ${lastName}`.trim();
 
     /*
      * The ContactSubmission status automatically defaults to

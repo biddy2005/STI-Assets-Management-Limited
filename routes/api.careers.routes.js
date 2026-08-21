@@ -32,10 +32,17 @@ const {
 );
 
 const {
-  cleanText,
   isHoneypotTriggered,
-  isValidEmail
-} = require('../middleware/validation.middleware');
+  validateSchema
+} = require(
+  '../middleware/validation.middleware'
+);
+
+const {
+  careerApplicationSchema
+} = require(
+  '../schemas/careers.schema'
+);
 
 
 
@@ -258,53 +265,43 @@ router.post(
     }
 
 
-    const applicantName =
-      cleanText(
-        req.body.applicantName,
-        100
+    /*
+     * Validate and normalize the submitted application fields.
+     *
+     * Upload validation, privacy acknowledgement and résumé
+     * checks remain separate from this schema so their existing
+     * behaviour and error messages are preserved.
+     */
+    const validation =
+      validateSchema(
+        careerApplicationSchema,
+        req.body
       );
 
 
-    const email =
-      cleanText(
-        req.body.email,
-        254
-      ).toLowerCase();
-
-
-    const phone =
-      cleanText(
-        req.body.phone,
-        30
-      ) || null;
-
-
-    const coverNote =
-      cleanText(
-        req.body.coverNote,
-        5000
-      ) || null;
-
-
-    const jobId =
-      Number(
-        req.body.jobId
-      );
-
-
-    const applicationIsInvalid =
-      !applicantName ||
-      !isValidEmail(email) ||
-      !Number.isInteger(jobId) ||
-      jobId < 1;
-
-
-    if (applicationIsInvalid) {
+    if (!validation.success) {
       return renderCareerError(
         res,
         'Please select a job and provide your name, a valid email address and your résumé.'
       );
     }
+
+
+    const {
+      applicantName,
+      email,
+      jobId
+    } = validation.data;
+
+
+    const phone =
+      validation.data.phone ||
+      null;
+
+
+    const coverNote =
+      validation.data.coverNote ||
+      null;
 
 
     /*
