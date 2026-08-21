@@ -1,4 +1,4 @@
-# AssetCo Website — Setup Guide
+# STI Assets Management Website — Setup Guide
 
 This is a working scaffold: every page and subpage in the sitemap renders, navigation works
 (desktop dropdowns + mobile hamburger), forms are wired to a backend, and there's an admin

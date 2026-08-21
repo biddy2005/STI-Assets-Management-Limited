@@ -346,22 +346,21 @@ app.use(
           req
         );
 
+
       /*
-      * Health checks are intentionally quiet during normal
-      * operation.
+      * Successful health checks are intentionally quiet.
       *
-      * /readyz already writes an explicit error log when the
+      * /readyz already writes an explicit error log if the
       * PostgreSQL readiness check fails.
       */
       const isHealthCheck =
         requestPath === '/healthz' ||
         requestPath === '/readyz';
 
+
       /*
-      * Successful static assets create large amounts of routine
-      * log noise and provide little operational value.
-      *
-      * Failed static requests are deliberately NOT silenced.
+      * Successful browser/static asset requests do not need
+      * individual HTTP log entries.
       */
       const isSuccessfulStaticAsset =
         res.statusCode < 400 &&
@@ -369,13 +368,36 @@ app.use(
           requestPath
         );
 
+
+      /*
+      * Chrome DevTools may automatically request this endpoint.
+      *
+      * Missing JavaScript source maps are also common during
+      * development and do not represent application failures.
+      */
+      const isKnownBrowserNoise =
+        requestPath ===
+          '/.well-known/appspecific/com.chrome.devtools.json' ||
+        (
+          res.statusCode === 404 &&
+          /\.map$/i.test(
+            requestPath
+          )
+        );
+
+
       if (
         isHealthCheck ||
-        isSuccessfulStaticAsset
+        isSuccessfulStaticAsset ||
+        isKnownBrowserNoise
       ) {
         return 'silent';
       }
 
+
+      /*
+      * Server-side failures remain highly visible.
+      */
       if (
         error ||
         res.statusCode >= 500
@@ -383,12 +405,43 @@ app.use(
         return 'error';
       }
 
+
+      /*
+      * Unexpected/rejected client requests remain visible.
+      */
       if (
         res.statusCode >= 400
       ) {
         return 'warn';
       }
 
+
+      /*
+      * Normal page browsing generates a large amount of noise.
+      *
+      * Successful GET and HEAD requests are therefore silent.
+      * Slow GET requests are logged separately below.
+      */
+      if (
+        (
+          req.method === 'GET' ||
+          req.method === 'HEAD'
+        ) &&
+        res.statusCode < 400
+      ) {
+        return 'silent';
+      }
+
+
+      /*
+      * Keep successful state-changing requests visible.
+      *
+      * Examples:
+      * POST /api/contact
+      * POST /api/newsletter
+      * POST /auth/login
+      * POST /admin/...
+      */
       return 'info';
     },
 
@@ -404,21 +457,150 @@ app.use(
           return `${req.method} ${requestPath} completed`;
         },
 
-    customErrorMessage: (
-      req,
-      res,
-      error
-    ) => {
-      const requestPath =
-        getRequestPath(
-          req
+        customErrorMessage: (
+          req,
+          res,
+          error
+        ) => {
+          const requestPath =
+            getRequestPath(
+              req
+            );
+
+          return `${req.method} ${requestPath} failed`;
+        }
+      })
+    );
+
+    /*
+ * ============================================================
+ * SLOW HTTP REQUEST MONITORING
+ * ============================================================
+ *
+ * Routine successful GET/HEAD requests are intentionally
+ * excluded from the normal INFO-level HTTP logs above.
+ *
+ * Preserve visibility of unusually slow page requests so
+ * performance regressions can still be detected.
+ */
+const SLOW_REQUEST_THRESHOLD_MS =
+  1_000;
+
+
+app.use(
+  (req, res, next) => {
+    const startedAt =
+      process.hrtime.bigint();
+
+
+    res.once(
+      'finish',
+      () => {
+        const finishedAt =
+          process.hrtime.bigint();
+
+
+        const responseTimeMs =
+          Number(
+            finishedAt -
+            startedAt
+          ) /
+          1_000_000;
+
+
+        const requestPath =
+          getRequestPath(
+            req
+          );
+
+
+        /*
+         * Failed requests are already handled by the normal
+         * HTTP/error logging system.
+         */
+        if (
+          res.statusCode >= 400
+        ) {
+          return;
+        }
+
+
+        /*
+         * Only monitor page-style read requests here.
+         *
+         * Successful POST/PUT/PATCH/DELETE requests continue
+         * through the normal INFO logging path.
+         */
+        if (
+          req.method !== 'GET' &&
+          req.method !== 'HEAD'
+        ) {
+          return;
+        }
+
+
+        /*
+         * Health checks and static assets are routine and should
+         * not produce slow-request warnings.
+         */
+        const isRoutineRequest =
+          requestPath === '/healthz' ||
+          requestPath === '/readyz' ||
+          routineStaticAssetPattern.test(
+            requestPath
+          );
+
+
+        if (
+          isRoutineRequest
+        ) {
+          return;
+        }
+
+
+        if (
+          responseTimeMs <
+          SLOW_REQUEST_THRESHOLD_MS
+        ) {
+          return;
+        }
+
+
+        req.log.warn(
+          {
+            event:
+              'HTTP_SLOW_REQUEST',
+
+            component:
+              'http',
+
+            requestId:
+              req.requestId,
+
+            method:
+              req.method,
+
+            path:
+              requestPath,
+
+            statusCode:
+              res.statusCode,
+
+            responseTimeMs:
+              Math.round(
+                responseTimeMs
+              )
+          },
+
+          'Slow HTTP request'
         );
+      }
+    );
 
-      return `${req.method} ${requestPath} failed`;
-    }
-  })
+
+    return next();
+  }
 );
-
 /*
  * Health check.
  *
@@ -545,19 +727,72 @@ app.use(
     ),
     {
       /*
-       * Do not expose hidden files such as .env-style files if
-       * one is accidentally copied into public.
-       */
+        Never expose hidden files.
+      */
       dotfiles: 'ignore',
 
       /*
-       * Do not automatically serve an index.html file.
-       * EJS routes control page responses.
-       */
+        EJS routes control pages.
+      */
       index: false,
 
+      /*
+        Allow browser revalidation.
+      */
       etag: true,
-      fallthrough: true
+
+      lastModified: true,
+
+      fallthrough: true,
+
+      /*
+        Short default cache for CSS/JS and
+        other non-image static files.
+      */
+      maxAge:
+        env.isProduction
+          ? '1h'
+          : 0,
+
+      /*
+        Images change much less frequently,
+        so allow browsers to keep them longer.
+      */
+      setHeaders: (
+        res,
+        filePath
+      ) => {
+        if (!env.isProduction) {
+          return;
+        }
+
+        const extension =
+          path
+            .extname(filePath)
+            .toLowerCase();
+
+        const imageExtensions =
+          new Set([
+            '.jpg',
+            '.jpeg',
+            '.png',
+            '.webp',
+            '.avif',
+            '.svg',
+            '.ico'
+          ]);
+
+        if (
+          imageExtensions.has(
+            extension
+          )
+        ) {
+          res.setHeader(
+            'Cache-Control',
+            'public, max-age=604800'
+          );
+        }
+      }
     }
   )
 );
@@ -664,7 +899,7 @@ app.locals.sessionStore =
 app.use(
   session({
     name:
-      'assetco.sid',
+      'stiassets.sid',
 
     store:
       sessionStore,

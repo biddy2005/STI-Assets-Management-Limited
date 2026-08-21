@@ -657,30 +657,93 @@
     ];
 
     const teamRevealGroups = [
-  {
-    selector: '.team-switch-pill',
-    effect: 'reveal-up',
-    stagger: 0
-  },
-  {
-    selector:
-      '#board-view .leadership-header, ' +
-      '#management-view .leadership-header',
-    effect: 'reveal-up',
-    stagger: 0
-  },
-  {
-    selector: '#board-view .leadership-card',
-    effect: 'reveal-up',
-    stagger: 80
-  },
-  {
-    selector:
-      '#management-view .leadership-card',
-    effect: 'reveal-up',
-    stagger: 90
-  }
-];
+
+      // ==========================================================
+      // TEAM SWITCH
+      // ==========================================================
+
+      {
+        selector: '.team-switch-pill',
+        effect: 'reveal-up',
+        delay: 0,
+        stagger: 0
+      },
+
+
+      // ==========================================================
+      // BOARD OF DIRECTORS
+      // ==========================================================
+
+      {
+        selector:
+          '#board-view .team-section-eyebrow',
+        effect: 'reveal-up',
+        delay: 0,
+        stagger: 0
+      },
+
+      {
+        selector:
+          '#board-view .leadership-heading',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector:
+          '#board-view .leadership-description',
+        effect: 'reveal-up',
+        delay: 70,
+        stagger: 0
+      },
+
+      {
+        selector:
+          '#board-view .leadership-card',
+        effect: 'reveal-card',
+        delay: 70,
+        stagger: 60
+      },
+
+
+      // ==========================================================
+      // MANAGEMENT TEAM
+      // ==========================================================
+
+      {
+        selector:
+          '#management-view .team-section-eyebrow',
+        effect: 'reveal-up',
+        delay: 0,
+        stagger: 0
+      },
+
+      {
+        selector:
+          '#management-view .leadership-heading',
+        effect: 'reveal-heading',
+        delay: 40,
+        stagger: 0
+      },
+
+      {
+        selector:
+          '#management-view .leadership-description',
+        effect: 'reveal-up',
+        delay: 70,
+        stagger: 0
+      },
+
+      {
+        selector:
+          '#management-view .leadership-card',
+        effect: 'reveal-card',
+        delay: 70,
+        stagger: 60
+      }
+
+    ];
 
 const servicesRevealGroups = [
   {

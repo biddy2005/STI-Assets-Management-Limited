@@ -93,7 +93,7 @@ async function requireAuth(
       );
 
       res.clearCookie(
-        'assetco.sid',
+        'stiassets.sid',
         {
           path: '/'
         }

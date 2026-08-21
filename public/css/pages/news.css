@@ -11,7 +11,7 @@
 .news-page-hero {
   --hero-bg-image:
     url(
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80"
+      "/heropic.png"
     );
 }
 

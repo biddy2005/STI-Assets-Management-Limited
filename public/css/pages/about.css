@@ -5,7 +5,7 @@
 .about-page-hero {
   --hero-bg-image:
     url(
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80"
+      "/heropic.png"
     );
 }
 /* ============================================================
@@ -1590,6 +1590,52 @@
   --reveal-y: 0px;
 }
 
+.about-overview-visual.about-reveal.reveal-right {
+  --reveal-x: 62px;
+}
+
+/* ============================================================
+   WHO WE ARE IMAGE ENTRANCE
+============================================================ */
+
+.about-overview-visual.about-reveal
+  .about-overview-image img {
+  scale: 1.07;
+
+  transition:
+    transform 450ms ease,
+    scale 760ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  transition-delay: 70ms;
+
+  will-change: scale;
+}
+.about-overview-visual.about-reveal
+  .about-overview-experience {
+  opacity: 0;
+
+  translate: 0 14px;
+
+  transition:
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    translate 500ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  transition-delay: 180ms;
+}
+
+
+.about-overview-visual.about-reveal.is-visible
+  .about-overview-experience {
+  opacity: 1;
+
+  translate: 0 0;
+}
+
+
+.about-overview-visual.about-reveal.is-visible
+  .about-overview-image img {
+  scale: 1;
+}
 
 /* Cards */
 
@@ -1714,6 +1760,23 @@
     translate: none;
 
     scale: 1;
+
+    transition: none;
+  }
+
+    .about-overview-visual.about-reveal
+    .about-overview-image img {
+    scale: 1;
+
+    transition: none;
+  }
+
+
+  .about-overview-visual.about-reveal
+    .about-overview-experience {
+    opacity: 1;
+
+    translate: none;
 
     transition: none;
   }

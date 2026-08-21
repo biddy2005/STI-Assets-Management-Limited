@@ -47,6 +47,12 @@
     content="#033669"
   >
 
+  <link
+    rel="icon"
+    type="image/png"
+    href="/croppedstilogo.png"
+  >
+
 
   <% if (typeof robots !== 'undefined' && robots) { %>
 
@@ -166,6 +172,39 @@
 </head>
 
 <body>
+
+  <!-- =========================================================
+       GLOBAL PAGE LOADER
+  ========================================================== -->
+  <div
+    id="siteLoader"
+    class="site-loader"
+    role="status"
+    aria-live="polite"
+    aria-label="Loading page"
+  >
+    <div class="site-loader-inner">
+
+      <div
+        class="site-loader-mark"
+        aria-hidden="true"
+      >
+        <span class="site-loader-ring"></span>
+
+        <img
+          src="/croppedstilogo.png"
+          alt=""
+          width="53"
+          height="71"
+        >
+      </div>
+
+      <p class="site-loader-brand">
+        STI Assets Management
+      </p>
+
+    </div>
+  </div>
 
   <%- include('nav') %>
 

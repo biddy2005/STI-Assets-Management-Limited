@@ -10,7 +10,7 @@
 .team-page-hero {
   --hero-bg-image:
     url(
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80"
+      "/heropic.png"
     );
 }
 
@@ -276,23 +276,45 @@
   overflow: hidden;
 
   transition:
-    opacity 680ms
-      cubic-bezier(0.22, 1, 0.36, 1)
-      var(--reveal-delay, 0ms),
+  transform
+    280ms
+    cubic-bezier(0.22, 1, 0.36, 1),
 
-    translate 680ms
-      cubic-bezier(0.22, 1, 0.36, 1)
-      var(--reveal-delay, 0ms),
+  border-color
+    280ms
+    cubic-bezier(0.22, 1, 0.36, 1),
 
-    transform 280ms
-      cubic-bezier(0.22, 1, 0.36, 1),
+  box-shadow
+    280ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    !important;
+}
 
-    border-color 280ms
-      cubic-bezier(0.22, 1, 0.36, 1),
+/* ============================================================
+   TEAM REVEALS: MOBILE
+============================================================ */
 
-    box-shadow 280ms
-      cubic-bezier(0.22, 1, 0.36, 1)
-      !important;
+@media (max-width: 767px) {
+
+  .team-reveal {
+    --reveal-x: 0px;
+    --reveal-y: 24px;
+  }
+
+
+  .team-reveal.reveal-heading {
+    --reveal-x: 0px;
+    --reveal-y: 28px;
+  }
+
+
+  .team-reveal.reveal-card {
+    --reveal-x: 0px;
+    --reveal-y: 27px;
+
+    --reveal-scale: 0.985;
+  }
+
 }
 
 /* ============================================================
@@ -779,20 +801,18 @@ body.team-modal-open {
   overflow: hidden;
 
   transition:
-  opacity 680ms cubic-bezier(0.22, 1, 0.36, 1)
-    var(--reveal-delay, 0ms),
+  transform
+    280ms
+    cubic-bezier(0.22, 1, 0.36, 1),
 
-  translate 680ms cubic-bezier(0.22, 1, 0.36, 1)
-    var(--reveal-delay, 0ms),
+  border-color
+    280ms
+    cubic-bezier(0.22, 1, 0.36, 1),
 
-  transform 280ms cubic-bezier(0.22, 1, 0.36, 1)
-    0ms,
-
-  border-color 280ms cubic-bezier(0.22, 1, 0.36, 1)
-    0ms,
-
-  box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1)
-    0ms !important;
+  box-shadow
+    280ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    !important;
 }
 
 
@@ -1002,31 +1022,83 @@ body.team-modal-open {
 }
 
 /* ============================================================
-   OUR TEAM PAGE REVEALS
+   OUR TEAM PAGE SCROLL REVEALS
+   Matches Home and About animation language
 ============================================================ */
 
 .team-reveal {
+  --reveal-x: 0px;
+  --reveal-y: 28px;
+  --reveal-scale: 1;
+
   opacity: 0;
 
-  translate: 0 24px;
+  translate:
+    var(--reveal-x)
+    var(--reveal-y);
 
-  #board-view .leadership-card.team-reveal {
-  translate: 0 30px;
-}
+  scale:
+    var(--reveal-scale);
 
   transition:
-    opacity 680ms cubic-bezier(0.22, 1, 0.36, 1),
-    translate 680ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity
+      420ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    translate
+      500ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+
+    scale
+      500ms
+      cubic-bezier(0.22, 1, 0.36, 1);
 
   transition-delay:
     var(--reveal-delay, 0ms);
 
-  will-change: opacity, translate;
+  will-change:
+    opacity,
+    translate,
+    scale;
 }
+
+
+/* Standard upward entrance */
+
+.team-reveal.reveal-up {
+  --reveal-x: 0px;
+  --reveal-y: 28px;
+}
+
+
+/* Large navy section heading */
+
+.team-reveal.reveal-heading {
+  --reveal-x: 0px;
+  --reveal-y: 34px;
+
+  --reveal-scale: 0.99;
+}
+
+
+/* Leadership cards */
+
+.team-reveal.reveal-card {
+  --reveal-x: 0px;
+  --reveal-y: 32px;
+
+  --reveal-scale: 0.975;
+}
+
+
+/* Final position */
 
 .team-reveal.is-visible {
   opacity: 1;
+
   translate: 0 0;
+
+  scale: 1;
 }
 
 
@@ -1036,30 +1108,32 @@ body.team-modal-open {
 
 .team-page-hero .hero-eyebrow {
   animation:
-    team-hero-enter 620ms
+    team-hero-enter 460ms
     cubic-bezier(0.22, 1, 0.36, 1)
-    80ms both;
+    60ms both;
 }
+
 
 .team-page-hero h1 {
   animation:
-    team-hero-enter 680ms
+    team-hero-enter 520ms
     cubic-bezier(0.22, 1, 0.36, 1)
-    160ms both;
+    120ms both;
 }
+
 
 .team-page-hero p {
   animation:
-    team-hero-enter 680ms
+    team-hero-enter 500ms
     cubic-bezier(0.22, 1, 0.36, 1)
-    240ms both;
+    190ms both;
 }
 
 @keyframes team-hero-enter {
   from {
     opacity: 0;
     transform:
-      translate3d(0, 18px, 0);
+      translate3d(0, 26px, 0);
   }
 
   to {
@@ -1074,16 +1148,26 @@ body.team-modal-open {
    TEAM ANIMATION REDUCED MOTION
 ============================================================ */
 @media (prefers-reduced-motion: reduce) {
+
   .team-reveal,
+  .team-reveal.reveal-up,
+  .team-reveal.reveal-heading,
+  .team-reveal.reveal-card,
   .team-reveal.is-visible {
     opacity: 1;
+
     translate: none;
+
+    scale: 1;
+
     transition: none;
   }
+
 
   .team-page-hero .hero-eyebrow,
   .team-page-hero h1,
   .team-page-hero p {
     animation: none;
   }
+
 }

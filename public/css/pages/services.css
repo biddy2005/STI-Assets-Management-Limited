@@ -10,7 +10,7 @@
 .services-page-hero {
   --hero-bg-image:
     url(
-      "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80"
+      "/services-hero.webp"
     );
 }
 

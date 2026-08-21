@@ -605,7 +605,7 @@ router.post(
     );
 
     res.clearCookie(
-      'assetco.sid',
+      'stiassets.sid',
       {
         path: '/'
       }
