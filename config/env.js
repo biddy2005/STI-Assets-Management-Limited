@@ -1,4 +1,17 @@
-require('dotenv').config();
+/*
+ * Automated tests load their isolated configuration through
+ * .env.test before the application starts.
+ *
+ * Never fall back to the developer .env during tests because
+ * it may contain real external-service credentials such as
+ * Power Automate webhook URLs.
+ */
+if (
+  process.env.NODE_ENV !==
+  'test'
+) {
+  require('dotenv').config();
+}
 
 const allowedNodeEnvironments =
   new Set([
@@ -285,77 +298,6 @@ if (
   );
 }
 
-const smtpHost =
-  readTrimmedEnvironmentValue(
-    'SMTP_HOST'
-  );
-
-const smtpUser =
-  readTrimmedEnvironmentValue(
-    'SMTP_USER'
-  );
-
-const smtpPass =
-  typeof process.env.SMTP_PASS ===
-    'string'
-    ? process.env.SMTP_PASS
-    : '';
-
-const notifyEmail =
-  readTrimmedEnvironmentValue(
-    'NOTIFY_EMAIL'
-  );
-
-const smtpPort =
-  Number(
-    process.env.SMTP_PORT || 587
-  );
-
-if (
-  !Number.isInteger(smtpPort) ||
-  smtpPort < 1 ||
-  smtpPort > 65535
-) {
-  throw new Error(
-    'SMTP_PORT must be an integer between 1 and 65535.'
-  );
-}
-
-/*
- * SMTP is optional during development.
- *
- * However, once any meaningful SMTP value is provided,
- * all required values must be provided.
- *
- * SMTP_PORT alone does not count because it normally has a
- * default value of 587.
- */
-const smtpConfigurationStarted =
-  Boolean(
-    smtpHost ||
-    smtpUser ||
-    smtpPass ||
-    notifyEmail
-  );
-
-if (
-  smtpConfigurationStarted &&
-  (
-    !smtpHost ||
-    !smtpUser ||
-    !smtpPass ||
-    !notifyEmail
-  )
-) {
-  throw new Error(
-    'SMTP_HOST, SMTP_USER, SMTP_PASS and NOTIFY_EMAIL must all be provided when email is enabled.'
-  );
-}
-
-const mailerConfigured =
-  smtpConfigurationStarted;
-
-
 /*
  * ============================================================
  * POWER AUTOMATE
@@ -373,6 +315,11 @@ const powerAutomateContactUrl =
     'POWER_AUTOMATE_CONTACT_URL'
   );
 
+const powerAutomateCareersUrl =
+  readTrimmedEnvironmentValue(
+    'POWER_AUTOMATE_CAREERS_URL'
+  );
+
 const powerAutomateNewsletterUrl =
   readTrimmedEnvironmentValue(
     'POWER_AUTOMATE_NEWSLETTER_URL'
@@ -382,6 +329,72 @@ const powerAutomateNewsletterUnsubscribeUrl =
   readTrimmedEnvironmentValue(
     'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL'
   );
+
+/*
+ * Production depends on Power Automate for external workflow
+ * notifications.
+ *
+ * Development and automated tests may run without these
+ * integrations, but production should fail fast rather than
+ * silently accepting submissions without triggering the
+ * expected workflows.
+ */
+if (isProduction) {
+
+  const missingPowerAutomateVariables =
+    [];
+
+
+  if (!powerAutomateContactUrl) {
+
+    missingPowerAutomateVariables.push(
+      'POWER_AUTOMATE_CONTACT_URL'
+    );
+
+  }
+
+
+  if (!powerAutomateCareersUrl) {
+
+    missingPowerAutomateVariables.push(
+      'POWER_AUTOMATE_CAREERS_URL'
+    );
+
+  }
+
+
+  if (!powerAutomateNewsletterUrl) {
+
+    missingPowerAutomateVariables.push(
+      'POWER_AUTOMATE_NEWSLETTER_URL'
+    );
+
+  }
+
+
+  if (
+    !powerAutomateNewsletterUnsubscribeUrl
+  ) {
+
+    missingPowerAutomateVariables.push(
+      'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL'
+    );
+
+  }
+
+
+  if (
+    missingPowerAutomateVariables.length >
+    0
+  ) {
+
+    throw new Error(
+      `Missing production Power Automate configuration: ${missingPowerAutomateVariables.join(', ')}`
+    );
+
+  }
+
+}
 
 
 if (powerAutomateNewsletterUrl) {
@@ -408,6 +421,29 @@ if (powerAutomateNewsletterUrl) {
   }
 }
 
+if (powerAutomateCareersUrl) {
+  let parsedPowerAutomateCareersUrl;
+
+  try {
+    parsedPowerAutomateCareersUrl =
+      new URL(
+        powerAutomateCareersUrl
+      );
+  } catch (error) {
+    throw new Error(
+      'POWER_AUTOMATE_CAREERS_URL must be a valid absolute URL.'
+    );
+  }
+
+  if (
+    parsedPowerAutomateCareersUrl
+      .protocol !== 'https:'
+  ) {
+    throw new Error(
+      'POWER_AUTOMATE_CAREERS_URL must use HTTPS.'
+    );
+  }
+}
 
 if (powerAutomateContactUrl) {
   let parsedPowerAutomateContactUrl;
@@ -522,6 +558,23 @@ if (
 ) {
   throw new Error(
     'STORAGE_DRIVER must be either local or r2.'
+  );
+}
+
+/*
+ * Production uploads must use persistent object storage.
+ *
+ * Local filesystem storage is suitable for development and
+ * automated tests, but production deployments may use
+ * ephemeral filesystems where uploaded files can disappear
+ * after a restart or redeployment.
+ */
+if (
+  isProduction &&
+  storageDriver !== 'r2'
+) {
+  throw new Error(
+    'STORAGE_DRIVER must be r2 in production.'
   );
 }
 
@@ -724,13 +777,8 @@ module.exports = {
   sessionSecret,
   appBaseUrl,
   trustProxy,
-  smtpHost,
-  smtpPort,
-  smtpUser,
-  smtpPass,
-  notifyEmail,
-  mailerConfigured,
   powerAutomateContactUrl,
+  powerAutomateCareersUrl,
   powerAutomateNewsletterUrl,
   powerAutomateNewsletterUnsubscribeUrl,
   newsletterUnsubscribeSecret,

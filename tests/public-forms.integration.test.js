@@ -65,6 +65,37 @@ if (
   );
 }
 
+/*
+ * ============================================================
+ * EXTERNAL INTEGRATION SAFETY
+ * ============================================================
+ *
+ * Automated tests must never contact real Power Automate
+ * workflows.
+ */
+const powerAutomateTestVariables =
+  [
+    'POWER_AUTOMATE_CONTACT_URL',
+    'POWER_AUTOMATE_CAREERS_URL',
+    'POWER_AUTOMATE_NEWSLETTER_URL',
+    'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL'
+  ];
+
+
+for (
+  const variableName
+  of powerAutomateTestVariables
+) {
+  if (
+    process.env[
+      variableName
+    ]
+  ) {
+    throw new Error(
+      `Public-form integration tests refused: ${variableName} must be empty during automated tests.`
+    );
+  }
+}
 
 /*
  * Require the application only after the environment safety
@@ -85,21 +116,8 @@ const {
 
 
 const {
-  transporter,
-  isMailerConfigured
-} = require(
-  '../config/mailer'
-);
-
-
-const {
-  sendJobApplicationNotification
-} = require(
-  '../services/email.service'
-);
-
-const {
   sendContactToPowerAutomate,
+  sendCareerApplicationToPowerAutomate,
   sendNewsletterToPowerAutomate,
   sendNewsletterUnsubscribeToPowerAutomate
 } = require(
@@ -329,68 +347,7 @@ test.after(
 );
 
 
-/*
- * ============================================================
- * 1. EMAIL-DISABLED SERVICE
- * ============================================================
- */
 
-test(
-  'career email notification service skips safely when SMTP is disabled',
-  async () => {
-    assert.equal(
-      isMailerConfigured(),
-      false,
-      'SMTP must remain disabled in .env.test.'
-    );
-
-
-    assert.equal(
-      transporter,
-      null
-    );
-
-
-    const careerResult =
-      await sendJobApplicationNotification({
-        applicationId:
-          999999,
-
-        applicantName:
-          'Phase 2E Applicant',
-
-        email:
-          'phase2e-career@example.com',
-
-        phone:
-          null,
-
-        coverNote:
-          null,
-
-        jobId:
-          999999,
-
-        jobTitle:
-          'Integration Test Role'
-      });
-
-
-    assert.deepEqual(
-      careerResult,
-      {
-        sent:
-          false,
-
-        skipped:
-          true,
-
-        messageId:
-          null
-      }
-    );
-  }
-);
 
 test(
   'Power Automate integrations skip safely when webhooks are disabled',
@@ -421,6 +378,46 @@ test(
           )
       });
 
+    const careersResult =
+  await sendCareerApplicationToPowerAutomate({
+    applicationId:
+      999999,
+
+    applicantName:
+      'Power Automate Careers Test',
+
+    email:
+      'power-automate-careers@example.com',
+
+    phone:
+      '08000000000',
+
+    coverNote:
+      'Power Automate disabled integration test.',
+
+    jobId:
+      999999,
+
+    jobTitle:
+      'Integration Test Role',
+
+    submittedAt:
+      new Date(
+        '2026-01-01T00:00:00.000Z'
+      ),
+
+    resumeOriginalName:
+      'test-resume.pdf',
+
+    resumeMimeType:
+      'application/pdf',
+
+    resumeContentBase64:
+      VALID_PDF.toString(
+        'base64'
+      )
+  });  
+
 
     const newsletterResult =
       await sendNewsletterToPowerAutomate({
@@ -442,6 +439,20 @@ test(
 
     assert.deepEqual(
       contactResult,
+      {
+        sent:
+          false,
+
+        skipped:
+          true,
+
+        statusCode:
+          null
+      }
+    );
+
+    assert.deepEqual(
+      careersResult,
       {
         sent:
           false,
@@ -678,13 +689,11 @@ test(
 
 
 /*
- * ============================================================
- * 5. VALID CONTACT + SMTP DISABLED
- * ============================================================
+ * 5. VALID CONTACT + WEBHOOK DISABLED
  */
 
 test(
-  'valid Contact submission is saved even when SMTP is disabled',
+  'valid Contact submission is saved even when Power Automate is disabled',
   async () => {
     const agent =
       request.agent(app);

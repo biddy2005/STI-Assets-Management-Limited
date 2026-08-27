@@ -1075,11 +1075,19 @@ const legalRevealGroups = [
     'about-reveal'
   );
 
-const homeRevealElements =
-  registerRevealGroups(
-    homeRevealGroups,
-    'home-reveal'
+const isRevampedHomepage =
+  Boolean(
+    document.querySelector('.home-hero') &&
+    document.querySelector('[data-reveal]')
   );
+
+const homeRevealElements =
+  isRevampedHomepage
+    ? []
+    : registerRevealGroups(
+        homeRevealGroups,
+        'home-reveal'
+      );
 
 const teamRevealElements =
   registerRevealGroups(

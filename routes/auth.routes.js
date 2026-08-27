@@ -592,6 +592,9 @@ router.post(
             err:
               error,
 
+            event:
+              'ADMIN_LOGOUT_AUDIT_FAILED',
+
             adminId
           },
 

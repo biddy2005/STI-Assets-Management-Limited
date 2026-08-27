@@ -130,6 +130,137 @@ async function sendContactToPowerAutomate({
 }
 
 /**
+ * Send one job application event to the Microsoft 365
+ * Power Automate workflow.
+ *
+ * PostgreSQL and private résumé storage remain the
+ * application's source of truth.
+ *
+ * The résumé itself is deliberately not sent to Power Automate.
+ * Administrators can access it through the authenticated
+ * application-management area.
+ */
+async function sendCareerApplicationToPowerAutomate({
+  applicationId,
+  applicantName,
+  email,
+  phone,
+  coverNote,
+  jobId,
+  jobTitle,
+  submittedAt,
+  resumeOriginalName,
+  resumeMimeType,
+  resumeContentBase64
+}) {
+  if (!env.powerAutomateCareersUrl) {
+    return {
+      sent: false,
+      skipped: true,
+      statusCode: null
+    };
+  }
+
+
+  const controller =
+    new AbortController();
+
+
+  const timeout =
+    setTimeout(
+      () => {
+        controller.abort();
+      },
+      WEBHOOK_TIMEOUT_MS
+    );
+
+
+  try {
+    const response =
+      await fetch(
+        env.powerAutomateCareersUrl,
+        {
+          method:
+            'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify({
+              schemaVersion:
+                1,
+
+              applicationId,
+
+              applicantName,
+
+              email,
+
+              phone:
+                phone || '',
+
+              coverNote:
+                coverNote || '',
+
+              jobId,
+
+              jobTitle,
+
+                submittedAt:
+                  submittedAt instanceof Date
+                    ? submittedAt.toISOString()
+                    : String(
+                        submittedAt
+                      ),
+
+                resume: {
+                  name:
+                    resumeOriginalName,
+
+                  contentType:
+                    resumeMimeType,
+
+                  contentBytes:
+                    resumeContentBase64
+                }
+            }),
+
+          signal:
+            controller.signal
+        }
+      );
+
+
+    if (!response.ok) {
+      const error =
+        new Error(
+          `Power Automate webhook returned HTTP ${response.status}.`
+        );
+
+      error.statusCode =
+        response.status;
+
+      throw error;
+    }
+
+
+    return {
+      sent: true,
+      skipped: false,
+      statusCode:
+        response.status
+    };
+  } finally {
+    clearTimeout(
+      timeout
+    );
+  }
+}
+
+/**
  * Send one newsletter subscription event to the Microsoft 365
  * Power Automate workflow.
  */
@@ -328,6 +459,7 @@ async function sendNewsletterUnsubscribeToPowerAutomate({
 
 module.exports = {
   sendContactToPowerAutomate,
+  sendCareerApplicationToPowerAutomate,
   sendNewsletterToPowerAutomate,
   sendNewsletterUnsubscribeToPowerAutomate
 };

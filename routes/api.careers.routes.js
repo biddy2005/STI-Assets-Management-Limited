@@ -18,9 +18,9 @@ const {
 );
 
 const {
-  sendJobApplicationNotification
+  sendCareerApplicationToPowerAutomate
 } = require(
-  '../services/email.service'
+  '../services/powerAutomate.service'
 );
 
 const prisma = require('../config/db');
@@ -95,6 +95,7 @@ function hasValidPdfSignature(
  * Reload the careers page with an error message.
  */
 async function renderCareerError(
+  req,
   res,
   errorMessage
 ) {
@@ -111,12 +112,22 @@ async function renderCareerError(
       })
       .catch((error) => {
         /*
-         * The form error should still display even when the
-         * job list cannot be reloaded.
-         */
-        console.error(
-          'Could not reload jobs while displaying a careers form error:',
-          error
+        * The form error should still display even when the
+        * job list cannot be reloaded.
+        */
+        req.log.error(
+          {
+            err:
+              error,
+
+            event:
+              'CAREERS_JOB_LIST_RELOAD_FAILED',
+
+            component:
+              'careers'
+          },
+
+          'Could not reload jobs while displaying a careers form error'
         );
 
         return [];
@@ -251,6 +262,7 @@ router.post(
 
     if (!privacyAcknowledged) {
       return renderCareerError(
+        req,
         res,
         'You must acknowledge the Privacy Policy before submitting your application.'
       );
@@ -259,6 +271,7 @@ router.post(
 
     if (!req.file) {
       return renderCareerError(
+        req,
         res,
         'Please upload your résumé as a PDF.'
       );
@@ -281,6 +294,7 @@ router.post(
 
     if (!validation.success) {
       return renderCareerError(
+        req,
         res,
         'Please select a job and provide your name, a valid email address and your résumé.'
       );
@@ -320,6 +334,7 @@ router.post(
 
     if (!isRealPdf) {
       return renderCareerError(
+        req,
         res,
         'The uploaded file is not a valid PDF document.'
       );
@@ -353,6 +368,7 @@ router.post(
 
     if (!selectedJob) {
       return renderCareerError(
+        req,
         res,
         'That job is no longer accepting applications.'
       );
@@ -453,6 +469,9 @@ router.post(
             err:
               cleanupError,
 
+            event:
+              'APPLICATION_RESUME_ROLLBACK_CLEANUP_FAILED',
+
             storageKey
           },
 
@@ -466,50 +485,117 @@ router.post(
 
 
     /*
-     * Email is deliberately non-transactional.
-     *
-     * A notification failure must not undo the valid résumé and
-     * JobApplication record.
-     */
-    try {
-      await sendJobApplicationNotification({
+ * Power Automate notification is deliberately
+ * non-transactional.
+ *
+ * The résumé and JobApplication have already been stored
+ * successfully.
+ *
+ * A Microsoft 365 or Power Automate failure must never undo
+ * the valid application.
+ */
+try {
+  const webhookResult =
+    await sendCareerApplicationToPowerAutomate({
+      applicationId:
+        createdApplication.id,
+
+      applicantName,
+
+      email,
+
+      phone,
+
+      coverNote,
+
+      jobId,
+
+      jobTitle:
+        selectedJob.title,
+
+      submittedAt:
+        createdApplication.submittedAt,
+
+      /*
+       * Use the sanitized filename that was persisted with the
+       * application rather than trusting the raw upload name
+       * again.
+       */
+      resumeOriginalName:
+        createdApplication.resumeOriginalName,
+
+      resumeMimeType:
+        createdApplication.resumeMimeType,
+
+      /*
+       * Multer MemoryStorage still owns the validated PDF buffer
+       * for the lifetime of this request.
+       *
+       * R2 remains the permanent private copy. This Base64 value
+       * is sent only so Power Automate can attach the résumé to
+       * the HR notification email.
+       */
+      resumeContentBase64:
+        req.file.buffer.toString(
+          'base64'
+        )
+    });
+
+
+  if (webhookResult.skipped) {
+    req.log.warn(
+      {
+        event:
+          'POWER_AUTOMATE_WEBHOOK_SKIPPED',
+
+        component:
+          'integration',
+
+        dependency:
+          'power-automate',
+
+        workflow:
+          'careers',
+
+        reason:
+          'NOT_CONFIGURED',
+
         applicationId:
-          createdApplication.id,
+          createdApplication.id
+      },
 
-        applicantName,
-        email,
-        phone,
-        coverNote,
-        jobId,
+      'Careers Power Automate webhook skipped'
+    );
+  }
+} catch (error) {
+  req.log.error(
+    {
+      err:
+        error,
 
-        jobTitle:
-          selectedJob.title
-      });
-    } catch (error) {
-      req.log.error(
-        {
-          err:
-            error,
+      event:
+        'POWER_AUTOMATE_WEBHOOK_FAILED',
 
-          event:
-            'EMAIL_SEND_FAILED',
+      component:
+        'integration',
 
-          component:
-            'email',
+      dependency:
+        'power-automate',
 
-          dependency:
-            'smtp',
+      workflow:
+        'careers',
 
-          notificationType:
-            'job_application',
+      applicationId:
+        createdApplication.id,
 
-          applicationId:
-            createdApplication.id
-        },
+      httpStatusCode:
+        error?.statusCode ||
+        null
+    },
 
-        'Job application notification email failed'
-      );
-    }
+    'Careers Power Automate webhook failed'
+  );
+}
 
 
     return res.redirect(
@@ -558,6 +644,7 @@ router.use(
               'LIMIT_FILE_SIZE'
           ) {
             return renderCareerError(
+              req,
               res,
               'The résumé must be 5 MB or smaller.'
             );
@@ -569,6 +656,7 @@ router.use(
               'LIMIT_FILE_COUNT'
           ) {
             return renderCareerError(
+              req,
               res,
               'Please upload only one résumé.'
             );
@@ -580,6 +668,7 @@ router.use(
               'LIMIT_UNEXPECTED_FILE'
           ) {
             return renderCareerError(
+              req,
               res,
               'The résumé upload field was not recognised.'
             );
@@ -587,6 +676,7 @@ router.use(
 
 
           return renderCareerError(
+            req,
             res,
             'The résumé could not be uploaded.'
           );
@@ -598,6 +688,7 @@ router.use(
             'Please upload your résumé as a valid PDF file.'
         ) {
           return renderCareerError(
+            req,
             res,
             error.message
           );

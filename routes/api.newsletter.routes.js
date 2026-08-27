@@ -162,16 +162,34 @@ const subscriber =
         email
       },
 
+      /*
+       * An existing subscriber may previously have opted out.
+       *
+       * Submitting the newsletter form again is treated as a new,
+       * explicit subscription request.
+       */
       update: {
+        isSubscribed:
+          true,
+
         subscribedAt:
-          subscriptionTime
+          subscriptionTime,
+
+        unsubscribedAt:
+          null
       },
 
       create: {
         email,
 
+        isSubscribed:
+          true,
+
         subscribedAt:
-          subscriptionTime
+          subscriptionTime,
+
+        unsubscribedAt:
+          null
       }
     });
 

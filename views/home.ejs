@@ -2,913 +2,885 @@
   pageCss: '/css/pages/home.css'
 }) %>
 
+<%
+  const homeArticles = (
+    typeof articles !== 'undefined' &&
+    Array.isArray(articles)
+  )
+    ? articles.slice(0, 3)
+    : [];
+%>
+
 <!-- ============================================================
-     1. HERO SECTION
+     HOMEPAGE STRUCTURED DATA
 ============================================================ -->
-<section class="hero-v2">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FinancialService",
+  "name": "STI Assets Management Limited",
+  "url": "https://stiassetmgt.com/",
+  "logo": "https://stiassetmgt.com/stilogo.png",
+  "description": "STI Assets Management Limited provides investment management, financial advisory, market research and portfolio solutions to individuals and organisations.",
+  "telephone": "+2349165439544",
+  "email": "info@stiassetmgt.com",
+  "areaServed": {
+    "@type": "Country",
+    "name": "Nigeria"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Plot 169b Moshood Olugbani Street",
+    "addressLocality": "Victoria Island",
+    "addressRegion": "Lagos",
+    "addressCountry": "NG"
+  }
+}
+</script>
 
-  <div class="hero-v2-inner">
-
-    <div class="hero-v2-content">
-
-      <div class="hero-v2-kicker">
-        <span>
-          Investment Management &bull; Financial Advisory
-        </span>
-      </div>
-
-
-      <!-- Rotating Hero Message -->
-      <div
-        class="hero-message-stage"
-        data-hero-rotator
-        role="group"
-        aria-label="STI Assets Management introduction"
-        aria-live="off"
-      >
-
-        <!-- Message 1 -->
-        <h1
-          class="hero-message hero-v2-heading is-active"
-          data-duration="2500"
-          aria-hidden="false"
-        >
-          <span
-            class="hero-word"
-            style="--word-index: 0"
-          >
-            Simplified
-          </span>
-
-          <span
-            class="hero-word"
-            style="--word-index: 1"
-          >
-            Finance
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 2"
-          >
-            Management
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 3"
-          >
-            Services
-          </span>
-        </h1>
-
-
-        <!-- Message 2 -->
-        <p
-          class="hero-message hero-message-support"
-          data-duration="2400"
-          aria-hidden="true"
-        >
-          <span class="hero-word" style="--word-index: 0">
-            Serving
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 1"
-          >
-            Individuals
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 2"
-          >
-            &amp;
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 3"
-          >
-            Institutions
-          </span>
-        </p>
-
-
-        <!-- Message 3 -->
-        <p
-          class="hero-message hero-message-support"
-          data-duration="2600"
-          aria-hidden="true"
-        >
-          <span class="hero-word" style="--word-index: 0">
-            Delivering
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 1"
-          >
-            Superior
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 2"
-          >
-            Investment
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 3"
-          >
-            Outcomes
-          </span>
-        </p>
-
-
-        <!-- Message 4 / CTA -->
-        <a
-          href="/contact"
-          class="hero-message hero-message-cta"
-          data-duration="3200"
-          aria-hidden="true"
-          tabindex="-1"
-          aria-label="Get started with STI Assets Management"
-        >
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 0"
-          >
-            Get
-          </span>
-
-          <span
-            class="hero-word hero-word-highlight"
-            style="--word-index: 1"
-          >
-            started
-          </span>
-
-          <span class="hero-word" style="--word-index: 2">
-            with
-          </span>
-
-          <span class="hero-word" style="--word-index: 3">
-            us
-          </span>
-
-          <span class="hero-word" style="--word-index: 4">
-            now
-          </span>
-
-          <span
-            class="hero-word hero-cta-arrow"
-            style="--word-index: 5"
-            aria-hidden="true"
-          >
-            →
-          </span>
-        </a>
-
-      </div>
-
-
-      <!-- Trust Highlights -->
-      <div
-        class="hero-trust-bar"
-        aria-label="Why clients choose STI Assets Management"
-      >
-        <span class="hero-trust-item">
-          SEC Regulated
-        </span>
-
-        <span
-          class="hero-trust-divider"
-          aria-hidden="true"
-        >
-          |
-        </span>
-
-        <span class="hero-trust-item">
-          Professional Fund Managers
-        </span>
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-<div
-  class="hero-v2-stats"
-  role="list"
-  aria-label="STI Assets Management key statistics"
->
-  <div class="hero-v2-stats-col" role="listitem">
-    <span class="hero-v2-stats-icon" aria-hidden="true">
-      <i
-        data-lucide="landmark"
-        class="ui-icon ui-icon-md"
-        aria-hidden="true"
-      ></i>
-    </span>
-    <div class="hero-v2-stats-number"><span class="counter" data-target="250" data-prefix="₦" data-suffix="B+">0</span></div>
-    <div class="hero-v2-stats-label">Assets Under Management</div>
-  </div>
-  <div class="hero-v2-stats-col" role="listitem">
-    <span class="hero-v2-stats-icon" aria-hidden="true">
-      <i
-        data-lucide="users"
-        class="ui-icon ui-icon-md"
-        aria-hidden="true"
-      ></i>
-    </span>
-    <div class="hero-v2-stats-number"><span class="counter" data-target="1500" data-suffix="+">0</span></div>
-    <div class="hero-v2-stats-label">Happy Clients</div>
-  </div>
-  <div class="hero-v2-stats-col" role="listitem">
-    <span class="hero-v2-stats-icon" aria-hidden="true">
-      <i
-        data-lucide="user-check"
-        class="ui-icon ui-icon-md"
-        aria-hidden="true"
-      ></i>
-    </span>
-    <div class="hero-v2-stats-number"><span class="counter" data-target="25" data-suffix="+">0</span></div>
-    <div class="hero-v2-stats-label">Investment Professionals</div>
-  </div>
-  <div class="hero-v2-stats-col" role="listitem">
-    <span class="hero-v2-stats-icon" aria-hidden="true">
-      <i
-        data-lucide="calendar-days"
-        class="ui-icon ui-icon-md"
-        aria-hidden="true"
-      ></i>
-    </span>
-    <div class="hero-v2-stats-number"><span class="counter" data-target="18">0</span></div>
-    <div class="hero-v2-stats-label">Years in Business</div>
-  </div>
-</div>
-
-  
 <!-- ============================================================
-     2. SERVICES SECTION (Modern redesign)
-============================================================ -->
-<section class="services-modern-section" id="services">
-  <div class="services-modern-container">
-
-<div class="services-modern-header">
-  <div class="values-eyebrow-row">
-    
-    <span class="eyebrow">What We Do</span>
-    
-  </div>
-  <h2 class="services-modern-heading">Our Services</h2>
-  <p class="services-modern-subheading">
-    We provide a wide range of investment management services tailored to meet the diverse financial needs of individuals and businesses.
-  </p>
-</div>
-
-    <div class="services-modern-grid">
-
-      <div class="services-modern-card">
-        <div class="services-modern-image-wrapper">
-          <img src="/financialadvisory.jpg" alt="Business professionals reviewing financial reports" class="services-modern-image" loading="lazy" decoding="async">
-        </div>
-        <div class="services-modern-body">
-          <h3 class="services-modern-title">Financial Advisory Services</h3>
-          
-          <p class="services-modern-description">Our financial advisory services are the cornerstone of our commitment to your financial success, built around your objectives and risk tolerance.</p>
-          <a
-            href="/services#financial-advisory"
-            class="services-modern-link"
-            aria-label="Learn more about Financial Advisory Services"
-          >
-            Learn More
-            <span class="services-modern-link-arrow">
-             <i
-              data-lucide="arrow-right"
-              class="ui-icon ui-icon-sm"
-              aria-hidden="true"
-            ></i>
-            </span>
-          </a>
-        </div>
-      </div>
-
-      <div class="services-modern-card">
-        <div class="services-modern-image-wrapper">
-          <img src="/marketresearch.webp" alt="Stock market charts and trading dashboard" class="services-modern-image" loading="lazy" decoding="async">
-        </div>
-        <div class="services-modern-body">
-          <h3 class="services-modern-title">Market Research</h3>
-          
-          <p class="services-modern-description">Our market research services provide clients with actionable insights, market intelligence, and comprehensive analysis.</p>
-          <a
-            href="/services#market-research"
-            class="services-modern-link"
-            aria-label="Learn more about Market Research"
-          >
-            Learn More
-            <span class="services-modern-link-arrow">
-              <i
-                data-lucide="arrow-right"
-                class="ui-icon ui-icon-sm"
-                aria-hidden="true"
-              ></i>
-            </span>
-          </a>
-        </div>
-      </div>
-
-      <div class="services-modern-card">
-        <div class="services-modern-image-wrapper">
-          <img
-            src="/portfoliomanagement.jpg"
-            alt="Investment professionals reviewing portfolio allocation charts"
-            class="services-modern-image"
-            loading="lazy"
-            decoding="async"
-          >
-        </div>
-        <div class="services-modern-body">
-          <h3 class="services-modern-title">Portfolio and Fund Management</h3>
-          
-          <p class="services-modern-description">
-            Professionally managed portfolios designed to preserve capital,
-            manage risk and support sustainable long-term growth.
-          </p>
-          <a
-            href="/services#portfolio-fund-management"
-            class="services-modern-link"
-            aria-label="Learn more about Portfolio and Fund Management"
-          >
-            Learn More
-            <span class="services-modern-link-arrow">
-              <i
-                data-lucide="arrow-right"
-                class="ui-icon ui-icon-sm"
-                aria-hidden="true"
-              ></i>
-            </span>
-          </a>
-        </div>
-      </div>
-
-      <div class="services-modern-card">
-        <div class="services-modern-image-wrapper">
-          <img src="/corporate.jpg" alt="Modern corporate office glass skyscraper" class="services-modern-image" loading="lazy" decoding="async">
-        </div>
-        <div class="services-modern-body">
-          <h3 class="services-modern-title">Corporate Investment Schemes</h3>
-          
-          <p class="services-modern-description">Tailored investment solutions helping businesses maximize corporate assets and improve financial performance.</p>
-          <a
-            href="/services#corporate-investment-schemes"
-            class="services-modern-link"
-            aria-label="Learn more about Corporate Investment Schemes"
-          >
-            Learn More
-            <span class="services-modern-link-arrow">
-              <i
-                data-lucide="arrow-right"
-                class="ui-icon ui-icon-sm"
-                aria-hidden="true"
-              ></i>
-            </span>
-          </a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-<!-- ============================================================
-     3. ABOUT PREVIEW
+     1. HERO
+     Large, image-led institutional introduction inspired by
+     premium investment-management editorial layouts.
 ============================================================ -->
 <section
-  class="home-about-section"
-  id="about"
-  aria-labelledby="home-about-title"
+  class="home-hero"
+  aria-labelledby="home-hero-title"
 >
-  <div class="home-about-container">
-
-    <div class="home-about-grid">
-
-      <!-- About image -->
-      <div class="home-about-visual">
-
-        <div class="home-about-image">
-          <img
-            src="/photo-1522071820081-009f0129c71c.jpg"
-            alt="STI Assets Management professionals collaborating"
-            loading="lazy"
-            decoding="async"
-          >
-        </div>
-
-        <div
-          class="home-about-year"
-          aria-label="STI Assets Management was incorporated in 2008"
-        >
-          <span class="home-about-year-label">Incorporated</span>
-          <strong class="home-about-year-number">2008</strong>
-        </div>
-
-      </div>
-
-      <!-- About content -->
-      <div class="home-about-content">
-
-        <div class="values-eyebrow-row home-about-eyebrow-row">
-          
-          <span class="eyebrow">About Us</span>
-          
-        </div>
-
-        <h2 class="home-about-heading" id="home-about-title">
-          Built for Scale and Efficiency
-        </h2>
-
-        <p class="home-about-lead">
-          STI Assets Management Limited is a wholly Nigerian-owned,
-          non-bank financial company providing asset management and
-          financial advisory services.
-        </p>
-
-        <p class="home-about-description">
-          We deliver innovative financial services
-          to individuals and businesses through expert people, technology
-          and integrity.
-        </p>
-
-        <a
-          href="/who-we-are"
-          class="btn-contact-cta home-about-link"
-          aria-label="Discover more about STI Assets Management"
-        >
-          <span>Discover Who We Are</span>
-        </a>
-
-      </div>
-
-    </div>
-
+  <div class="home-hero-media" aria-hidden="true">
+    <img
+      src="/pexels-taiwo-samson-1239982962-38511754.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
   </div>
-</section>
 
-<!-- ============================================================
-     4. PRODUCTS PREVIEW
-============================================================ -->
-<section
-  class="products-modern-section"
-  id="products"
-  aria-labelledby="home-products-title"
->
-  <span
-    class="products-modern-bg-dots products-modern-bg-dots-left"
-    aria-hidden="true"
-  ></span>
+  <div class="home-hero-overlay" aria-hidden="true"></div>
 
-  <span
-    class="products-modern-bg-dots products-modern-bg-dots-right"
-    aria-hidden="true"
-  ></span>
-
-  <div class="products-modern-container">
-
-    <!-- Products section heading -->
-    <div class="services-modern-header products-modern-header">
-
-      <div class="values-eyebrow-row">
-        
-        <span class="eyebrow">Investment Solutions</span>
-        
-      </div>
-
-      <h2
-        class="services-modern-heading"
-        id="home-products-title"
-      >
-        STIAM Products
-      </h2>
-
-      <p class="products-modern-subheading">
-        Explore investment solutions designed to preserve capital,
-        generate income and diversify your wealth across different
-        currencies and time horizons.
+  <div class="home-shell home-hero-inner">
+    <div class="home-hero-copy">
+      <p class="home-hero-eyebrow">
+        STI Assets Management Limited
       </p>
 
+      <h1 id="home-hero-title" class="home-hero-title">
+        Your capital.<br>
+        <span>Managed with purpose.</span>
+      </h1>
+
+      <p class="home-hero-summary">
+        We help individuals and institutions preserve, grow and deploy
+        capital through disciplined investment management and financial
+        advisory solutions.
+      </p>
+
+      <div class="home-hero-actions" aria-label="Homepage actions">
+        <a href="/products" class="home-button home-button-primary">
+          <span>Explore Investments</span>
+          <i
+            data-lucide="arrow-up-right"
+            class="ui-icon ui-icon-sm"
+            aria-hidden="true"
+          ></i>
+        </a>
+
+        <a href="/contact" class="home-button home-button-ghost">
+          <span>Speak with an Advisor</span>
+        </a>
+      </div>
     </div>
 
-    <!-- Products grid -->
-    <div class="products-modern-grid">
+    <div class="home-hero-foot">
+      <div class="home-hero-trust" aria-label="STI trust highlights">
+        <span>SEC Regulated</span>
+        <span aria-hidden="true">|</span>
+        <span>Professional Fund Managers</span>
+        <span aria-hidden="true">|</span>
+        <span>Incorporated 2008</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <!-- Money Market Fund -->
-      <article class="products-modern-card">
 
-        <div class="products-modern-image-wrapper">
+<!-- ============================================================
+     2. WHAT WE DO
+     Image-led editorial cards. Desktop uses a four-column composition;
+     mobile becomes native horizontal scroll-snap rather than JS carousel.
+============================================================ -->
+<section
+  class="home-services"
+  id="services"
+  aria-labelledby="home-services-title"
+>
+  <div class="home-shell">
+    <div class="home-section-intro" data-reveal="up">
+      <div>
+        <p class="home-section-label">What We Do</p>
+        <h2 id="home-services-title">
+          Expertise for every financial decision.
+        </h2>
+      </div>
+
+      <div class="home-section-intro-side">
+        <a href="/services" class="home-text-link">
+          <span>View all services</span>
+          <i
+            data-lucide="arrow-up-right"
+            class="ui-icon ui-icon-sm"
+            aria-hidden="true"
+          ></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-services-rail-wrap">
+    <div class="home-services-rail" aria-label="STI services">
+      <article class="home-service-card" data-reveal="up">
+        <a
+          href="/services#financial-advisory"
+          class="home-service-card-link"
+          aria-label="Financial Advisory Services"
+        >
           <img
-           src="/moneymarket.webp"
-            alt="Financial documents and calculator representing short-term investment planning"
-            class="products-modern-image"
+            src="/financialadvisory.jpg"
+            alt="Business professionals reviewing financial information"
             loading="lazy"
             decoding="async"
           >
-        </div>
-        <div class="products-modern-content">
 
-          <h3 class="products-modern-title">
-            STIAM Money Market Fund
-          </h3>
+          <div class="home-service-shade" aria-hidden="true"></div>
 
-          <p class="products-modern-description">
-            A high-liquidity, low-risk investment solution designed
-            to preserve capital while delivering competitive
-            short-term returns.
+          <div class="home-service-content">
+            <h3>Financial Advisory Services</h3>
+            <p>
+              Advice shaped around your objectives, liquidity needs,
+              risk tolerance and time horizon.
+            </p>
+
+            <span class="home-service-action" aria-hidden="true">
+              Explore service
+              <i data-lucide="arrow-up-right" class="ui-icon ui-icon-sm"></i>
+            </span>
+          </div>
+        </a>
+      </article>
+
+      <article class="home-service-card" data-reveal="up">
+        <a
+          href="/services#market-research"
+          class="home-service-card-link"
+          aria-label="Market Research"
+        >
+          <img
+            src="/marketresearch.webp"
+            alt="Investment professionals analysing reports and market data"
+            loading="lazy"
+            decoding="async"
+          >
+
+          <div class="home-service-shade" aria-hidden="true"></div>
+
+          <div class="home-service-content">
+            <h3>Market Research</h3>
+            <p>
+              Timely intelligence, market trends and analysis that support
+              informed investment decisions.
+            </p>
+
+            <span class="home-service-action" aria-hidden="true">
+              Explore service
+              <i data-lucide="arrow-up-right" class="ui-icon ui-icon-sm"></i>
+            </span>
+          </div>
+        </a>
+      </article>
+
+      <article class="home-service-card" data-reveal="up">
+        <a
+          href="/services#portfolio-fund-management"
+          class="home-service-card-link"
+          aria-label="Portfolio and Fund Management"
+        >
+          <img
+            src="/portfoliomanagement.jpg"
+            alt="Investment portfolio documents and financial charts"
+            loading="lazy"
+            decoding="async"
+          >
+
+          <div class="home-service-shade" aria-hidden="true"></div>
+
+          <div class="home-service-content">
+            <h3>Portfolio &amp; Fund Management</h3>
+            <p>
+              Professionally managed portfolios focused on capital
+              preservation, risk management and sustainable growth.
+            </p>
+
+            <span class="home-service-action" aria-hidden="true">
+              Explore service
+              <i data-lucide="arrow-up-right" class="ui-icon ui-icon-sm"></i>
+            </span>
+          </div>
+        </a>
+      </article>
+
+      <article class="home-service-card" data-reveal="up">
+        <a
+          href="/services#corporate-investment-schemes"
+          class="home-service-card-link"
+          aria-label="Corporate Investment Schemes"
+        >
+          <img
+            src="/corporate.jpg"
+            alt="Modern corporate buildings representing institutional investment"
+            loading="lazy"
+            decoding="async"
+          >
+
+          <div class="home-service-shade" aria-hidden="true"></div>
+
+          <div class="home-service-content">
+            <h3>Corporate Investment Schemes</h3>
+            <p>
+              Structured investment solutions designed to help businesses
+              optimise investible assets and financial performance.
+            </p>
+
+            <span class="home-service-action" aria-hidden="true">
+              Explore service
+              <i data-lucide="arrow-up-right" class="ui-icon ui-icon-sm"></i>
+            </span>
+          </div>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     6. INVESTMENT SOLUTIONS
+     Product-led section follows the credibility story so visitors can
+     move from trust and positioning into specific investment options.
+============================================================ -->
+<section
+  class="home-investments"
+  id="investment-solutions"
+  aria-labelledby="home-investments-title"
+>
+  <div class="home-shell">
+    <div class="home-section-intro home-section-intro-light" data-reveal="up">
+      <div>
+        <p class="home-section-label">Investment Solutions</p>
+        <h2 id="home-investments-title">
+          Built around how you want your money to work.
+        </h2>
+      </div>
+
+      <div class="home-section-intro-side">
+
+        <a href="/products" class="home-text-link home-text-link-light">
+          <span>View all products</span>
+          <i
+            data-lucide="arrow-up-right"
+            class="ui-icon ui-icon-sm"
+            aria-hidden="true"
+          ></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="home-investment-list">
+      <article class="home-investment-row" data-reveal="up">
+
+        <a
+          href="/products#money-market-note"
+          class="home-investment-image"
+          aria-label="Explore STIAM Money Market Fund"
+        >
+          <img
+            src="/moneymarket.webp"
+            alt="Market price board representing money market investing"
+            loading="lazy"
+            decoding="async"
+          >
+        </a>
+
+        <div class="home-investment-copy">
+          <p class="home-investment-meta">
+            Liquidity <span aria-hidden="true">•</span> Capital Preservation
+          </p>
+
+          <h3>STIAM Money Market Fund</h3>
+
+          <p>
+            A highly liquid investment solution designed to
+            preserve capital while delivering competitive short-term returns.
           </p>
 
           <a
             href="/products#money-market-note"
-            class="products-modern-card-link"
-            aria-label="Explore the Money Market Fund"
+            class="home-text-link home-text-link-light"
           >
-            <span>Explore Product</span>
-
+            <span>Explore fund</span>
             <i
               data-lucide="arrow-right"
               class="ui-icon ui-icon-sm"
               aria-hidden="true"
             ></i>
           </a>
-
         </div>
-
       </article>
 
-      <!-- Fixed Income Dollar Note -->
-      <article class="products-modern-card">
+      <article class="home-investment-row" data-reveal="up">
 
-        <div class="products-modern-image-wrapper">
-          <img
-            src="/dollarnote.jpg"
-            alt="US dollar notes and calculator representing dollar-denominated investments"
-            class="products-modern-image"
-            loading="lazy"
-            decoding="async"
-          >
-        </div>
-        <div class="products-modern-content">
-
-          <h3 class="products-modern-title">
-            STIAM Fixed Income Dollar Note
-          </h3>
-
-          <p class="products-modern-description">
-            A USD-denominated fixed-income solution designed to
-            provide steady returns and help protect wealth against
-            local currency depreciation.
-          </p>
-
-          <a
-            href="/products#fixed-income-dollar-note"
-            class="products-modern-card-link"
-            aria-label="Explore the Fixed Income Dollar Note"
-          >
-            <span>Explore Product</span>
-
-            <i
-              data-lucide="arrow-right"
-              class="ui-icon ui-icon-sm"
-              aria-hidden="true"
-            ></i>
-          </a>
-
-        </div>
-
-      </article>
-
-      <!-- Fixed Income Note -->
-      <article class="products-modern-card">
-
-        <div class="products-modern-image-wrapper">
+        <a
+          href="/products#fixed-income-note"
+          class="home-investment-image"
+          aria-label="Explore STIAM Fixed Income Note"
+        >
           <img
             src="/fixedincomenote.webp"
-            alt="Corporate office building representing fixed-income investments"
-            class="products-modern-image"
+            alt="Coins in a glass jar representing structured fixed income investing"
             loading="lazy"
             decoding="async"
           >
-        </div>
-        <div class="products-modern-content">
+        </a>
 
-          <h3 class="products-modern-title">
-            STIAM Fixed Income Note
-          </h3>
+        <div class="home-investment-copy">
+          <p class="home-investment-meta">
+            Naira Denominated <span aria-hidden="true">•</span> Income Focused
+          </p>
 
-          <p class="products-modern-description">
-            A medium-to-long-term investment in structured corporate
-            and sovereign debt obligations offering predictable
-            income streams.
+          <h3>STIAM Fixed Income Note</h3>
+
+          <p>
+            A medium and long term investment in structured corporate and
+            sovereign debt obligations offering predictable income streams.
           </p>
 
           <a
             href="/products#fixed-income-note"
-            class="products-modern-card-link"
-            aria-label="Explore the Fixed Income Note"
+            class="home-text-link home-text-link-light"
           >
-            <span>Explore Product</span>
-
+            <span>Explore note</span>
             <i
               data-lucide="arrow-right"
               class="ui-icon ui-icon-sm"
               aria-hidden="true"
             ></i>
           </a>
-
         </div>
-
       </article>
 
-    </div>
+      <article class="home-investment-row" data-reveal="up">
 
+        <a
+          href="/products#fixed-income-dollar-note"
+          class="home-investment-image"
+          aria-label="Explore STIAM Fixed Income Dollar Note"
+        >
+          <img
+            src="/dollarnote.jpg"
+            alt="US dollar notes and calculator representing dollar-denominated investing"
+            loading="lazy"
+            decoding="async"
+          >
+        </a>
+
+        <div class="home-investment-copy">
+          <p class="home-investment-meta">
+            USD Denominated <span aria-hidden="true">•</span> Diversification
+          </p>
+
+          <h3>STIAM Fixed Income Dollar Note</h3>
+
+          <p>
+            A fixed income solution denominated in US dollars and designed to provide
+            steady returns and help protect wealth against local currency
+            depreciation.
+          </p>
+
+          <a
+            href="/products#fixed-income-dollar-note"
+            class="home-text-link home-text-link-light"
+          >
+            <span>Explore dollar note</span>
+            <i
+              data-lucide="arrow-right"
+              class="ui-icon ui-icon-sm"
+              aria-hidden="true"
+            ></i>
+          </a>
+        </div>
+      </article>
+    </div>
   </div>
 </section>
 
 <!-- ============================================================
-     5. COMMUNITY & INSIGHTS
-     Featured news carousel
+     3. ABOUT STI
+     Asymmetric editorial composition inspired by the supplied video.
 ============================================================ -->
 <section
-  class="home-insights-section"
-  id="insights"
-  aria-labelledby="home-insights-heading"
+  class="home-about"
+  id="about"
+  aria-labelledby="home-about-title"
 >
-  <div
-    class="home-insights-decor home-insights-decor-tl"
-    aria-hidden="true"
-  ></div>
+  <div class="home-shell home-about-grid">
+    <div class="home-about-copy" data-reveal="left">
+      <p class="home-section-label">About STI</p>
 
-  <div
-    class="home-insights-decor home-insights-decor-tr"
-    aria-hidden="true"
-  ></div>
-
-  <div
-    class="home-insights-decor home-insights-decor-curve"
-    aria-hidden="true"
-  ></div>
-
-  <div class="home-insights-container">
-
-    <!-- Section heading -->
-    <div class="services-modern-header home-insights-header">
-
-      <div class="values-eyebrow-row">
-        
-        <span class="eyebrow">Community &amp; Insights</span>
-        
-      </div>
-
-      <h2
-        class="services-modern-heading"
-        id="home-insights-heading"
-      >
-        Latest Updates From Our Community
+      <h2 id="home-about-title">
+        Built for decisions that move wealth forward.
       </h2>
 
-      <p class="home-insights-subheading">
-        Stay informed with company news, market insights and perspectives
-        from our investment professionals.
+      <p class="home-about-lead">
+        STI Assets Management Limited is a wholly Nigerian-owned,
+        non-bank financial company providing investment management and
+        financial advisory services.
       </p>
 
-    </div>
+      <p class="home-about-body">
+        We combine experienced people, disciplined analysis and technology
+        to deliver clear, responsive financial solutions for individuals,
+        institutions and businesses.
+      </p>
 
-    <% if (!articles || articles.length === 0) { %>
-
-      <!-- Empty state -->
-      <div class="home-insights-empty">
-
-        <span
-          class="home-insights-empty-icon"
-          aria-hidden="true"
-        >
+      <div class="home-about-actions">
+        <a href="/who-we-are" class="home-text-link">
+          <span>Discover who we are</span>
           <i
-            data-lucide="newspaper"
-            class="ui-icon ui-icon-lg"
+            data-lucide="arrow-up-right"
+            class="ui-icon ui-icon-sm"
             aria-hidden="true"
           ></i>
-        </span>
-
-        <h3>No Updates Available</h3>
-
-        <p>
-          New company updates and market insights will appear here
-          when they are published.
-        </p>
-
+        </a>
       </div>
+    </div>
 
-    <% } else { %>
+    <div class="home-about-visual" data-reveal="right">
+      <figure class="home-about-image home-about-image-main">
+        <img
+          src="/photo-1522071820081-009f0129c71c.jpg"
+          alt="Investment professionals collaborating around a table"
+          loading="lazy"
+          decoding="async"
+        >
+      </figure>
 
-      <!-- Carousel -->
-      <div
-        class="home-insights-carousel"
-        data-home-insights-carousel
-        aria-roledescription="carousel"
-        aria-label="Community and Insights articles"
-      >
+      <figure class="home-about-image home-about-image-secondary" aria-hidden="true">
+        <img
+          src="/corporate.jpg"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        >
+      </figure>
 
-        <% if (articles.length > 1) { %>
-
-          <button
-            type="button"
-            class="home-insights-arrow home-insights-arrow-prev"
-            data-home-insights-prev
-            aria-label="Show previous article"
-          >
-            <i
-              data-lucide="chevron-left"
-              class="ui-icon"
-              aria-hidden="true"
-            ></i>
-          </button>
-
-        <% } %>
-
-        <div class="home-insights-viewport">
-
-          <div
-            class="home-insights-track"
-            data-home-insights-track
-          >
-
-            <% articles.forEach(function (article, index) { %>
-
-              <div
-                class="home-insights-slide"
-                role="group"
-                aria-roledescription="slide"
-                aria-label="<%= index + 1 %> of <%= articles.length %>"
-                aria-hidden="<%= index === 0 ? 'false' : 'true' %>"
-                data-home-insights-slide
-              >
-
-                <article
-                  class="home-insights-card"
-                  aria-labelledby="home-insights-title-<%= index %>"
-                  aria-describedby="home-insights-excerpt-<%= index %>"
-                >
-
-                  <div class="home-insights-image-wrap">
-                    <img
-                      class="home-insights-image"
-                      src="<%= (
-                        article.coverImage &&
-                        String(article.coverImage).trim() !== ''
-                      )
-                        ? article.coverImage
-                        : '/stilogo.png'
-                      %>"
-                      alt="<%= article.title || 'STI Assets Management update' %>"
-                      loading="lazy"
-                      decoding="async"
-                    >
-                  </div>
-
-                  <div class="home-insights-content">
-
-                    <div class="home-insights-meta">
-
-                      <span class="home-insights-category">
-                        <%= String(article.category || 'Insights').toUpperCase() %>
-                      </span>
-
-                      <% if (article.date) { %>
-                        <span class="home-insights-date">
-                          <i
-                            data-lucide="calendar-days"
-                            class="ui-icon ui-icon-sm"
-                            aria-hidden="true"
-                          ></i>
-
-                          <%= article.date %>
-                        </span>
-                      <% } %>
-
-                    </div>
-
-                    <h3
-                      class="home-insights-title"
-                      id="home-insights-title-<%= index %>"
-                    >
-                      <%= article.title || 'STI Assets Management Update' %>
-                    </h3>
-
-                    <p
-                      class="home-insights-excerpt"
-                      id="home-insights-excerpt-<%= index %>"
-                    >
-                      <%= article.excerpt || 'Read the latest update from STI Assets Management.' %>
-                    </p>
-
-                    <a
-                      href="/resources/news/<%= article.slug %>"
-                      class="home-insights-link"
-                      tabindex="<%= index === 0 ? '0' : '-1' %>"
-                      aria-label="Read article: <%= article.title || 'STI Assets Management Update' %>"
-                    >
-                      <span class="home-insights-link-text">Read Article</span>
-
-                      <i
-                        data-lucide="arrow-right"
-                        class="home-insights-link-arrow ui-icon ui-icon-sm"
-                        aria-hidden="true"
-                      ></i>
-                    </a>
-
-                  </div>
-
-                </article>
-
-              </div>
-
-            <% }); %>
-
-          </div>
-
-        </div>
-
-        <% if (articles.length > 1) { %>
-
-          <button
-            type="button"
-            class="home-insights-arrow home-insights-arrow-next"
-            data-home-insights-next
-            aria-label="Show next article"
-          >
-            <i
-              data-lucide="chevron-right"
-              class="ui-icon"
-              aria-hidden="true"
-            ></i>
-          </button>
-
-          <div
-            class="home-insights-controls"
-            data-home-insights-dots
-            aria-label="Choose an article"
-          >
-
-            <% articles.forEach(function (article, index) { %>
-
-              <button
-                type="button"
-                class="home-insights-dot<%= index === 0 ? ' is-active' : '' %>"
-                data-home-insights-dot
-                data-index="<%= index %>"
-                aria-label="Go to article <%= index + 1 %>"
-              ></button>
-
-            <% }); %>
-
-          </div>
-
-        <% } %>
-
+      <div class="home-about-year">
+        <span>Incorporated</span>
+        <strong>2008</strong>
       </div>
+    </div>
+  </div>
+</section>
 
-    <% } %>
 
-    <!-- View all news -->
-    <div class="home-insights-footer">
+<!-- ============================================================
+     4. STI IN NUMBERS
+============================================================ -->
+<section
+  class="home-proof"
+  aria-label="STI Assets Management key statistics"
+>
+  <div class="home-shell home-proof-grid">
 
-      <a
-        href="/resources/news"
-        class="home-insights-view-all"
-      >
-        <span>View All News &amp; Insights</span>
+    <div class="home-proof-item" data-reveal="up">
+      <strong class="home-proof-value">
+        <span
+          class="counter"
+          data-target="250"
+          data-prefix="₦"
+          data-suffix="B+"
+        >₦250B+</span>
+      </strong>
 
-      </a>
+      <span class="home-proof-label">
+        Assets Under Management
+      </span>
+    </div>
 
+
+    <div class="home-proof-item" data-reveal="up">
+      <strong class="home-proof-value">
+        <span
+          class="counter"
+          data-target="1500"
+          data-suffix="+"
+        >1,500+</span>
+      </strong>
+
+      <span class="home-proof-label">
+        Clients Served
+      </span>
+    </div>
+
+
+    <div class="home-proof-item" data-reveal="up">
+      <strong class="home-proof-value">
+        <span
+          class="counter"
+          data-target="18"
+          data-suffix=" Years"
+        >18 Years</span>
+      </strong>
+
+      <span class="home-proof-label">
+        Industry Experience
+      </span>
+    </div>
+
+
+    <div class="home-proof-item" data-reveal="up">
+      <strong class="home-proof-value">
+        <span
+          class="counter"
+          data-target="25"
+          data-suffix="+"
+        >25+</span>
+      </strong>
+
+      <span class="home-proof-label">
+        Investment Professionals
+      </span>
     </div>
 
   </div>
 </section>
+
+
+<!-- ============================================================
+     5. WHY STI
+============================================================ -->
+<section
+  class="home-why"
+  aria-labelledby="home-why-title"
+>
+  <div class="home-shell home-why-grid">
+    <div class="home-why-intro" data-reveal="left">
+      <p class="home-section-label">Why STI</p>
+
+      <h2 id="home-why-title">
+        A disciplined approach to managing what matters.
+      </h2>
+
+      <p>
+        Good investment management is more than selecting assets. It is the
+        discipline to understand the objective, evaluate the environment,
+        manage risk and stay accountable to the client.
+      </p>
+
+      <a href="/contact" class="home-button home-button-primary">
+        <span>Start a Conversation</span>
+        <i
+          data-lucide="arrow-up-right"
+          class="ui-icon ui-icon-sm"
+          aria-hidden="true"
+        ></i>
+      </a>
+    </div>
+
+    <ul class="home-principles">
+
+  <li class="home-principle" data-reveal="up">
+    <span class="home-principle-icon" aria-hidden="true">
+      <i data-lucide="user" class="ui-icon"></i>
+    </span>
+
+    <div class="home-principle-content">
+      <h3>Client First</h3>
+
+      <p>
+        Solutions begin with your objectives, liquidity needs,
+        risk tolerance and investment horizon.
+      </p>
+    </div>
+  </li>
+
+
+  <li class="home-principle" data-reveal="up">
+    <span class="home-principle-icon" aria-hidden="true">
+      <i data-lucide="search" class="ui-icon"></i>
+    </span>
+
+    <div class="home-principle-content">
+      <h3>Research Led</h3>
+
+      <p>
+        Decisions are supported by market intelligence, analysis and
+        a clear understanding of changing financial conditions.
+      </p>
+    </div>
+  </li>
+
+
+  <li class="home-principle" data-reveal="up">
+    <span class="home-principle-icon" aria-hidden="true">
+      <i data-lucide="shield-check" class="ui-icon"></i>
+    </span>
+
+    <div class="home-principle-content">
+      <h3>Risk Conscious</h3>
+
+      <p>
+        We focus on balancing return objectives with thoughtful capital
+        preservation and appropriate risk management.
+      </p>
+    </div>
+  </li>
+
+
+  <li class="home-principle" data-reveal="up">
+    <span class="home-principle-icon" aria-hidden="true">
+      <i data-lucide="handshake" class="ui-icon"></i>
+    </span>
+
+    <div class="home-principle-content">
+      <h3>Built on Trust</h3>
+
+      <p>
+        Professionalism, transparency and integrity guide how we manage
+        relationships and client assets.
+      </p>
+    </div>
+  </li>
+
+</ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     7. DAILY MARKET DIGEST
+     Full-bleed research feature kept separate from company news.
+============================================================ -->
+<section
+  class="home-digest"
+  id="daily-digest"
+  aria-labelledby="home-digest-title"
+>
+  <div class="home-digest-background" aria-hidden="true">
+    <img
+      src="/globalmarket.webp"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    >
+  </div>
+
+  <div class="home-shell home-digest-inner">
+    <div class="home-digest-copy" data-reveal="up">
+      <p class="home-section-label home-section-label-light">
+        STIAM Daily Market Digest
+      </p>
+
+      <h2 id="home-digest-title">
+        Perspective for better financial decisions.
+      </h2>
+
+      <p>
+        Start the day with a concise view of market movements,
+        economic developments and investment themes selected by
+        our research team.
+      </p>
+
+      <div class="home-digest-topics" aria-label="Daily Digest coverage">
+        <span>Markets</span>
+        <span>Economy</span>
+        <span>Fixed Income</span>
+        <span>Investment Themes</span>
+      </div>
+
+      <a
+        href="/resources/downloads"
+        class="home-button home-button-primary"
+      >
+        <span>View Daily Market Digest</span>
+        <i
+          data-lucide="arrow-up-right"
+          class="ui-icon ui-icon-sm"
+          aria-hidden="true"
+        ></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     8. NEWS
+     Dynamic news data retained from the current Express/EJS implementation.
+============================================================ -->
+<section
+  class="home-insights"
+  id="insights"
+  aria-labelledby="home-insights-title"
+>
+  <div class="home-shell">
+    <div class="home-section-intro" data-reveal="up">
+      <div>
+        <p class="home-section-label">News &amp; Updates</p>
+        <h2 id="home-insights-title">
+          The latest from STI.
+        </h2>
+      </div>
+
+      <div class="home-section-intro-side">
+
+        <a href="/resources/news" class="home-text-link">
+          <span>View all news</span>
+          <i
+            data-lucide="arrow-up-right"
+            class="ui-icon ui-icon-sm"
+            aria-hidden="true"
+          ></i>
+        </a>
+      </div>
+    </div>
+
+    <% if (homeArticles.length === 0) { %>
+      <div class="home-insights-empty" data-reveal="up">
+        <div>
+          <span class="home-insights-empty-icon" aria-hidden="true">
+            <i data-lucide="newspaper" class="ui-icon ui-icon-md"></i>
+          </span>
+          <h3>No updates available yet</h3>
+          <p>
+            New company news and updates will appear here when
+            they are published.
+          </p>
+        </div>
+      </div>
+    <% } else { %>
+      <div
+        class="home-insights-grid home-insights-grid-<%= homeArticles.length %>"
+      >
+        <% homeArticles.forEach(function (article, index) { %>
+          <article
+            class="home-insight-card <%= index === 0 ? 'home-insight-card-featured' : '' %>"
+            data-reveal="up"
+          >
+            <a
+              href="/resources/news/<%= article.slug %>"
+              class="home-insight-image-link"
+              aria-label="Read article: <%= article.title || 'STI Assets Management Update' %>"
+            >
+              <img
+                src="<%= (
+                  article.coverImage &&
+                  String(article.coverImage).trim() !== ''
+                )
+                  ? article.coverImage
+                  : '/stilogo.png'
+                %>"
+                alt="<%= article.title || 'STI Assets Management update' %>"
+                loading="lazy"
+                decoding="async"
+              >
+            </a>
+
+            <div class="home-insight-copy">
+              <div class="home-insight-meta">
+                <span><%= String(article.category || 'News').toUpperCase() %></span>
+                <% if (article.date) { %>
+                  <time><%= article.date %></time>
+                <% } %>
+              </div>
+
+              <h3>
+                <a href="/resources/news/<%= article.slug %>">
+                  <%= article.title || 'STI Assets Management Update' %>
+                </a>
+              </h3>
+
+              <p>
+                <%= article.excerpt || 'Read the latest news from STI Assets Management.' %>
+              </p>
+
+              <a
+                href="/resources/news/<%= article.slug %>"
+                class="home-text-link"
+              >
+                <span>Read article</span>
+                <i
+                  data-lucide="arrow-right"
+                  class="ui-icon ui-icon-sm"
+                  aria-hidden="true"
+                ></i>
+              </a>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<!-- ============================================================
+     9. FINAL CTA
+     Replaces the generic shared footer CTA on the homepage only.
+============================================================ -->
+<section
+  class="home-contact-cta"
+  aria-labelledby="home-contact-title"
+>
+  <div class="home-contact-media" aria-hidden="true">
+    <img
+      src="/services-hero.webp"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    >
+  </div>
+
+  <div class="home-contact-overlay" aria-hidden="true"></div>
+
+  <div class="home-shell home-contact-inner" data-reveal="up">
+    <p class="home-section-label home-section-label-light">Your Next Move</p>
+
+    <h2 id="home-contact-title">
+      Let’s build a strategy around where you want to go.
+    </h2>
+
+    <p>
+      Whether you are investing personally, managing institutional capital
+      or looking for strategic financial advice, our team is ready to start
+      the conversation.
+    </p>
+
+    <a href="/contact" class="home-button home-button-primary">
+      <span>Speak with an Advisor</span>
+      <i
+        data-lucide="arrow-up-right"
+        class="ui-icon ui-icon-sm"
+        aria-hidden="true"
+      ></i>
+    </a>
+  </div>
+</section>
+
 <!-- Lucide icon library -->
 <script
   src="/vendor/lucide/lucide.min.js"
   defer
 ></script>
 
-<!-- Homepage functionality and icon initialisation -->
+<!-- Homepage interactions: reveals, counters and icon initialisation -->
 <script
-  src="/js/homepage.js"
+  src="/js/homepage.js?v=homepage-revamp-3"
   defer
 ></script>
 
-<%- include('partials/footer') %>
+<%- include('partials/footer', { hideFooterCta: true }) %>

@@ -76,7 +76,10 @@ test(
           '  Lagos  ',
 
         description:
-          '  Job description  '
+          '  Job description  ',
+
+        status:
+          '  open  '
       });
 
     assert.equal(
@@ -136,7 +139,7 @@ test(
 
     assert.equal(
       result.status,
-      ''
+      'open'
     );
   }
 );

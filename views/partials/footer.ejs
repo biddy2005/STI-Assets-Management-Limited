@@ -1,15 +1,41 @@
 </main>
 
+  <% if (typeof hideFooterCta === 'undefined' || !hideFooterCta) { %>
+
   <div class="footer-cta-banner">
     <div class="footer-cta-inner">
-      <h2>Ready to Grow Your Wealth?</h2>
-      <p>Let our experienced investment professionals help you achieve your financial goals.</p>
+
+      <h2>
+        Ready to Grow Your Wealth?
+      </h2>
+
+      <p>
+        Let our experienced investment professionals
+        help you achieve your financial goals.
+      </p>
+
       <div class="footer-cta-actions">
-        <a href="/contact" class="btn-primary">Get Started</a>
-        <a href="/contact" class="btn-outline btn-outline-light">Contact Us</a>
+
+        <a
+          href="/contact"
+          class="btn-primary"
+        >
+          Get Started
+        </a>
+
+        <a
+          href="/contact"
+          class="btn-outline btn-outline-light"
+        >
+          Contact Us
+        </a>
+
       </div>
+
     </div>
   </div>
+
+<% } %>
 
 <div class="footer-newsletter-wrap">
     <div class="footer-newsletter-card">
@@ -30,24 +56,185 @@
         </svg>
         <h3>Stay Updated</h3>
       </div>
-      <% if (typeof newsletterSuccess !== 'undefined' && newsletterSuccess) { %>
-        <p class="footer-newsletter-message footer-newsletter-message-success">Thanks for subscribing!</p>
-      <% } else if (typeof newsletterError !== 'undefined' && newsletterError) { %>
-        <p class="footer-newsletter-message footer-newsletter-message-error">Please enter a valid email address.</p>
-      <% } else { %>
-        <form action="/api/newsletter" method="POST" class="footer-newsletter-form">
+      <form
+        action="/api/newsletter"
+        method="POST"
+        class="footer-newsletter-form"
+      >
+        <input
+          type="hidden"
+          name="_csrf"
+          value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"
+        >
+
+        <label
+          class="honeypot"
+          aria-hidden="true"
+        >
+          Website
+
           <input
-            type="hidden"
-            name="_csrf"
-            value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"
+            type="text"
+            name="website"
+            tabindex="-1"
+            autocomplete="off"
           >
-          <label class="honeypot" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
-          <input type="email" name="email" placeholder="Enter your email address" required>
-          <button type="submit">Subscribe Now</button>
-        </form>
-      <% } %>
-    </div>
+        </label>
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter your email address"
+          autocomplete="email"
+          required
+        >
+
+        <button type="submit">
+          Subscribe Now
+        </button>
+      </form>
+        </div>
   </div>
+
+
+  <!-- =========================================================
+       NEWSLETTER FEEDBACK MODAL
+  ========================================================== -->
+
+  <% if (
+    (typeof newsletterSuccess !== 'undefined' && newsletterSuccess) ||
+    (typeof newsletterError !== 'undefined' && newsletterError)
+  ) { %>
+
+    <div
+      class="newsletter-feedback-overlay"
+      id="newsletterFeedback"
+      data-newsletter-feedback
+      role="presentation"
+    >
+
+      <div
+        class="newsletter-feedback-modal
+          <%= newsletterSuccess
+            ? 'newsletter-feedback-success'
+            : 'newsletter-feedback-error'
+          %>"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="newsletterFeedbackTitle"
+        aria-describedby="newsletterFeedbackDescription"
+      >
+
+        <!-- Close button -->
+        <button
+          type="button"
+          class="newsletter-feedback-close"
+          data-newsletter-feedback-close
+          aria-label="Close notification"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M18 6L6 18"></path>
+            <path d="M6 6l12 12"></path>
+          </svg>
+        </button>
+
+
+        <% if (newsletterSuccess) { %>
+
+          <div
+            class="newsletter-feedback-icon
+                   newsletter-feedback-icon-success"
+            aria-hidden="true"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="34"
+              height="34"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+          </div>
+
+          <span class="newsletter-feedback-eyebrow">
+            Newsletter
+          </span>
+
+          <h2 id="newsletterFeedbackTitle">
+            Successfully Subscribed
+          </h2>
+
+          <p id="newsletterFeedbackDescription">
+            You have successfully subscribed to the
+            STI Assets Management newsletter.
+          </p>
+
+        <% } else { %>
+
+          <div
+            class="newsletter-feedback-icon
+                   newsletter-feedback-icon-error"
+            aria-hidden="true"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="34"
+              height="34"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 8v5"></path>
+              <path d="M12 17h.01"></path>
+            </svg>
+          </div>
+
+          <span class="newsletter-feedback-eyebrow">
+            Newsletter
+          </span>
+
+          <h2 id="newsletterFeedbackTitle">
+            Subscription Failed
+          </h2>
+
+          <p id="newsletterFeedbackDescription">
+            Please enter a valid email address and try again.
+          </p>
+
+        <% } %>
+
+
+        <button
+          type="button"
+          class="newsletter-feedback-action"
+          data-newsletter-feedback-close
+        >
+          Done
+        </button>
+
+      </div>
+
+    </div>
+
+  <% } %>
+
 
   <footer class="site-footer">
     <div class="footer-wrap">
@@ -164,13 +351,16 @@
     </div>
   </footer>
 <script
-  src="/js/page-loader.js?v=1"
+  src="/js/newsletter-feedback.js?v=1"
+  defer
 ></script>
 
 <script
   src="/js/animations.js?v=site-animations-23"
   defer
 ></script>
+
+
 
 </body>
 </html>

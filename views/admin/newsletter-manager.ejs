@@ -22,35 +22,84 @@
 
   <section class="section">
     <h1>Newsletter Subscribers</h1>
-    <p><%= subscribers.length %> total subscriber<%= subscribers.length === 1 ? '' : 's' %></p>
+    <%
+      const activeSubscribers =
+        subscribers.filter(
+          (sub) =>
+            sub.isSubscribed
+        ).length;
+
+      const unsubscribedSubscribers =
+        subscribers.length -
+        activeSubscribers;
+    %>
+
+    <p>
+      <strong><%= activeSubscribers %></strong>
+      active subscriber<%= activeSubscribers === 1 ? '' : 's' %>
+      &nbsp;|&nbsp;
+      <strong><%= unsubscribedSubscribers %></strong>
+      unsubscribed
+      &nbsp;|&nbsp;
+      <strong><%= subscribers.length %></strong>
+      total
+    </p>
 
     <div class="card-grid">
-      <% subscribers.forEach(function(sub) { %>
-        <div class="card">
-          <h3><%= sub.email %></h3>
-          <p><small>Subscribed: <%= sub.subscribedAt.toLocaleString() %></small></p>
-            <form
-              action="/admin/newsletter/<%= sub.id %>/delete"
-              method="POST"
-              data-confirm="Remove this subscriber from the newsletter?"
-            >
-                      <input
-                        type="hidden"
-                        name="_csrf"
-                        value="<%= csrfToken %>"
-                      >
+        <% subscribers.forEach(function(sub) { %>
+          <div class="card">
+    <h3><%= sub.email %></h3>
 
-              <button
-                type="submit"
-                class="btn-outline"
-              >
-                Remove
-              </button>
-            </form>
-        </div>
+    <p>
+      <span
+        class="newsletter-status <%= sub.isSubscribed
+          ? 'newsletter-status--subscribed'
+          : 'newsletter-status--unsubscribed' %>"
+      >
+        <%= sub.isSubscribed
+          ? 'Subscribed'
+          : 'Unsubscribed' %>
+      </span>
+    </p>
+
+    <p>
+      <small>
+        Subscribed:
+        <%= sub.subscribedAt.toLocaleString() %>
+      </small>
+    </p>
+
+    <% if (!sub.isSubscribed && sub.unsubscribedAt) { %>
+      <p>
+        <small>
+          Unsubscribed:
+          <%= sub.unsubscribedAt.toLocaleString() %>
+        </small>
+      </p>
+    <% } %>
+
+    <form
+      action="/admin/newsletter/<%= sub.id %>/delete"
+      method="POST"
+      data-confirm="Permanently remove this newsletter record?"
+    >
+      <input
+        type="hidden"
+        name="_csrf"
+        value="<%= csrfToken %>"
+      >
+
+      <button
+        type="submit"
+        class="btn-outline"
+      >
+        Remove
+      </button>
+    </form>
+  </div>
       <% }) %>
       <% if (subscribers.length === 0) { %>
-        <p>No subscribers yet.</p>
+        <p>No newsletter subscription records yet.</p>
       <% } %>
     </div>
   </section>

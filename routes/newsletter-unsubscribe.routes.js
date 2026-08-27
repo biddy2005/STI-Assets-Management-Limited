@@ -261,6 +261,20 @@ router.post(
         `${req.params.token}`;
 
 
+      /*
+      * Unsubscribe requests are idempotent.
+      *
+      * If PostgreSQL already records this subscriber as
+      * unsubscribed, do not trigger the external workflow again.
+      */
+      if (!subscriber.isSubscribed) {
+        return res.redirect(
+          303,
+          '/newsletter/unsubscribed'
+        );
+      }
+
+
       try {
         await sendNewsletterUnsubscribeToPowerAutomate({
           subscriberId:
@@ -317,6 +331,57 @@ router.post(
             }
           );
       }
+
+      /*
+ * Microsoft 365 has confirmed the unsubscribe.
+ *
+ * Record the same preference locally so PostgreSQL and the
+ * external newsletter workflow remain aligned.
+ */
+try {
+  await prisma.newsletterSubscriber
+    .update({
+      where: {
+        id:
+          subscriber.id
+      },
+
+      data: {
+        isSubscribed:
+          false,
+
+        unsubscribedAt:
+          new Date()
+      }
+    });
+} catch (error) {
+  /*
+   * The external unsubscribe has already succeeded.
+   *
+   * Do not tell the subscriber that their unsubscribe failed,
+   * because Microsoft 365 has already processed their request.
+   *
+   * Log the local persistence failure prominently so it can be
+   * reconciled operationally.
+   */
+  req.log.error(
+    {
+      err:
+        error,
+
+      event:
+        'NEWSLETTER_LOCAL_UNSUBSCRIBE_PERSIST_FAILED',
+
+      component:
+        'newsletter',
+
+      subscriberId:
+        subscriber.id
+    },
+
+    'Newsletter unsubscribe succeeded externally but could not be persisted locally'
+  );
+}
 
 
       return res.redirect(

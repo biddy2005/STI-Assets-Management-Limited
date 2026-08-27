@@ -215,9 +215,11 @@ model ContactSubmission {
 }
 
 model NewsletterSubscriber {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  subscribedAt DateTime @default(now())
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  isSubscribed   Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
 }
 
 enum DayOfWeek {

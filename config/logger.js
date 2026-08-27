@@ -16,7 +16,7 @@ const env =
  * - passwords
  * - session secrets
  * - database credentials
- * - SMTP credentials
+ * - Power Automate webhook credentials
  * - R2 credentials
  * - CSRF tokens
  * - contact/application message bodies
@@ -70,12 +70,6 @@ const logger =
         'DATABASE_URL',
 
         /*
-         * Email credentials.
-         */
-        'smtpPass',
-        'SMTP_PASS',
-
-        /*
          * Cloudflare R2 credentials.
          */
         'r2AccessKeyId',
@@ -113,16 +107,25 @@ const logger =
         'body.phone',
         'body.message',
         'body.coverNote',
-
+        /*
+        * Résumé content passed to the Careers Power Automate
+        * integration.
+        */
+        'resumeContentBase64',
+        'resume.contentBytes',
+        'body.resume.contentBytes',
+        'req.body.resume.contentBytes',
         /*
         * Power Automate webhook credentials and Newsletter
         * unsubscribe signing secret.
         */
         'powerAutomateContactUrl',
+        'powerAutomateCareersUrl',
         'powerAutomateNewsletterUrl',
         'powerAutomateNewsletterUnsubscribeUrl',
         'newsletterUnsubscribeSecret',
         'POWER_AUTOMATE_CONTACT_URL',
+        'POWER_AUTOMATE_CAREERS_URL',
         'POWER_AUTOMATE_NEWSLETTER_URL',
         'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL',
         'NEWSLETTER_UNSUBSCRIBE_SECRET'
