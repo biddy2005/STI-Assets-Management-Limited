@@ -1,7 +1,7 @@
 (() => {
   window.__animationsFileLoaded = true;
   window.__animationsFileVersion =
-  'site-animations-24';
+  'site-animations-25';
 
   function initialiseAnimations() {
     if (window.__animationsInitialised) return;
@@ -294,35 +294,60 @@
     // EXISTING GENERAL REVEALS
     // ============================================================
 
+    let prefersReducedMotion = true;
+
+    try {
+      prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+    } catch {
+      // Motion remains disabled when preference detection fails.
+    }
+
     const generalRevealElements = Array.from(
       document.querySelectorAll('.reveal-on-scroll')
     );
 
     if (
-      generalRevealElements.length &&
-      'IntersectionObserver' in window
+      !generalRevealElements.length ||
+      prefersReducedMotion ||
+      !('IntersectionObserver' in window)
     ) {
-      const generalObserver = new IntersectionObserver(
-        (entries, observer) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          });
-        },
-        {
-          threshold: 0.15
-        }
-      );
-
-      generalRevealElements.forEach((element) => {
-        generalObserver.observe(element);
-      });
-    } else {
       generalRevealElements.forEach((element) => {
         element.classList.add('is-visible');
       });
+    } else {
+      let generalObserver;
+
+      try {
+        generalObserver = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            });
+          },
+          {
+            threshold: 0.15
+          }
+        );
+      } catch {
+        generalRevealElements.forEach((element) => {
+          element.classList.add('is-visible');
+        });
+      }
+
+      if (generalObserver) {
+        generalRevealElements.forEach((element) => {
+          try {
+            generalObserver.observe(element);
+          } catch {
+            element.classList.add('is-visible');
+          }
+        });
+      }
     }
 
     // ============================================================
@@ -1021,8 +1046,75 @@ const legalRevealGroups = [
   }
 ];
 
-
     const revealElementSet = new Set();
+    const revealBaseClasses = new Map();
+
+    function restoreRevealElement(element) {
+      const baseClasses =
+        revealBaseClasses.get(element);
+
+      try {
+        element.classList.add('is-visible');
+      } catch {
+        // Continue with class cleanup below.
+      }
+
+      if (baseClasses) {
+        baseClasses.forEach((baseClass) => {
+          try {
+            element.classList.remove(baseClass);
+          } catch {
+            // A visible state was already attempted above.
+          }
+        });
+      }
+
+      revealBaseClasses.delete(element);
+      revealElementSet.delete(element);
+    }
+
+    function restoreRegisteredRevealElements() {
+      Array.from(revealBaseClasses.keys())
+        .forEach(restoreRevealElement);
+    }
+
+    if (
+      prefersReducedMotion ||
+      !('IntersectionObserver' in window)
+    ) {
+      return;
+    }
+
+    let pageObserver;
+
+    try {
+      pageObserver = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+
+            try {
+              entry.target.classList.add(
+                'is-visible'
+              );
+
+              observer.unobserve(entry.target);
+
+              revealBaseClasses.delete(entry.target);
+              revealElementSet.delete(entry.target);
+            } catch {
+              restoreRevealElement(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.08,
+          rootMargin: '0px 0px -3% 0px'
+        }
+      );
+    } catch {
+      return;
+    }
 
     function registerRevealGroups(
       groups,
@@ -1036,6 +1128,20 @@ const legalRevealGroups = [
         );
 
         elements.forEach((element, index) => {
+          let baseClasses =
+            revealBaseClasses.get(element);
+
+          if (!baseClasses) {
+            baseClasses = new Set();
+            revealBaseClasses.set(
+              element,
+              baseClasses
+            );
+          }
+
+          baseClasses.add(baseClass);
+          revealElementSet.add(element);
+
           element.classList.add(baseClass);
 
           if (
@@ -1062,14 +1168,14 @@ const legalRevealGroups = [
           );
 
           pageElements.push(element);
-          revealElementSet.add(element);
         });
       });
 
       return pageElements;
     }
 
-    const aboutRevealElements =
+    try {
+      const aboutRevealElements =
   registerRevealGroups(
     aboutRevealGroups,
     'about-reveal'
@@ -1189,46 +1295,27 @@ window.__legalAnimationsCount =
     window.__siteAnimationsCount =
       allRevealElements.length;
 
-    if (!allRevealElements.length) return;
-
-    const prefersReducedMotion =
-      window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches;
-
-    if (
-      prefersReducedMotion ||
-      !('IntersectionObserver' in window)
-    ) {
-      allRevealElements.forEach((element) => {
-        element.classList.add('is-visible');
-      });
-
+    if (!allRevealElements.length) {
+      pageObserver.disconnect();
       return;
     }
 
-    // ============================================================
-    // SHARED ONE-TIME OBSERVER
-    // ============================================================
-
-    const pageObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.08,
-        rootMargin: '0px 0px -3% 0px'
-      }
-    );
-
     allRevealElements.forEach((element) => {
-      pageObserver.observe(element);
+      try {
+        pageObserver.observe(element);
+      } catch {
+        restoreRevealElement(element);
+      }
     });
+    } catch {
+      restoreRegisteredRevealElements();
+
+      try {
+        pageObserver.disconnect();
+      } catch {
+        // Content visibility no longer depends on the observer.
+      }
+    }
   }
 
   /*
