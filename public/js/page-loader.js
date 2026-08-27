@@ -3,22 +3,6 @@
 
 
   /*
-   * ============================================================
-   * JAVASCRIPT CAPABILITY
-   * ============================================================
-   *
-   * The loader is hidden by default in CSS.
-   *
-   * Adding this class tells the stylesheet that the loader
-   * JavaScript loaded successfully and the loader may therefore
-   * be used safely.
-   */
-  document.documentElement.classList.add(
-    'js'
-  );
-
-
-  /*
    * Avoid flashing the loader during very fast navigation.
    *
    * If the new page begins loading quickly enough, the browser
@@ -144,9 +128,28 @@
        * entire website covered while non-critical images and other
        * resources are still downloading.
        */
-      requestAnimationFrame(
-        hideLoader
-      );
+      const hideInitialLoader =
+        () => {
+          requestAnimationFrame(
+            hideLoader
+          );
+        };
+
+
+      if (
+        document.readyState ===
+        'loading'
+      ) {
+        document.addEventListener(
+          'DOMContentLoaded',
+          hideInitialLoader,
+          {
+            once: true
+          }
+        );
+      } else {
+        hideInitialLoader();
+      }
 
 
       /*
@@ -344,27 +347,41 @@
           );
         }
       );
+
+
+      /*
+       * ============================================================
+       * PROGRESSIVE ENHANCEMENT READY STATE
+       * ============================================================
+       *
+       * The loader remains hidden in both HTML and CSS until every
+       * path that can hide or reset it has been established.
+       *
+       * Keep this as the final initialisation step so an earlier
+       * exception leaves the server-rendered page fully usable.
+       */
+      try {
+        document.documentElement.classList.add(
+          'page-loader-ready'
+        );
+
+
+        showLoader();
+      } catch {
+        document.documentElement.classList.remove(
+          'page-loader-ready'
+        );
+
+
+        hideLoader();
+      }
     };
 
 
   /*
-   * page-loader.js now loads from the document <head>, so wait
-   * until the body and loader markup have been parsed before
-   * accessing #siteLoader.
+   * The script is placed immediately after #siteLoader so the
+   * element exists before synchronous initialisation begins.
    */
-  if (
-    document.readyState ===
-    'loading'
-  ) {
-    document.addEventListener(
-      'DOMContentLoaded',
-      initialisePageLoader,
-      {
-        once: true
-      }
-    );
-  } else {
-    initialisePageLoader();
-  }
+  initialisePageLoader();
 
 })();

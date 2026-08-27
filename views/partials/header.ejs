@@ -169,17 +169,6 @@
 
   <% } %>
 
-
-  <!--
-    Page-loader bootstrap.
-
-    This intentionally runs before the body is parsed so the
-    loader is enabled only when its JavaScript loaded successfully.
-  -->
-  <script
-    src="/js/page-loader.js?v=2"
-  ></script>
-
 </head>
 
 <body>
@@ -189,10 +178,11 @@
   ========================================================== -->
   <div
     id="siteLoader"
-    class="site-loader"
+    class="site-loader is-hidden"
     role="status"
     aria-live="polite"
     aria-label="Loading page"
+    aria-hidden="true"
   >
     <div class="site-loader-inner">
 
@@ -216,6 +206,17 @@
 
     </div>
   </div>
+
+  <!--
+    Page-loader bootstrap.
+
+    The loader starts hidden. This runs immediately after its
+    markup so JavaScript can initialise every reset path before
+    opting the document into the enhanced loader state.
+  -->
+  <script
+    src="/js/page-loader.js?v=3"
+  ></script>
 
   <%- include('nav') %>
 

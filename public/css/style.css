@@ -1210,6 +1210,20 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
       #f8fafc 100%
     );
 
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 260ms;
+}
+
+
+/* JavaScript-enabled state */
+
+.page-loader-ready .site-loader {
   opacity: 1;
   visibility: visible;
 
@@ -1356,7 +1370,8 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
       #f68634;
   }
 
-  .site-loader {
+  .site-loader,
+  .page-loader-ready .site-loader {
     transition: none;
   }
 
