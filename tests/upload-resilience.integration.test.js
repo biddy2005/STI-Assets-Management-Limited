@@ -79,8 +79,7 @@ const prisma =
 const {
   resumeDirectory,
   digestUploadDirectory,
-  newsUploadDirectory,
-  rateGuideUploadDirectory
+  newsUploadDirectory
 } = require('../config/storage');
 
 
@@ -430,7 +429,6 @@ async function removeFilesCreatedDuringTests(
 let originalResumeFiles;
 let originalDigestFiles;
 let originalNewsFiles;
-let originalRateGuideFiles;
 
 
 /*
@@ -455,7 +453,7 @@ async function clearTestDatabaseData() {
   await prisma.dailyDigest
     .deleteMany();
 
-  await prisma.rateGuide
+  await prisma.productRate
     .deleteMany();
 
   await prisma.auditLog
@@ -480,11 +478,6 @@ async function removeCurrentTestFiles() {
   await removeFilesCreatedDuringTests(
     newsUploadDirectory,
     originalNewsFiles
-  );
-
-  await removeFilesCreatedDuringTests(
-    rateGuideUploadDirectory,
-    originalRateGuideFiles
   );
 }
 
@@ -511,12 +504,6 @@ test.before(
       await directorySnapshot(
         newsUploadDirectory
       );
-
-    originalRateGuideFiles =
-      await directorySnapshot(
-        rateGuideUploadDirectory
-      );
-
 
     await clearTestDatabaseData();
   }
@@ -848,12 +835,12 @@ test(
  */
 
 test(
-  'failed Rate Guide replacement removes the new image and preserves the existing image',
+  'failed Product Rate update preserves the previously published rates',
   async () => {
     const admin =
       await createTestAdmin({
         label:
-          'rate-guide-failure'
+          'product-rate-failure'
       });
 
 
@@ -869,88 +856,34 @@ test(
     );
 
 
-    /*
-     * First create a valid existing Rate Guide.
-     */
-    let csrfToken =
-      await getAdminCsrfToken(
-        agent
-      );
+    const existingRate =
+      await prisma.productRate.create({
+        data: {
+          product:
+            'MONEY_MARKET_NOTE',
+
+          tenorMinDays:
+            1,
+
+          tenorMaxDays:
+            30,
+
+          minAmount:
+            250000,
+
+          maxAmount:
+            999999,
+
+          ratePercent:
+            10.5,
+
+          isActive:
+            true
+        }
+      });
 
 
-    const firstResponse =
-      await agent
-        .post('/admin/rate-guide')
-        .field(
-          '_csrf',
-          csrfToken
-        )
-        .attach(
-          'rateGuideImage',
-          VALID_PNG,
-          {
-            filename:
-              'initial-rate-guide.png',
-
-            contentType:
-              'image/png'
-          }
-        );
-
-
-    assert.equal(
-      firstResponse.status,
-      302
-    );
-
-
-    const originalRateGuide =
-      await prisma.rateGuide
-        .findUnique({
-          where: {
-            id:
-              1
-          }
-        });
-
-
-    assert.ok(
-      originalRateGuide
-    );
-
-
-    const originalFilename =
-      path.basename(
-        originalRateGuide.imageUrl
-      );
-
-
-    const originalFilePath =
-      path.join(
-        rateGuideUploadDirectory,
-        originalFilename
-      );
-
-
-    assert.equal(
-      await fileExists(
-        originalFilePath
-      ),
-      true
-    );
-
-
-    const beforeReplacement =
-      await directorySnapshot(
-        rateGuideUploadDirectory
-      );
-
-
-    /*
-     * Now deliberately fail the database transaction for the
-     * replacement.
-     */
-    csrfToken =
+    const csrfToken =
       await getAdminCsrfToken(
         agent
       );
@@ -966,7 +899,7 @@ test(
     prisma.$transaction =
       async () => {
         throw new Error(
-          'Forced Rate Guide database failure for integration test.'
+          'Forced Product Rate database failure for integration test.'
         );
       };
 
@@ -974,22 +907,18 @@ test(
     try {
       failureResponse =
         await agent
-          .post('/admin/rate-guide')
-          .field(
-            '_csrf',
-            csrfToken
-          )
-          .attach(
-            'rateGuideImage',
-            VALID_PNG,
-            {
-              filename:
-                'replacement-rate-guide.png',
+          .post('/admin/rates')
+          .type('form')
+          .send({
+            _csrf:
+              csrfToken,
 
-              contentType:
-                'image/png'
-            }
-          );
+            product:
+              'MONEY_MARKET_NOTE',
+
+            rate_0_30:
+              '12.75'
+          });
     } finally {
       prisma.$transaction =
         originalTransaction;
@@ -1002,33 +931,32 @@ test(
     );
 
 
-    const rateGuideAfterFailure =
-      await prisma.rateGuide
-        .findUnique({
-          where: {
-            id:
-              1
-          }
-        });
+    const ratesAfterFailure =
+      await prisma.productRate.findMany({
+        where: {
+          product:
+            'MONEY_MARKET_NOTE'
+        }
+      });
 
 
     assert.equal(
-      rateGuideAfterFailure.imageUrl,
-      originalRateGuide.imageUrl
+      ratesAfterFailure.length,
+      1
     );
 
 
     assert.equal(
-      await fileExists(
-        originalFilePath
+      ratesAfterFailure[0].id,
+      existingRate.id
+    );
+
+
+    assert.equal(
+      Number(
+        ratesAfterFailure[0].ratePercent
       ),
-      true
-    );
-
-
-    await assertNoNewFiles(
-      rateGuideUploadDirectory,
-      beforeReplacement
+      10.5
     );
   }
 );

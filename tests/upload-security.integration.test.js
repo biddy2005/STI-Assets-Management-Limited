@@ -79,8 +79,7 @@ const prisma =
 const {
   resumeDirectory,
   digestUploadDirectory,
-  newsUploadDirectory,
-  rateGuideUploadDirectory
+  newsUploadDirectory
 } = require('../config/storage');
 
 
@@ -486,7 +485,6 @@ async function removeFilesCreatedDuringTests(
 let originalResumeFiles;
 let originalDigestFiles;
 let originalNewsFiles;
-let originalRateGuideFiles;
 
 
 /*
@@ -511,8 +509,8 @@ async function clearPhase2DDatabaseData() {
   await prisma.jobPosting
     .deleteMany();
 
-  await prisma.rateGuide
-    .deleteMany();
+await prisma.productRate
+  .deleteMany();
 
   await prisma.dailyDigest
     .deleteMany();
@@ -545,12 +543,6 @@ test.before(
         newsUploadDirectory
       );
 
-    originalRateGuideFiles =
-      await directorySnapshot(
-        rateGuideUploadDirectory
-      );
-
-
     await clearPhase2DDatabaseData();
   }
 );
@@ -581,12 +573,6 @@ test.after(
       newsUploadDirectory,
       originalNewsFiles
     );
-
-    await removeFilesCreatedDuringTests(
-      rateGuideUploadDirectory,
-      originalRateGuideFiles
-    );
-
 
     if (
       app.locals.sessionStore &&
@@ -1262,7 +1248,7 @@ test(
  */
 
 test(
-  'multipart upload with missing CSRF token is rejected and its file is removed',
+  'multipart News upload without CSRF is rejected without persisting a file or article',
   async () => {
     const admin =
       await createTestAdmin({
@@ -1288,21 +1274,33 @@ test(
 
     const before =
       await directorySnapshot(
-        rateGuideUploadDirectory
+        newsUploadDirectory
       );
+
+
+    const title =
+      `Missing CSRF Upload ${Date.now()}`;
 
 
     const response =
       await agent
         .post(
-          '/admin/rate-guide'
+          '/admin/news'
+        )
+        .field(
+          'title',
+          title
+        )
+        .field(
+          'body',
+          'This article must not be created because the CSRF token is missing.'
         )
         .attach(
-          'rateGuideImage',
+          'coverImage',
           VALID_PNG,
           {
             filename:
-              'rate-guide.png',
+              'csrf-test.png',
 
             contentType:
               'image/png'
@@ -1317,28 +1315,26 @@ test(
 
 
     await assertNoNewFiles(
-      rateGuideUploadDirectory,
+      newsUploadDirectory,
       before
     );
 
 
-    const rateGuide =
-      await prisma.rateGuide
-        .findUnique({
+    const article =
+      await prisma.newsArticle
+        .findFirst({
           where: {
-            id:
-              1
+            title
           }
         });
 
 
     assert.equal(
-      rateGuide,
+      article,
       null
     );
   }
 );
-
 
 /*
  * ============================================================
@@ -1347,7 +1343,7 @@ test(
  */
 
 test(
-  'admin image larger than 5 MB is rejected and cleaned up',
+  'admin News image larger than 5 MB is rejected and not persisted',
   async () => {
     const admin =
       await createTestAdmin({
@@ -1379,21 +1375,33 @@ test(
 
     const before =
       await directorySnapshot(
-        rateGuideUploadDirectory
+        newsUploadDirectory
       );
+
+
+    const title =
+      `Oversized News Image ${Date.now()}`;
 
 
     const response =
       await agent
         .post(
-          '/admin/rate-guide'
+          '/admin/news'
         )
         .field(
           '_csrf',
           csrfToken
         )
+        .field(
+          'title',
+          title
+        )
+        .field(
+          'body',
+          'This article must not be created because its cover image is too large.'
+        )
         .attach(
-          'rateGuideImage',
+          'coverImage',
           OVERSIZED_PNG,
           {
             filename:
@@ -1418,8 +1426,23 @@ test(
 
 
     await assertNoNewFiles(
-      rateGuideUploadDirectory,
+      newsUploadDirectory,
       before
+    );
+
+
+    const article =
+      await prisma.newsArticle
+        .findFirst({
+          where: {
+            title
+          }
+        });
+
+
+    assert.equal(
+      article,
+      null
     );
   }
 );

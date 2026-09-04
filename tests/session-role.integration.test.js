@@ -324,13 +324,12 @@ test(
     );
 
 
-    const allowedRoutes =
-      [
-        '/admin/news',
-        '/admin/downloads',
-        '/admin/jobs',
-        '/admin/rate-guide'
-      ];
+  const allowedRoutes =
+    [
+      '/admin/news',
+      '/admin/downloads',
+      '/admin/jobs'
+    ];
 
 
     for (
@@ -381,14 +380,15 @@ test(
     );
 
 
-    const restrictedRoutes =
-      [
-        '/admin/applications',
-        '/admin/contact-submissions',
-        '/admin/newsletter',
-        '/admin/audit-logs',
-        '/admin/editors'
-      ];
+  const restrictedRoutes =
+    [
+      '/admin/applications',
+      '/admin/contact-submissions',
+      '/admin/newsletter',
+      '/admin/audit-logs',
+      '/admin/editors',
+      '/admin/rates'
+    ];
 
 
     for (
@@ -439,14 +439,15 @@ test(
     );
 
 
-    const protectedRoutes =
-      [
-        '/admin/applications',
-        '/admin/contact-submissions',
-        '/admin/newsletter',
-        '/admin/audit-logs',
-        '/admin/editors'
-      ];
+  const protectedRoutes =
+    [
+      '/admin/applications',
+      '/admin/contact-submissions',
+      '/admin/newsletter',
+      '/admin/audit-logs',
+      '/admin/editors',
+      '/admin/rates'
+    ];
 
 
     for (
