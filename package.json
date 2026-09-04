@@ -24,6 +24,7 @@
     "prisma:validate": "prisma validate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
+    "deploy:build": "npm ci --include=dev && npm run prisma:generate && npm run prisma:migrate:deploy && npm prune --omit=dev",
     "prisma:migrate:status": "prisma migrate status",
     "prisma:studio": "prisma studio",
     "security:audit": "audit-ci --config audit-ci.jsonc"
