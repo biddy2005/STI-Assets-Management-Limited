@@ -330,6 +330,20 @@ const powerAutomateNewsletterUnsubscribeUrl =
     'POWER_AUTOMATE_NEWSLETTER_UNSUBSCRIBE_URL'
   );
 
+const powerAutomateSubscriptionsUrl =
+  readTrimmedEnvironmentValue(
+    'POWER_AUTOMATE_SUBSCRIPTIONS_URL'
+  );
+
+const fieldEncryptionKey =
+  readTrimmedEnvironmentValue(
+    'FIELD_ENCRYPTION_KEY'
+  );
+
+const subscriptionCallbackSecret =
+  readTrimmedEnvironmentValue(
+    'SUBSCRIPTION_CALLBACK_SECRET'
+  );
 /*
  * Production depends on Power Automate for external workflow
  * notifications.
@@ -781,6 +795,9 @@ module.exports = {
   powerAutomateCareersUrl,
   powerAutomateNewsletterUrl,
   powerAutomateNewsletterUnsubscribeUrl,
+  powerAutomateSubscriptionsUrl,
+  fieldEncryptionKey,
+  subscriptionCallbackSecret,
   newsletterUnsubscribeSecret,
   logLevel,
   storageDriver,

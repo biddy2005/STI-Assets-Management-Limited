@@ -50,10 +50,25 @@ const careersRoutes =
 const newsletterRoutes =
   require('./routes/api.newsletter.routes');
 
+const subscriptionsRoutes =
+  require('./routes/api.subscriptions.routes');
+
 const newsletterUnsubscribeRoutes =
   require(
     './routes/newsletter-unsubscribe.routes'
   );
+
+const adminSubscriptionsRoutes =
+  require('./routes/admin.subscriptions.routes');
+
+const subscriptionCallbackRoutes =
+  require('./routes/api.subscription-callback.routes');
+
+const ratesRoutes =
+  require('./routes/api.rates.routes');
+
+const adminRatesRoutes =
+  require('./routes/admin.rates.routes');
 
 const {
   contactLimiter,
@@ -996,10 +1011,24 @@ app.post(
 );
 
 /*
+ * Must precede the subscriptions router so the limiter runs
+ * before Multer buffers three KYC documents.
+ */
+app.post(
+  '/api/subscriptions',
+  careersLimiter
+);
+
+/*
  * Protect only newsletter subscriptions.
  */
 app.post(
   '/api/newsletter',
+  newsletterLimiter
+);
+
+app.post(
+  '/api/subscriptions/callback',
   newsletterLimiter
 );
 
@@ -1013,8 +1042,33 @@ app.use(
 );
 
 app.use(
+  '/admin/subscriptions',
+  adminSubscriptionsRoutes
+);
+
+app.use(
+  '/admin/rates',
+  adminRatesRoutes
+);
+
+app.use(
+  '/api',
+  ratesRoutes
+);
+
+app.use(
+  '/api',
+  subscriptionCallbackRoutes
+);
+
+app.use(
   '/admin',
   adminRoutes
+);
+
+app.use(
+  '/api',
+  subscriptionsRoutes
 );
 
 app.use(

@@ -1,570 +1,329 @@
 <%- include('../partials/header', {
-  pageCss: '/css/pages/about.css'
+  pageCss: '/css/pages/about.css',
+  pageTitle: 'Who We Are | STI Assets Management Limited',
+  pageDescription: 'STI Assets Management Limited is a wholly Nigerian-owned, SEC-regulated investment management and financial advisory firm established in 2008.'
 }) %>
-<!-- ============================================================
-     1. HERO SECTION
-============================================================ -->
-<section class="inner-page-hero about-page-hero">
-  <div class="inner-page-hero-inner">
-    <span class="hero-eyebrow">About STIAM</span>
-    <h1>Your Trusted Investment Partner</h1>
-    <p>Building Wealth Through Expert Financial Management.</p>
-  </div>
-</section>
 
-<!-- ============================================================
-     2. WHO WE ARE
-============================================================ -->
-<section
-  class="about-overview-section"
-  aria-labelledby="about-overview-title"
->
-  <div class="about-overview-container">
+<main id="main-content">
 
-    <div class="about-overview-grid">
+  <!-- ============================================================
+       1. HERO
+       Compact counterpart to the homepage hero. Same left
+       alignment, same type, roughly half the height.
+  ============================================================ -->
+  <section class="page-hero" aria-labelledby="about-hero-title">
+    <div class="page-hero-media" aria-hidden="true">
+      <img
+        src="/hero-poster.webp"
+        alt=""
+        fetchpriority="high"
+        decoding="async"
+      >
+    </div>
 
-      <!-- Company overview -->
-      <div class="about-overview-content">
+    <div class="page-hero-overlay" aria-hidden="true"></div>
 
-        <div class="values-eyebrow-row about-overview-eyebrow">
-          <span class="eyebrow">Who We Are</span>
-        </div>
+    <div class="page-shell page-hero-inner">
+      <div class="page-hero-copy">
+        <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Who we are</span>
+        </nav>
 
-        <h2 id="about-overview-title">
-          A Trusted Nigerian Investment Management Company
-        </h2>
-
-        <p class="about-overview-lead">
-          STI Assets Management Limited is a wholly Nigerian-owned,
-          non-bank financial company established in 2008 to provide
-          investment management and financial advisory services.
-        </p>
-
-        <p class="about-overview-text">
-          
-        We are a wholly owned Nigerian company, dedicated to delivering innovative financial services that empower the country's business landscape, catering to the needs of both individuals and corporations. Our identity is rooted in being an exceptional, all-encompassing financial hub where limitless possibilities flourish, and where optimism always fills the glass with opportunities. This is made possible through our dedicated team and robust tools that ensure we fulfil our commitments
-        </p>
-
-        <p class="about-overview-text">
-          
-        The organisation is committed to operating as a professional and ethical organisation with an unmatched commitment to customer satisfaction.
-        </p>
-
-        <!-- Company highlights -->
-        <div
-          class="about-overview-facts"
-          aria-label="STI Assets Management company information"
+        <h1
+          id="about-hero-title"
+          class="page-hero-title page-enter"
+          style="--page-enter-delay: 120ms"
         >
-          <div class="about-overview-fact">
-            <strong>2008</strong>
-            <span>Established</span>
+          Nigerian owned. Built for the long term.
+        </h1>
+
+        <p
+          class="page-hero-summary page-enter"
+          style="--page-enter-delay: 240ms"
+        >
+          Since 2008 we have managed capital for individuals, corporates and
+          institutions across Nigeria, under a licence from the Securities and
+          Exchange Commission.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       2. OVERVIEW
+       Asymmetric split with the fact row, which was already the
+       strongest element on the previous version of this page.
+  ============================================================ -->
+  <section class="page-band page-band-light" aria-labelledby="about-overview-title">
+    <div class="page-shell">
+      <div class="page-split">
+
+         <div class="reveal-on-scroll">
+          <p class="page-eyebrow">Who we are</p>
+
+          <h2 id="about-overview-title" class="page-title-sm">
+            A trusted Nigerian investment management company.
+          </h2>
+
+          <div class="page-prose" style="margin-top: 22px;">
+            <p>
+              STI Assets Management Limited is a wholly Nigerian-owned, non-bank
+              financial company established in 2008 to provide investment
+              management and financial advisory services.
+            </p>
+
+            <p>
+              We deliver financial services built around the needs of both
+              individuals and corporations, supported by a dedicated team and
+              the tools required to meet the commitments we make.
+            </p>
+
+            <p>
+              The organisation is committed to operating professionally and
+              ethically, with an unmatched commitment to client satisfaction.
+            </p>
           </div>
 
-          <span
-            class="about-overview-fact-divider"
-            aria-hidden="true"
-          >
-            |
-          </span>
+          <div class="page-facts" aria-label="Company information">
+            <div class="page-fact">
+              <strong class="page-fact-value">2008</strong>
+              <span class="page-fact-label">Established</span>
+            </div>
 
-          <div class="about-overview-fact">
-            <strong>Nigerian-Owned</strong>
-            <span>Local Expertise</span>
-          </div>
+            <div class="page-fact">
+              <strong class="page-fact-value">Nigerian owned</strong>
+              <span class="page-fact-label">Local expertise</span>
+            </div>
 
-          <span
-            class="about-overview-fact-divider"
-            aria-hidden="true"
-          >
-            |
-          </span>
-
-          <div class="about-overview-fact">
-            <strong>Individuals &amp; Corporations</strong>
-            <span>Clients We Serve</span>
+            <div class="page-fact">
+              <strong class="page-fact-value">Individuals &amp; corporates</strong>
+              <span class="page-fact-label">Clients we serve</span>
+            </div>
           </div>
         </div>
 
-      </div>
-
-      <!-- Company image -->
-      <div class="about-overview-visual">
-
-        <div class="about-overview-image">
+        <div class="page-media reveal-on-scroll reveal-zoom" style="--reveal-delay: 120ms">
           <img
             src="/photo-1522071820081-009f0129c71c.jpg"
-            alt="Investment professionals collaborating in a corporate office"
-            loading="eager"
+            alt="The STI Assets Management team at work in Victoria Island, Lagos"
+            loading="lazy"
             decoding="async"
           >
+
+          <div class="page-media-badge">
+            <strong>100+</strong>
+            <span>Years combined experience</span>
+          </div>
         </div>
 
-        <div class="about-overview-experience">
-          <strong>100+</strong>
+      </div>
+    </div>
+  </section>
 
-          <span>
-            Years of Combined<br>
-            Professional Experience
+
+  <!-- ============================================================
+       3. PURPOSE — polarity flip
+       The homepage alternates white and navy bands. Without this
+       an inner page reads flat however good the content is.
+  ============================================================ -->
+  <section class="page-band page-band-ink" aria-labelledby="about-purpose-title">
+    <div class="page-shell">
+
+      <div class="page-section-head reveal-on-scroll">
+        <p class="page-eyebrow page-eyebrow-light">Our purpose</p>
+
+        <h2 id="about-purpose-title" class="page-title-sm page-title-light">
+          Driven by purpose. Focused on impact.
+        </h2>
+
+        <p class="page-lead">
+          Our strategic focus is to create meaningful wealth opportunities while
+          building a responsive and dependable investment management firm.
+        </p>
+      </div>
+
+            <ol class="page-statement-list">
+        <li class="page-statement reveal-on-scroll" style="--reveal-delay: 80ms">
+          <span class="page-statement-num" aria-hidden="true">01</span>
+          <div>
+            <h3 class="page-statement-title">Meaningful wealth opportunities</h3>
+            <p class="page-statement-text">
+              We identify and structure investments that serve a defined
+              objective, rather than selling products in search of a buyer.
+              Every mandate begins with what the capital is for.
+            </p>
+          </div>
+        </li>
+
+        <li class="page-statement reveal-on-scroll" style="--reveal-delay: 140ms">
+          <span class="page-statement-num" aria-hidden="true">02</span>
+          <div>
+            <h3 class="page-statement-title">A dependable institution</h3>
+            <p class="page-statement-text">
+              Responsiveness and reliability are operational commitments, not
+              marketing claims. Clients receive statements on a fixed schedule
+              and reach a named contact when they call.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       4. VISION AND MISSION
+  ============================================================ -->
+  <section class="page-band page-band-soft" aria-labelledby="about-direction-title">
+    <div class="page-shell">
+
+      <div class="page-section-head reveal-on-scroll">
+        <p class="page-eyebrow">Our direction</p>
+
+        <h2 id="about-direction-title" class="page-title-sm">
+          Where we are going, and how we get there.
+        </h2>
+      </div>
+
+            <div class="page-declarations">
+        <div class="page-declaration reveal-on-scroll">
+          <p class="page-eyebrow">Vision</p>
+          <p class="page-declaration-text">
+            The foremost financial enterprise that consistently demonstrates superior competency in progressive wealth creation and preservation
+          </p>
+        </div>
+
+        <div class="page-declaration reveal-on-scroll" style="--reveal-delay: 100ms">
+          <p class="page-eyebrow">Mission</p>
+          <p class="page-declaration-text">
+            To provide distinctive and relatable innovative investment solutions that are inclusive, rewarding and sustainable
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       BREATHER
+       A full-bleed image between two text-heavy bands. No copy
+       over it; its job is to give the eye somewhere to rest.
+  ============================================================ -->
+  <section class="page-breather reveal-on-scroll reveal-zoom" aria-hidden="true">
+    <img
+      src="/pexels-hilalbulbul-37293743.jpg"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    >
+  </section>
+
+  <!-- ============================================================
+       5. CORE VALUES
+       Five values in a 3+2 grid. Left aligned, no centred headers.
+  ============================================================ -->
+  <section class="page-band page-band-light" aria-labelledby="about-values-title">
+    <div class="page-shell">
+
+     <div class="page-section-head reveal-on-scroll">
+        <p class="page-eyebrow">Our core values</p>
+
+        <h2 id="about-values-title" class="page-title-sm">
+          Built on values. Driven by purpose.
+        </h2>
+
+        <p class="page-lead">
+          Every relationship we build and every decision we make is anchored in
+          the principles that define who we are as an organisation.
+        </p>
+      </div>
+
+      <div class="page-grid page-grid-3">
+
+        <article class="page-card page-card-lift reveal-on-scroll">
+          <span class="page-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 11 2 2 4-4"></path><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
           </span>
-        </div>
+          <h3 class="page-card-title">Client first</h3>
+          <p class="page-card-text">
+            Your objectives, liquidity needs and risk tolerance are written down
+            before capital is deployed, and we do not take a position outside
+            them.
+          </p>
+        </article>
+
+        <article class="page-card page-card-lift reveal-on-scroll" style="--reveal-delay: 60ms">
+          <span class="page-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </span>
+          <h3 class="page-card-title">Collaboration</h3>
+          <p class="page-card-text">
+            Research, advisory and portfolio management work from the same
+            information, so the advice you receive reflects the whole firm rather
+            than one desk.
+          </p>
+        </article>
+
+         <article class="page-card page-card-lift reveal-on-scroll" style="--reveal-delay: 120ms">
+          <span class="page-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="m9 14 2 2 4-4"></path></svg>
+          </span>
+          <h3 class="page-card-title">Accountability</h3>
+          <p class="page-card-text">
+            We report on what we said we would do, on a fixed schedule, including
+            when the result falls short of the objective.
+          </p>
+        </article>
+
+        <article class="page-card page-card-lift reveal-on-scroll">
+          <span class="page-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8a5 5 0 0 1-6 0Z"></path><path d="m2 16 3-8 3 8a5 5 0 0 1-6 0Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h18"></path></svg>
+          </span>
+          <h3 class="page-card-title">Integrity</h3>
+          <p class="page-card-text">
+            Client assets sit with an independent custodian. Fees are disclosed
+            in full before you commit, not discovered afterwards.
+          </p>
+        </article>
+
+         <article class="page-card page-card-lift reveal-on-scroll" style="--reveal-delay: 60ms">
+          <span class="page-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12l4 6-10 13L2 9Z"></path><path d="m11 3-3 6 4 13 4-13-3-6"></path><path d="M2 9h20"></path></svg>
+          </span>
+          <h3 class="page-card-title">Excellence</h3>
+          <p class="page-card-text">
+            Professional standards are held consistently, from a first enquiry
+            through to the administration of a corporate scheme.
+          </p>
+        </article>
+
+        <!--
+          The sixth cell carries the onward action rather than a
+          sixth value, so the grid resolves without an empty gap.
+        -->
+        <article class="page-card page-card-ink reveal-on-scroll" style="--reveal-delay: 120ms">
+          <h3 class="page-card-title">Work with us</h3>
+          <p class="page-card-text">
+            Tell an advisor what the capital is for and the horizon you have in
+            mind. We will tell you which mandate fits, or whether none of them
+            do.
+          </p>
+
+          <div style="margin-top: auto; padding-top: 24px;">
+            <a href="/contact" class="page-text-link page-text-link-light">
+              Speak with an advisor
+              <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+            </a>
+          </div>
+        </article>
 
       </div>
-
     </div>
+  </section>
 
-  </div>
-</section>
-
-<!-- ============================================================
-     3. STRATEGIC GOALS AND FOCUS
-============================================================ -->
-<section
-  class="about-purpose-section"
-  aria-labelledby="about-purpose-title"
->
-  <div class="about-purpose-container">
-
-    <!-- Section heading -->
-    <div class="about-purpose-header">
-
-      <div class="values-eyebrow-row">
-        <span class="eyebrow">Our Purpose</span>
-      </div>
-
-      <h2 id="about-purpose-title">
-        Driven by Purpose. Focused on Impact.
-      </h2>
-
-      <p>
-        Our strategic focus is to create meaningful wealth opportunities
-        while building a responsive and dependable investment management
-        firm.
-      </p>
-
-    </div>
-
-    <!-- Strategic focus cards -->
-    <div
-      class="about-purpose-grid"
-      role="list"
-      aria-label="STI Assets Management strategic focus"
-    >
-
-      <!-- Wealth creation -->
-      <article
-        class="about-purpose-card about-purpose-card-primary"
-        role="listitem"
-      >
-
-        <div class="about-purpose-card-content">
-
-          <h3>
-            Creating Opportunities for Growing Wealth
-          </h3>
-
-          <p>
-            We serve Nigeria's growing and emerging affluent market
-            with investment solutions designed to help clients identify
-            and maximise wealth creation opportunities.
-          </p>
-
-        </div>
-
-      </article>
-
-      <!-- Agile investment management -->
-      <article
-        class="about-purpose-card about-purpose-card-secondary"
-        role="listitem"
-      >
-
-        <div class="about-purpose-card-content">
-
-          <h3>
-            Building a Responsive Advisory Firm
-          </h3>
-
-          <p>
-            We are building an asset management and investment advisory
-            firm that is agile, dependable and focused on delivering
-            superior outcomes for every client.
-          </p>
-
-        </div>
-
-      </article>
-
-    </div>
-
-  </div>
-</section>
-
-<!-- ============================================================
-     4. VISION AND MISSION
-============================================================ -->
-<section
-  class="about-direction-section"
-  aria-labelledby="about-direction-title"
->
-  <div class="about-direction-container">
-
-    <!-- Section heading -->
-    <div class="about-direction-header">
-
-      <div class="values-eyebrow-row">
-       <span class="eyebrow">Our Direction</span>
-      </div>
-
-      <h2 id="about-direction-title">
-        Guided by Vision. Driven by Mission.
-      </h2>
-
-      <p>
-        Our vision shapes where we are going. Our mission defines how we get there.<br>
-        Together, they guide every decision we make.
-      </p>
-
-    </div>
-
-    <!-- Vision and Mission cards -->
-    <div
-      class="about-direction-grid"
-      role="list"
-      aria-label="STI Assets Management vision and mission"
-    >
-
-      <!-- Vision -->
-      <article
-        class="about-direction-card about-direction-card-vision"
-        role="listitem"
-      >
-
-        <div
-          class="about-direction-icon"
-          aria-hidden="true"
-        >
-          <!-- Lucide: Eye -->
-          <svg
-            class="ui-icon ui-icon-lg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
-            ></path>
-
-            <circle
-              cx="12"
-              cy="12"
-              r="3"
-            ></circle>
-          </svg>
-        </div>
-
-        <div class="about-direction-content">
-
-          <h3>
-            Our Vision
-          </h3>
-
-          <p>
-            The foremost financial enterprise that consistently demonstrates superior competency in progressive wealth creation and preservation.
-          </p>
-
-        </div>
-
-      </article>
-
-      <!-- Mission -->
-      <article
-        class="about-direction-card about-direction-card-mission"
-        role="listitem"
-      >
-
-        <div
-          class="about-direction-icon"
-          aria-hidden="true"
-        >
-          <!-- Lucide: Rocket -->
-          <svg
-            class="ui-icon ui-icon-lg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"
-            ></path>
-
-            <path
-              d="m12 15-3-3a22 22 0 0 1 2-3.95A12.87 12.87 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"
-            ></path>
-
-            <path
-              d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"
-            ></path>
-
-            <path
-              d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"
-            ></path>
-          </svg>
-        </div>
-
-        <div class="about-direction-content">
-
-          <h3>
-            Our Mission
-          </h3>
-
-          <p>
-            To provide distinctive and relatable innovative investment solutions that are inclusive, rewarding and sustainable.
-          </p>
-
-        </div>
-
-      </article>
-
-    </div>
-
-  </div>
-</section>
-
-<!-- ============================================================
-     5. CORE VALUES
-============================================================ -->
-<section
-  class="about-values-modern-section"
-  aria-labelledby="about-values-title"
->
-  <div
-    class="about-values-decoration about-values-decoration-left"
-    aria-hidden="true"
-  ></div>
-
-  <div
-    class="about-values-decoration about-values-decoration-right"
-    aria-hidden="true"
-  ></div>
-
-  <div class="about-values-modern-container">
-
-    <!-- Section heading -->
-    <div class="about-values-modern-header">
-
-      <div class="values-eyebrow-row">
-        <span class="eyebrow">Our Core Values</span>
-
-      </div>
-
-      <h2 id="about-values-title">
-        Built on Values. Driven by Purpose.
-      </h2>
-
-      <p>
-        Every relationship we build and every decision we make is anchored in the principles that define who we are as an organisation.
-      </p>
-
-    </div>
-
-    <!-- Core values -->
-    <div
-      class="about-values-modern-grid"
-      role="list"
-      aria-label="STI Assets Management core values"
-    >
-
-      <!-- Client First -->
-      <article
-        class="about-value-card"
-        role="listitem"
-      >
-        <div
-          class="about-value-icon"
-          aria-hidden="true"
-        >
-          <!-- Lucide: UserCheck -->
-          <svg
-            class="ui-icon ui-icon-lg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="m16 11 2 2 4-4"></path>
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-          </svg>
-        </div>
-
-        <div class="about-value-content">
-          <h3>Client First</h3>
-
-          <p>
-            We place our clients at the center of every decision, tailoring solutions to their unique financial goals.
-          </p>
-        </div>
-      </article>
-
-      <!-- Collaboration -->
-      <article
-        class="about-value-card"
-        role="listitem"
-      >
-        <div
-          class="about-value-icon"
-          aria-hidden="true"
-        >
-          <!-- Lucide: Users -->
-          <svg
-            class="ui-icon ui-icon-lg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-        </div>
-
-        <div class="about-value-content">
-          <h3>Collaboration</h3>
-
-          <p>
-            We work together, across teams and with clients, to deliver outcomes that are greater than the sum of their parts.
-          </p>
-        </div>
-      </article>
-
-      <!-- Accountability -->
-      <article
-        class="about-value-card"
-        role="listitem"
-      >
-        <div
-          class="about-value-icon"
-          aria-hidden="true"
-        >
-          <!-- Lucide: ClipboardCheck -->
-          <svg
-            class="ui-icon ui-icon-lg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <rect
-              width="8"
-              height="4"
-              x="8"
-              y="2"
-              rx="1"
-              ry="1"
-            ></rect>
-
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <path d="m9 14 2 2 4-4"></path>
-          </svg>
-        </div>
-
-        <div class="about-value-content">
-          <h3>Accountability</h3>
-
-          <p>
-            We take ownership of our commitments and stand behind the advice and service we provide.
-          </p>
-        </div>
-      </article>
-
-      <!-- Integrity -->
-      <article
-        class="about-value-card"
-        role="listitem"
-      >
-        <div
-          class="about-value-icon"
-          aria-hidden="true"
-        >
-          <!-- Lucide: Scale -->
-          <svg
-            class="ui-icon ui-icon-lg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="m16 16 3-8 3 8a5 5 0 0 1-6 0Z"></path>
-            <path d="m2 16 3-8 3 8a5 5 0 0 1-6 0Z"></path>
-            <path d="M7 21h10"></path>
-            <path d="M12 3v18"></path>
-            <path d="M3 7h18"></path>
-          </svg>
-        </div>
-
-        <div class="about-value-content">
-          <h3>Integrity</h3>
-
-          <p>
-            We operate with honesty and transparency, earning trust through consistent, ethical conduct.
-          </p>
-        </div>
-      </article>
-
-      <!-- Excellence -->
-      <article
-        class="about-value-card"
-        role="listitem"
-      >
-        <div
-          class="about-value-icon"
-          aria-hidden="true"
-        >
-          <!-- Lucide: Gem -->
-          <svg
-            class="ui-icon ui-icon-lg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M6 3h12l4 6-10 13L2 9Z"></path>
-            <path d="m11 3-3 6 4 13 4-13-3-6"></path>
-            <path d="M2 9h20"></path>
-          </svg>
-        </div>
-
-        <div class="about-value-content">
-          <h3>Excellence</h3>
-
-          <p>
-            We pursue the highest standards in everything we do, from advisory services to client experience.
-          </p>
-        </div>
-      </article>
-
-    </div>
-
-  </div>
-</section>
-
+</main>
 
 <%- include('../partials/footer') %>

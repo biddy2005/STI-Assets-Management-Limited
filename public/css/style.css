@@ -2,6 +2,9 @@
 :root {
   --color-primary: #033669;
   --color-accent: #f68634;
+  --color-accent-action: #be5500;
+  --color-focus-on-light: var(--color-primary);
+  --color-focus-on-dark: #ffffff;
   --color-success: #27ae60;
   --color-bg: #ffffff;
   --color-bg-alt: #f5f7f9;
@@ -18,15 +21,39 @@
   --radius-xl: 22px;
 
   /* Shadow scale — reuse everywhere instead of one-off rgba values */
-  --shadow-sm: 0 10px 25px -5px rgba(3, 54, 105, 0.05);
-  --shadow-md: 0 15px 45px rgba(3, 54, 105, 0.06);
-  --shadow-lg: 0 25px 60px rgba(3, 54, 105, 0.12);
+  --shadow-sm:
+    0 1px 1px rgba(3, 54, 105, 0.04),
+    0 2px 2px rgba(3, 54, 105, 0.05),
+    inset 0 0 0 1px rgba(3, 54, 105, 0.07);
+  --shadow-md:
+    0 2px 2px rgba(3, 54, 105, 0.05),
+    0 8px 8px -8px rgba(3, 54, 105, 0.07),
+    inset 0 0 0 1px rgba(3, 54, 105, 0.07);
+  --shadow-lg:
+    0 2px 2px rgba(3, 54, 105, 0.05),
+    0 8px 16px -4px rgba(3, 54, 105, 0.08),
+    0 24px 32px -8px rgba(3, 54, 105, 0.06),
+    inset 0 0 0 1px rgba(3, 54, 105, 0.07);
 
-  --transition-standard: transform 300ms ease, box-shadow 300ms ease;
+    --transition-standard: transform 200ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 200ms cubic-bezier(0.23, 1, 0.32, 1);
 
   --hv2-navy: var(--color-primary);
   --hv2-orange: var(--color-accent);
   --hv2-gray: #5B6470;
+}
+
+/*
+ * The header is sticky at 90px, so anchored sections must
+ * offset by that much or their headings land underneath it.
+ */
+html {
+  scroll-padding-top: 110px;
+}
+
+section[id],
+[id^="home-"],
+[id$="-section"] {
+  scroll-margin-top: 110px;
 }
 
 /* ============================================================
@@ -205,6 +232,7 @@ button {
   border-bottom: 1px solid rgba(3, 54, 105, 0.06);
   transition: box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+.site-header.is-sticky,
 .site-header.is-scrolling {
   box-shadow: 0 4px 20px rgba(3, 54, 105, 0.08);
 }
@@ -366,7 +394,7 @@ button {
 .nav-toggle:focus-visible,
 .drawer-close:focus-visible,
 .mobile-drawer-nav a:focus-visible {
-  outline: 3px solid rgba(246, 134, 52, 0.38);
+  outline: 3px solid var(--color-focus-on-light);
   outline-offset: 4px;
 }
 
@@ -396,15 +424,32 @@ button {
 .btn-contact-cta {
   padding: 10px 22px;
   border-radius: 8px;
-  background: #f68634;
+  background: var(--color-primary);
   color: #ffffff;
   font-weight: 700;
   font-size: 0.925rem;
-  transition: transform 250ms ease, box-shadow 250ms ease;
+  transition: background-color 250ms ease, transform 250ms ease, box-shadow 250ms ease;
 }
 .btn-contact-cta:hover {
+  background: #04477f;
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(246, 134, 52, 0.35);
+  box-shadow: 0 10px 24px rgba(3, 54, 105, 0.28);
+}
+
+.btn-nav-secondary {
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid rgba(3, 54, 105, 0.22);
+  font-weight: 600;
+  font-size: 0.925rem;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.btn-nav-secondary:hover {
+  background: var(--color-bg-alt);
+  border-color: var(--color-primary);
 }
 
 /* ---- Hamburger toggle (mobile/tablet) ---- */
@@ -456,6 +501,7 @@ button {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  will-change: transform;
 }
 
 .mobile-drawer.open {
@@ -704,14 +750,15 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
   font-size: 1rem;
 }
 .footer-newsletter-form input:focus {
-  outline: none;
+  outline: 3px solid var(--color-focus-on-light);
+  outline-offset: 3px;
   border-color: #033669;
   box-shadow: none;
 }
 .footer-newsletter-form button {
   height: 48px;
   padding: 0 28px;
-  background: #f68634;
+  background: var(--color-primary);
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -720,7 +767,7 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
   transition: background 250ms ease;
 }
 .footer-newsletter-form button:hover {
-  background: #d9711f;
+  background: #04477f;
 }
 
 @media (min-width: 768px) {
@@ -809,8 +856,8 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
   height: 16px;
 }
 .footer-social-row .social-icon:hover {
-  background: #f68634;
-  border-color: #f68634;
+  background: var(--color-accent-action);
+  border-color: var(--color-accent-action);
 }
 
 .footer-arrow-list li {
@@ -949,14 +996,14 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
 ============================================================ */
 
 .site-footer a:focus-visible,
-.footer-cta-banner a:focus-visible,
-.footer-newsletter-form button:focus-visible {
-  outline: 3px solid rgba(246, 134, 52, 0.42);
+.footer-cta-banner a:focus-visible {
+  outline: 3px solid var(--color-focus-on-dark);
   outline-offset: 4px;
 }
 
-.footer-newsletter-form input:focus-visible {
-  outline: none;
+.footer-newsletter-form button:focus-visible {
+  outline: 3px solid var(--color-focus-on-light);
+  outline-offset: 4px;
 }
 
 .honeypot {
@@ -1016,7 +1063,7 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
 }
 
 .btn-outline:focus-visible {
-  outline: 3px solid rgba(246, 134, 52, 0.28);
+  outline: 3px solid var(--color-focus-on-light);
   outline-offset: 3px;
 }
 
@@ -1033,6 +1080,11 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
   border-color: #ffffff;
 
   color: var(--color-primary);
+}
+
+.footer-cta-banner .btn-outline-light:focus-visible {
+  outline: 3px solid var(--color-focus-on-dark);
+  outline-offset: 4px;
 }
 
 
@@ -1570,7 +1622,7 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
 
   color: #ffffff;
 
-  background: #033669;
+  background: var(--color-accent-action);
 
   border: 0;
   border-radius: 8px;
@@ -1590,7 +1642,7 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
 
 
 .newsletter-feedback-action:hover {
-  background: #f68634;
+  background: var(--color-primary);
 
   transform:
     translateY(-2px);
@@ -1754,3 +1806,28 @@ p { color: var(--color-text-muted); margin-bottom: 12px; }
   }
 
 }
+
+/* Admin status pills */
+.status-pill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #eef2f6;
+  color: #033669;
+}
+
+.status-pill.is-approved {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+
+.status-pill.is-rejected {
+  background: #fdecea;
+  color: #c0392b;
+}
+
+.state-ok    { color: #1e7e34; }
+.state-fail  { color: #c0392b; }
+.state-idle  { color: #5b6b78; }

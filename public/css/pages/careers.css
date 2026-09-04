@@ -1,506 +1,266 @@
-/* ============================================================
-   STI ASSETS MANAGEMENT
-   CAREERS PAGE
-============================================================ */
+/* ===========================================================
+   CAREERS
+   -----------------------------------------------------------
+   Restyles the existing markup against page-system.css.
+   The two-column layout (roles left, sticky form right) is
+   kept: it is the right structure for this page.
+
+   Load order: style.css → page-system.css → this file
+   =========================================================== */
 
 
-/* ============================================================
-   CAREERS HERO
-============================================================ */
-
-.careers-page-hero {
-  --hero-bg-image:
-    url(
-      "/heropic.png"
-    );
-}
-
-.careers-page-hero
-  .inner-page-hero-inner {
-  width: 100%;
-  max-width: 840px;
-}
-
-.careers-page-hero p {
-  max-width: 690px;
-}
-/* ============================================================
-   CAREERS HERO ENTRANCE
-============================================================ */
-
-.careers-page-hero
-  .hero-eyebrow {
-  animation:
-    careers-hero-enter 620ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    80ms both;
-}
-
-.careers-page-hero h1 {
-  animation:
-    careers-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    160ms both;
-}
-
-.careers-page-hero p {
-  animation:
-    careers-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    240ms both;
-}
-
-@keyframes careers-hero-enter {
-
-  from {
-    opacity: 0;
-
-    transform:
-      translate3d(0, 18px, 0);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translate3d(0, 0, 0);
-  }
-
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-  .careers-page-hero
-    .hero-eyebrow,
-
-  .careers-page-hero h1,
-
-  .careers-page-hero p {
-    animation: none;
-  }
-
-}
-/* ============================================================
-   CAREERS SECTION
-============================================================ */
+/* ===========================================================
+   SECTION
+   =========================================================== */
 
 .careers-section {
-  width: 100%;
-
-  padding:
-    clamp(72px, 8vw, 104px)
-    20px
-    clamp(82px, 9vw, 116px);
-
-  background:
-    linear-gradient(
-      180deg,
-      #f8fafc 0%,
-      #ffffff 100%
-    );
+  padding: var(--page-section-space) 0;
+  background: var(--page-surface);
 }
 
 .careers-shell {
-  width: 100%;
-  max-width: var(--max-width);
-
+  width: min(calc(100% - 48px), var(--page-shell));
   margin: 0 auto;
 }
 
 .careers-layout {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr);
-
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
-
   gap: 42px;
 }
+
 @media (min-width: 980px) {
-
   .careers-layout {
-    grid-template-columns:
-      minmax(0, 1.08fr)
-      minmax(390px, 0.92fr);
-
-    gap:
-      clamp(48px, 6vw, 72px);
+    grid-template-columns: minmax(0, 1.08fr) minmax(390px, 0.92fr);
+    gap: clamp(48px, 6vw, 80px);
   }
-
 }
-/* ============================================================
-   CAREERS HEADINGS
-============================================================ */
+
+
+/* ===========================================================
+   COLUMN HEADINGS
+   =========================================================== */
 
 .careers-column-header,
 .careers-form-header {
-  margin-bottom: 25px;
+  margin-bottom: 26px;
 }
 
 .careers-column-header h2,
 .careers-form-header h2 {
   margin: 0;
-
-  color:
-    var(--color-primary);
-
-  font-size:
-    clamp(1.7rem, 2.7vw, 2.05rem);
-
-  font-weight: 800;
-  line-height: 1.2;
-
-  letter-spacing:
-    -0.025em;
+  color: var(--page-navy);
+  font-size: clamp(1.7rem, 2.6vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
 }
-/* ============================================================
-   OPEN ROLES
-============================================================ */
 
-.careers-jobs-column {
-  min-width: 0;
-}
+
+/* ===========================================================
+   JOB CARD
+   =========================================================== */
+
+.careers-jobs-column { min-width: 0; }
 
 .careers-jobs-list {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  gap: 17px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
 }
 
 .job-card {
   min-width: 0;
-
-  padding:
-    clamp(23px, 3vw, 29px);
-
-  background:
-    #ffffff;
-
-  border:
-    1px solid
-    rgba(3, 54, 105, 0.08);
-
-  border-radius: 19px;
-
-  box-shadow:
-    0 10px 30px
-    rgba(3, 54, 105, 0.045);
-
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
   transition:
-    transform 270ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    border-color 270ms ease,
-
-    box-shadow 270ms
-      cubic-bezier(0.22, 1, 0.36, 1);
+    transform 200ms var(--page-ease),
+    border-color 200ms var(--page-ease),
+    box-shadow 200ms var(--page-ease);
 }
 
-/* ============================================================
-   JOB DEPARTMENT
-============================================================ */
+@media (hover: hover) and (pointer: fine) {
+  .job-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(3, 54, 105, 0.18);
+    box-shadow:
+      0 2px 2px rgba(3, 54, 105, 0.05),
+      0 8px 16px -4px rgba(3, 54, 105, 0.08);
+  }
+}
 
+/* Department reads as metadata, so it is set in mono. */
 .job-department {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-
-  gap: 5px;
-
-  margin-bottom: 12px;
-
-  font-size: 0.78rem;
-  line-height: 1.4;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.job-department-label {
-  color: var(--color-text-muted);
+.job-department-label { color: var(--page-muted); }
+.job-department-value { color: var(--page-orange); }
 
-  font-weight: 600;
-}
-
-.job-department-value {
-  color: var(--color-primary);
-
-  font-weight: 750;
-}
 .job-card-title {
-  margin:
-    0 0 12px;
-
-  color:
-    var(--color-primary);
-
-  font-size:
-    clamp(1.12rem, 2vw, 1.3rem);
-
-  font-weight: 780;
-  line-height: 1.36;
-
-  letter-spacing:
-    -0.018em;
-
+  margin: 0 0 14px;
+  color: var(--page-navy);
+  font-size: clamp(1.15rem, 1.9vw, 1.35rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
   text-wrap: pretty;
 }
-/* ============================================================
-   JOB META
-============================================================ */
 
 .job-meta {
   display: flex;
-
   align-items: center;
   flex-wrap: wrap;
-
-  gap:
-    8px 18px;
-
+  gap: 8px 20px;
   margin-bottom: 16px;
 }
 
 .job-meta-item {
   display: inline-flex;
-
   align-items: center;
-
   gap: 7px;
-
   min-width: 0;
-
-  color:
-    var(--color-text-muted);
-
-  font-size: 0.8rem;
-  font-weight: 600;
+  color: var(--page-muted);
+  font-size: 0.82rem;
   line-height: 1.45;
 }
 
-.job-meta-item
-  .ui-icon {
+.job-meta-item .ui-icon {
   width: 15px;
   height: 15px;
-
   flex: 0 0 auto;
-
-  color:
-    var(--color-accent);
+  color: var(--page-muted);
 }
 
 .job-description {
   margin: 0;
-
-  color:
-    var(--color-text-muted);
-
-  font-size: 0.91rem;
+  color: var(--page-muted);
+  font-size: 0.94rem;
   line-height: 1.75;
-
   overflow-wrap: anywhere;
 }
 
 .job-details-link {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-
   gap: 8px;
-
   width: fit-content;
-
-  margin-top: 18px;
-
-  color:
-    var(--color-primary);
-
+  margin-top: 20px;
+  color: var(--page-navy);
   font-size: 0.86rem;
-  font-weight: 750;
-  line-height: 1.4;
-
-  text-decoration: none;
-
-  transition:
-    color 220ms ease;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  transition: color 200ms var(--page-ease);
 }
 
 .job-details-link .ui-icon {
   width: 16px;
   height: 16px;
-
   flex: 0 0 auto;
-
-  transition:
-    translate 220ms
-    cubic-bezier(0.22, 1, 0.36, 1);
+  transition: translate 200ms var(--page-ease);
 }
 
-@media (hover: hover) {
-
-  .job-details-link:hover {
-    color:
-      var(--color-accent);
-  }
-
-  .job-details-link:hover
-    .ui-icon {
-    translate: 4px 0;
-  }
-
+@media (hover: hover) and (pointer: fine) {
+  .job-details-link:hover .ui-icon { translate: 4px 0; }
 }
 
 .job-details-link:focus-visible {
-  outline:
-    3px solid
-    rgba(246, 134, 52, 0.28);
-
-  outline-offset: 5px;
-
+  outline: 3px solid var(--color-accent-action);
+  outline-offset: 4px;
   border-radius: 4px;
 }
 
-@media (hover: hover) {
 
-  .job-card:hover {
-    transform:
-      translateY(-3px);
-
-    border-color:
-      rgba(246, 134, 52, 0.19);
-
-    box-shadow:
-      0 17px 40px
-      rgba(3, 54, 105, 0.075);
-  }
-
-}
-/* ============================================================
-   NO OPEN ROLES
-============================================================ */
+/* ===========================================================
+   EMPTY STATE
+   =========================================================== */
 
 .careers-empty {
   display: flex;
-
   align-items: flex-start;
-
-  gap: 15px;
-
-  padding:
-    23px 22px;
-
-  background:
-    #ffffff;
-
-  border:
-    1px solid
-    rgba(3, 54, 105, 0.08);
-
-  border-radius: 17px;
-
-  box-shadow:
-    0 9px 28px
-    rgba(3, 54, 105, 0.04);
+  gap: 16px;
+  padding: 26px;
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
 }
 
 .careers-empty-icon {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
-  width: 43px;
-  height: 43px;
-
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
-
-  color:
-    var(--color-primary);
-
-  background:
-    rgba(3, 54, 105, 0.06);
-
-  border-radius: 12px;
+  color: var(--page-navy);
+  background: rgba(3, 54, 105, 0.06);
+  border-radius: var(--page-radius);
 }
 
-.careers-empty-icon
-  .ui-icon {
-  width: 21px;
-  height: 21px;
-}
+.careers-empty-icon .ui-icon { width: 20px; height: 20px; }
 
 .careers-empty p {
   margin: 2px 0 0;
-
-  color:
-    var(--color-text-muted);
-
-  font-size: 0.9rem;
+  color: var(--page-muted);
+  font-size: 0.92rem;
   line-height: 1.7;
 }
-/* ============================================================
-   APPLICATION CARD
-============================================================ */
 
-.careers-form-column {
-  min-width: 0;
-}
+
+/* ===========================================================
+   APPLICATION CARD
+   =========================================================== */
+
+.careers-form-column { min-width: 0; }
 
 .careers-form-card {
   width: 100%;
-
-  padding:
-    clamp(27px, 4vw, 37px);
-
-  background:
-    #ffffff;
-
-  border:
-    1px solid
-    rgba(3, 54, 105, 0.085);
-
-  border-radius: 21px;
-
+  padding: clamp(26px, 3.5vw, 34px);
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
   box-shadow:
-    0 18px 48px
-    rgba(3, 54, 105, 0.075);
+    0 2px 2px rgba(3, 54, 105, 0.04),
+    0 8px 16px -4px rgba(3, 54, 105, 0.06);
 }
-@media (min-width: 1100px) {
 
+@media (min-width: 1100px) {
   .careers-form-card {
     position: sticky;
-
-    top: 112px;
+    top: 120px;
   }
-
 }
-/* ============================================================
-   APPLICATION FORM
-============================================================ */
+
+
+/* ===========================================================
+   FORM
+   =========================================================== */
 
 .careers-form {
   display: flex;
-
   flex-direction: column;
-
-  gap: 19px;
+  gap: 18px;
 }
 
 .careers-form label {
   display: flex;
-
   flex-direction: column;
-
-  gap: 8px;
-
+  gap: 7px;
   min-width: 0;
-
-  color:
-    var(--color-primary);
-
-  font-size: 0.82rem;
-  font-weight: 700;
+  color: var(--page-ink);
+  font-size: 0.85rem;
+  font-weight: 600;
   line-height: 1.4;
 }
 
@@ -508,417 +268,240 @@
 .careers-form select,
 .careers-form textarea {
   width: 100%;
-
   min-width: 0;
-
-  padding:
-    13px 14px;
-
-  color:
-    var(--color-text);
-
-  background:
-    #ffffff;
-
-  border:
-    1px solid #d8e0e6;
-
-  border-radius: 9px;
-
+  padding: 12px 13px;
+  color: var(--page-ink);
+  background: #ffffff;
+  border: 1px solid rgba(3, 54, 105, 0.18);
+  border-radius: var(--radius, 6px);
   font: inherit;
   font-size: 0.94rem;
-
   transition:
-    border-color 220ms ease,
-    box-shadow 220ms ease;
+    border-color 150ms var(--page-ease),
+    box-shadow 150ms var(--page-ease);
 }
 
 .careers-form textarea {
-  min-height: 125px;
-
+  min-height: 120px;
   resize: vertical;
 }
-.careers-form input:focus,
+
+.careers-form input:not([type="checkbox"]):focus,
 .careers-form select:focus,
 .careers-form textarea:focus {
   outline: none;
-
-  border-color:
-    rgba(3, 54, 105, 0.68);
-
-  box-shadow:
-    0 0 0 4px
-    rgba(3, 54, 105, 0.065);
+  border-color: var(--page-navy);
+  box-shadow: 0 0 0 3px rgba(3, 54, 105, 0.12);
 }
-/* ============================================================
-   RESUME UPLOAD
-============================================================ */
 
 .careers-resume-field small {
-  color:
-    var(--color-text-muted);
-
-  font-size: 0.75rem;
-  font-weight: 500;
+  color: var(--page-muted);
+  font-size: 0.76rem;
+  font-weight: 400;
   line-height: 1.5;
 }
 
-.careers-form
-  input[type="file"] {
+.careers-form input[type="file"] {
   padding: 9px;
-
-  background:
-    #f8fafc;
-
+  background: var(--page-surface);
   cursor: pointer;
 }
 
-.careers-form
-  input[type="file"]::file-selector-button {
+.careers-form input[type="file"]::file-selector-button {
   margin-right: 11px;
-
-  padding:
-    8px 12px;
-
-  color:
-    var(--color-primary);
-
-  background:
-    rgba(3, 54, 105, 0.065);
-
-  border: 0;
-
-  border-radius: 7px;
-
+  padding: 8px 13px;
+  color: var(--page-navy);
+  background: #ffffff;
+  border: 1px solid rgba(3, 54, 105, 0.18);
+  border-radius: var(--radius, 6px);
   font: inherit;
   font-size: 0.8rem;
-  font-weight: 700;
-
+  font-weight: 600;
   cursor: pointer;
 }
-/* ============================================================
-   PRIVACY ACKNOWLEDGEMENT
-============================================================ */
 
-.careers-form
-  .privacy-consent {
+
+/* ===========================================================
+   PRIVACY CONSENT
+   =========================================================== */
+
+.careers-form .privacy-consent {
   display: grid;
-
-  grid-template-columns:
-    19px minmax(0, 1fr);
-
+  grid-template-columns: 19px minmax(0, 1fr);
   align-items: start;
-
   gap: 11px;
-
-  padding:
-    14px 15px;
-
-  color:
-    var(--color-text-muted);
-
-  background:
-    #f8fafc;
-
-  border:
-    1px solid
-    rgba(3, 54, 105, 0.09);
-
-  border-radius: 9px;
-
-  font-size: 0.79rem;
-  font-weight: 500;
+  padding: 15px;
+  color: var(--page-muted);
+  background: var(--page-surface);
+  border: 1px solid var(--page-line);
+  border-radius: var(--radius, 6px);
+  font-size: 0.8rem;
+  font-weight: 400;
   line-height: 1.62;
 }
 
-.careers-form
-  .privacy-consent
-  input[type="checkbox"] {
+.careers-form .privacy-consent input[type="checkbox"] {
   width: 18px;
   height: 18px;
-
-  margin:
-    2px 0 0;
-
-  padding: 0;
-
-  accent-color:
-    var(--color-primary);
-
+  margin: 2px 0 0;
+  accent-color: var(--page-navy);
   cursor: pointer;
 }
 
-.careers-form
-  .privacy-consent span {
+.careers-form .privacy-consent span {
   display: block;
-
   min-width: 0;
 }
-/* ============================================================
-   SUBMIT APPLICATION
-============================================================ */
+
+
+/* ===========================================================
+   SUBMIT
+   Navy, matching the button system used site-wide.
+   =========================================================== */
 
 .btn-careers-submit {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 9px;
-
   width: fit-content;
-  min-height: 46px;
-
-  padding:
-    12px 22px;
-
+  min-height: 48px;
+  padding: 13px 26px;
   color: #ffffff;
-
-  background:
-    var(--color-accent);
-
-  border:
-    1px solid
-    var(--color-accent);
-
-  border-radius: 9px;
-
+  background: var(--page-navy);
+  border: 1px solid var(--page-navy);
+  border-radius: var(--page-radius);
   font: inherit;
-  font-size: 0.87rem;
-  font-weight: 750;
-
+  font-size: 0.92rem;
+  font-weight: 600;
   cursor: pointer;
-
   transition:
-    transform 240ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    box-shadow 240ms ease;
+    transform 160ms var(--page-ease),
+    background-color 160ms var(--page-ease);
 }
 
-.btn-careers-submit
-  .ui-icon {
+.btn-careers-submit .ui-icon {
   width: 17px;
   height: 17px;
-
-  transition:
-    translate 220ms
-    cubic-bezier(0.22, 1, 0.36, 1);
+  transition: translate 200ms var(--page-ease);
 }
 
-@media (hover: hover) {
-
+@media (hover: hover) and (pointer: fine) {
   .btn-careers-submit:hover {
-    transform:
-      translateY(-2px);
-
-    box-shadow:
-      0 10px 24px
-      rgba(246, 134, 52, 0.24);
+    background: #04477f;
+    border-color: #04477f;
+    transform: translateY(-2px);
   }
 
-  .btn-careers-submit:hover
-    .ui-icon {
-    translate:
-      3px 0;
-  }
-
+  .btn-careers-submit:hover .ui-icon { translate: 3px 0; }
 }
 
 .btn-careers-submit:focus-visible {
-  outline:
-    3px solid
-    rgba(246, 134, 52, 0.3);
-
-  outline-offset: 4px;
+  outline: 3px solid var(--color-accent-action);
+  outline-offset: 3px;
 }
-/* ============================================================
-   CAREERS FEEDBACK
-============================================================ */
+
+
+/* ===========================================================
+   FEEDBACK
+   =========================================================== */
 
 .careers-success-banner {
   display: flex;
-
   align-items: center;
-
   gap: 11px;
-
   width: 100%;
-
-  margin:
-    0 0 30px;
-
-  padding:
-    14px 17px;
-
-  color:
-    #1f7d47;
-
-  background:
-    rgba(39, 174, 96, 0.075);
-
-  border:
-    1px solid
-    rgba(39, 174, 96, 0.2);
-
-  border-radius: 11px;
+  margin: 0 0 30px;
+  padding: 15px 18px;
+  color: #1e7e34;
+  background: rgba(30, 126, 52, 0.07);
+  border: 1px solid rgba(30, 126, 52, 0.2);
+  border-radius: var(--page-radius);
 }
 
-.careers-success-banner
-  .ui-icon {
+.careers-success-banner .ui-icon {
   width: 20px;
   height: 20px;
-
   flex: 0 0 auto;
 }
 
 .careers-success-banner p {
   margin: 0;
-
   color: inherit;
-
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 600;
   line-height: 1.55;
 }
 
 .form-error {
-  margin:
-    0 0 20px;
-
-  padding:
-    13px 15px;
-
+  margin: 0 0 20px;
+  padding: 14px 16px;
   color: #a63a35;
-
-  background:
-    rgba(192, 57, 43, 0.065);
-
-  border:
-    1px solid
-    rgba(192, 57, 43, 0.16);
-
-  border-radius: 9px;
-
+  background: rgba(192, 57, 43, 0.06);
+  border: 1px solid rgba(192, 57, 43, 0.16);
+  border-radius: var(--page-radius);
   font-size: 0.88rem;
   line-height: 1.55;
 }
-/* ============================================================
-   CAREERS MOBILE
-============================================================ */
-
-@media (max-width: 767px) {
-
-  .careers-section {
-    padding:
-      64px 16px
-      76px;
-  }
-
-  .careers-layout {
-    gap: 38px;
-  }
-
-  .job-card {
-    border-radius: 17px;
-
-    padding:
-      22px 19px;
-  }
-
-  .careers-form-card {
-    border-radius: 18px;
-  }
-
-  .btn-careers-submit {
-    width: 100%;
-  }
-
-}
 
 
-@media (max-width: 480px) {
-
-  .job-meta {
-    align-items: flex-start;
-
-    flex-direction: column;
-
-    gap: 8px;
-  }
-
-  .careers-empty {
-    padding:
-      20px 17px;
-  }
-
-}
-
-
-@media (max-width: 360px) {
-
-  .careers-section {
-    padding-right: 14px;
-    padding-left: 14px;
-  }
-
-}
-@media (prefers-reduced-motion: reduce) {
-
-  .job-card,
-  .btn-careers-submit,
-  .btn-careers-submit .ui-icon {
-    transition: none;
-  }
-
-}
-
-/* ============================================================
-   CAREERS SCROLL REVEALS
-============================================================ */
+/* ===========================================================
+   REVEALS
+   =========================================================== */
 
 .careers-reveal {
   opacity: 0;
-
-  translate:
-    0 22px;
-
+  translate: 0 22px;
   transition:
-    opacity 660ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    translate 660ms
-      cubic-bezier(0.22, 1, 0.36, 1);
-
-  transition-delay:
-    var(--reveal-delay, 0ms);
-
-  will-change:
-    opacity,
-    translate;
+    opacity 660ms var(--page-ease),
+    translate 660ms var(--page-ease);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, translate;
 }
 
 .careers-reveal.is-visible {
   opacity: 1;
-
-  translate:
-    0 0;
+  translate: 0 0;
 }
 
-/* ============================================================
-   CAREERS REVEAL REDUCED MOTION
-============================================================ */
+
+/* ===========================================================
+   RESPONSIVE
+   =========================================================== */
+
+@media (max-width: 767px) {
+  .careers-shell { width: calc(100% - 32px); }
+  .careers-layout { gap: 38px; }
+  .job-card { padding: 22px; }
+  .btn-careers-submit { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .job-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .careers-empty { padding: 20px; }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
+  .job-card,
+  .btn-careers-submit,
+  .btn-careers-submit .ui-icon,
+  .job-details-link .ui-icon {
+    transition: none;
+  }
+
+  .job-card:hover { transform: none; }
+  .btn-careers-submit:hover { transform: none; }
 
   .careers-reveal {
     opacity: 1;
-
     translate: none;
-
     transition: none;
-
     will-change: auto;
   }
-
 }

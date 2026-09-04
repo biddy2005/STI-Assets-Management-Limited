@@ -1,490 +1,432 @@
 <%- include('../partials/header', {
-  pageCss: '/css/pages/services.css'
+  pageCss: '/css/pages/services.css?v=3',
+  pageTitle: 'Services | STI Assets Management Limited',
+  pageDescription: 'Financial advisory, market research, portfolio and fund management, and corporate investment schemes from a SEC-regulated Nigerian asset manager.'
 }) %>
-<!-- ============================================================
-     PAGE HEADER
-============================================================ -->
-<section class="inner-page-hero services-page-hero">
-  <div class="inner-page-hero-inner">
-    <span class="hero-eyebrow">Our Solutions</span>
-    <h1>Tailored Strategies. Proven Expertise.</h1>
-    <p>We are dedicated to building lasting relationships with our clients based on trust, transparency, and a shared commitment to achieving your financial vision.</p>
-  </div>
-</section>
 
-<!-- ============================================================
-     SERVICE 1: FINANCIAL ADVISORY SERVICES
-============================================================ -->
-<section
-  id="financial-advisory"
-  class="section service-block service-block-white service-advisory-section"
->
-  <div class="service-split">
+<main id="main-content">
 
-    <article class="service-intro">
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section class="page-hero" aria-labelledby="services-hero-title">
+    <div class="page-hero-media" aria-hidden="true">
+      <img
+        src="/services-hero.webp"
+        alt=""
+        fetchpriority="high"
+        decoding="async"
+      >
+    </div>
 
-      <div class="service-intro-image">
-        <img
-          src="/financialadvisory.jpg"
-          alt="Financial advisor meeting with a client"
-          loading="lazy"
-          decoding="async"
+    <div class="page-hero-overlay" aria-hidden="true"></div>
+
+    <div class="page-shell page-hero-inner">
+      <div class="page-hero-copy">
+        <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Services</span>
+        </nav>
+
+        <h1
+          id="services-hero-title"
+          class="page-hero-title page-enter"
+          style="--page-enter-delay: 120ms"
         >
+          Expertise for every financial decision.
+        </h1>
+
+        <p
+          class="page-hero-summary page-enter"
+          style="--page-enter-delay: 240ms"
+        >
+          Four practices, one mandate: put research behind every position and
+          keep the client informed at each step.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       01. FINANCIAL ADVISORY
+  ============================================================ -->
+  <section
+    id="financial-advisory"
+    class="page-band page-band-soft service-section"
+    aria-labelledby="advisory-title"
+  >
+    <div class="page-shell service-layout">
+
+      <div class="service-aside reveal-on-scroll">
+
+        <h2 id="advisory-title" class="page-title-sm">
+          Financial advisory services.
+        </h2>
+
+        <p class="page-lead">
+          Advisory is where every relationship starts. Before any capital is
+          deployed we agree what it is for, when you need it back, and how much
+          volatility you are willing to accept along the way.
+        </p>
+
+        <p class="page-lead">
+          That agreement is written down. It governs every position we
+          subsequently take on your behalf.
+        </p>
       </div>
 
-      <div class="service-intro-text">
-
-        <div
-          class="service-section-index service-section-index-left"
-        >
-          <span class="service-section-number">
-            01
+      <ol class="service-capabilities reveal-on-scroll" style="--reveal-delay: 100ms">
+        <li class="service-capability">
+          <span class="service-capability-icon" aria-hidden="true">
+            <i data-lucide="shield-check"></i>
           </span>
+          <h3>Risk assessment</h3>
+          <p>
+            We establish your capacity for loss and your tolerance for it, which
+            are not the same thing. The result sets the exposure limits written
+            into your investment policy.
+          </p>
+        </li>
+
+        <li class="service-capability">
+          <span class="service-capability-icon" aria-hidden="true">
+            <i data-lucide="clipboard-list"></i>
+          </span>
+          <h3>Financial planning</h3>
+          <p>
+            A plan covering budgeting, savings and investment strategy, built
+            around the commitments you actually have rather than a generic
+            allocation model.
+          </p>
+        </li>
+
+        <li class="service-capability">
+          <span class="service-capability-icon" aria-hidden="true">
+            <i data-lucide="piggy-bank"></i>
+          </span>
+          <h3>Retirement planning</h3>
+          <p>
+            Retirement account management and income planning, structured so
+            that the drawdown phase is funded without forcing you to sell into a
+            weak market.
+          </p>
+        </li>
+      </ol>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       02. MARKET RESEARCH
+  ============================================================ -->
+  <section
+    id="market-research"
+    class="page-band page-band-ink service-section"
+    aria-labelledby="research-title"
+  >
+    <div class="page-shell service-layout">
+
+      <div class="service-aside reveal-on-scroll">
+
+        <h2 id="research-title" class="page-title-sm page-title-light">
+          Market research.
+        </h2>
+
+        <p class="page-lead">
+          Our analysts publish to clients before their work informs any position
+          we take. You see the reasoning, not just the recommendation.
+        </p>
+
+        <p class="page-lead">
+          Coverage spans Nigerian fixed income, equities and the macro
+          conditions that move both.
+        </p>
+
+        <a href="/resources/digest" class="page-text-link page-text-link-light">
+          Read the market digest
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+        </a>
+      </div>
+
+      <ol class="service-capabilities reveal-on-scroll" style="--reveal-delay: 100ms">
+        <li class="service-capability">
+          <h3>Global market updates</h3>
+          <p>
+            A daily summary of domestic and global market activity, written to
+            support portfolio diversification decisions rather than to fill an
+            inbox.
+          </p>
+        </li>
+
+        <li class="service-capability">
+          <h3>Economic analysis</h3>
+          <p>
+            Regular reads on inflation, rates and currency, and what each one
+            changes for the instruments you hold.
+          </p>
+        </li>
+
+        <li class="service-capability">
+          <h3>Sector analysis</h3>
+          <p>
+            Sector-specific research identifying where opportunity and risk are
+            concentrated, updated as conditions move.
+          </p>
+        </li>
+
+        <li class="service-capability">
+          <h3>Company analysis</h3>
+          <p>
+            Detailed work on individual issuers, covering balance sheet
+            strength and the quality of reported earnings.
+          </p>
+        </li>
+      </ol>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       03. PORTFOLIO AND FUND MANAGEMENT
+  ============================================================ -->
+  <section
+    id="portfolio-management"
+    class="page-band page-band-light service-section"
+    aria-labelledby="portfolio-title"
+  >
+    <div class="page-shell service-layout">
+
+      <div class="service-aside reveal-on-scroll">
+
+        <h2 id="portfolio-title" class="page-title-sm">
+          Portfolio &amp; fund management.
+        </h2>
+
+        <p class="page-lead">
+          Discretionary and advisory mandates run to a written investment
+          policy, with risk limits agreed upfront and reviewed every quarter.
+        </p>
+
+        <p class="page-lead">
+          Client assets are held with an independent custodian. You receive
+          statements directly, on a fixed schedule.
+        </p>
+        <div class="service-aside-media">
+          <img
+            src="/pexels-markus-winkler-1430818-18512882.jpg"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          >
         </div>
+        <a href="/products" class="page-text-link">
+          View our investment products
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+        </a>
+      </div>
 
-        <h2>Financial Advisory Services</h2>
+      <ol class="service-capabilities reveal-on-scroll" style="--reveal-delay: 100ms">
+        <li class="service-capability">
+          <h3>Discretionary portfolio management</h3>
+          <p>
+            Our managers act within your written mandate without needing
+            approval for each trade, which matters when a position has to be
+            adjusted quickly.
+          </p>
+        </li>
 
-        <p>
-          Financial advisory is the cornerstone of our commitment to you. We work closely with every client to understand their goals and build a strategy that stands the test of time, grounded in expertise and tailored to your unique circumstances.
+        <li class="service-capability">
+          <h3>Model portfolios</h3>
+          <p>
+            Diversified allocations matched to defined risk profiles, available
+            to both individual and corporate clients.
+          </p>
+        </li>
+
+        <li class="service-capability">
+          <h3>Mutual funds</h3>
+          <p>
+            Access to a selected range of funds, chosen on cost, mandate clarity
+            and the consistency of the manager's process.
+          </p>
+        </li>
+
+        <li class="service-capability">
+          <h3>Alternative investments</h3>
+          <p>
+            Diversification into real estate, private equity and hedge
+            strategies, where the horizon and liquidity terms suit your mandate.
+          </p>
+        </li>
+      </ol>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       04. CORPORATE INVESTMENT SCHEMES
+  ============================================================ -->
+  <section
+    id="corporate-schemes"
+    class="page-band page-band-soft service-section"
+    aria-labelledby="corporate-title"
+  >
+    <div class="page-shell service-layout">
+
+      <div class="service-aside reveal-on-scroll">
+
+        <h2 id="corporate-title" class="page-title-sm">
+          Corporate investment schemes.
+        </h2>
+
+        <p class="page-lead">
+          Employee savings, gratuity and treasury schemes administered end to
+          end, from scheme design through to member reporting.
+        </p>
+
+        <p class="page-lead">
+          The same investment discipline applies at institutional scale as it
+          does to an individual mandate.
         </p>
 
       </div>
-    </article>
 
-    <div
-      class="service-feature-stack"
-      aria-label="Financial advisory capabilities"
-    >
-
-      <article class="service-feature">
-
-        <div class="service-feature-icon">
-          <svg
-            class="ui-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            <path d="M9 12l2 2 4-4"></path>
-          </svg>
-        </div>
-
-        <div class="service-feature-copy">
-          <h3>Risk Assessment</h3>
+      <ol class="service-capabilities reveal-on-scroll" style="--reveal-delay: 100ms">
+        <li class="service-capability">
+          <h3>Corporate cash management</h3>
           <p>
-            We assess your risk profile to determine the best investment strategy for you.
+            Liquidity and cash flow managed against your working capital cycle,
+            so operating funds stay available when they are needed.
           </p>
-        </div>
+        </li>
 
-      </article>
-
-      <article class="service-feature">
-
-        <div class="service-feature-icon">
-          <svg
-            class="ui-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <rect
-                width="8"
-                height="4"
-                x="8"
-                y="2"
-                rx="1"
-                ry="1"
-              ></rect>
-
-              <path
-                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
-              ></path>
-
-              <path d="M12 11h4"></path>
-              <path d="M12 16h4"></path>
-              <path d="M8 11h.01"></path>
-              <path d="M8 16h.01"></path>
-          </svg>
-        </div>
-
-        <div class="service-feature-copy">
-          <h3>Financial Planning</h3>
+        <li class="service-capability">
+          <h3>Employee benefit plans</h3>
           <p>
-            We create a comprehensive financial plan that includes budgeting, savings, and investment strategies.
+            Design and administration of employee retirement schemes, including
+            compliance obligations and individual member reporting.
           </p>
-        </div>
-
-      </article>
-
-      <article class="service-feature">
-
-        <div class="service-feature-icon">
-          <svg
-            class="ui-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <circle
-              cx="12"
-              cy="12"
-              r="9"
-            ></circle>
-            <path d="M12 7v5l3 3"></path>
-          </svg>
-        </div>
-
-        <div class="service-feature-copy">
-          <h3>Retirement Planning</h3>
-          <p>
-            We help you prepare for a comfortable and secure retirement through retirement account management and income planning.
-          </p>
-        </div>
-
-      </article>
+        </li>
+      </ol>
 
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ============================================================
-     SERVICE 2: MARKET RESEARCH
+  <!-- ============================================================
+     CONNECTED APPROACH
 ============================================================ -->
 <section
-  id="market-research"
-  class="section service-block service-block-alt service-research-section"
+  class="page-band page-band-soft service-process"
+  aria-labelledby="service-process-title"
 >
-  <div class="section-header-center">
+  <div class="page-shell">
 
-    <div class="service-section-index">
-      <span class="service-section-number">
-        02
-      </span>
+    <div class="page-section-head reveal-on-scroll">
+      <p class="page-eyebrow">Our approach</p>
+
+      <h2
+        class="page-title-sm"
+        id="service-process-title"
+      >
+        One discipline, four connected practices.
+      </h2>
+
+      <p class="page-lead">
+        Each practice has a distinct role, but the strongest outcomes come
+        from bringing advice, research and investment management together
+        around the client's objective.
+      </p>
     </div>
 
-    <h2>Market Research</h2>
+    <ol class="service-process-grid">
 
-    <p class="section-lead">
-      We equip our clients with timely, rigorous research to inform every investment decision.
-    </p>
-
-  </div>
-
-  <div class="service-research-grid">
-
-    <article class="research-card">
-
-      <div class="research-card-image">
-        <img
-          src="/globalmarket.webp"
-          alt="Global stock market data on a trading screen"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div class="research-card-body">
-        <h3>Global Market Updates</h3>
-
+      <li class="service-process-step reveal-on-scroll">
+        <span class="service-process-num">01</span>
+        <h3>Advisory</h3>
         <p>
-          Summary of daily domestic and global market activities to aid better portfolio diversification understanding.
+          Define objectives, liquidity requirements, risk tolerance
+          and time horizon.
         </p>
+      </li>
 
-      </div>
-    </article>
-
-    <article class="research-card">
-
-      <div class="research-card-image">
-        <img
-          src="/economicanalysis.webp"
-          alt="Economic indicators displayed on an analytics dashboard"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div class="research-card-body">
-        <h3>Economic Analysis</h3>
-
+      <li class="service-process-step reveal-on-scroll">
+        <span class="service-process-num">02</span>
+        <h3>Research</h3>
         <p>
-          Regular updates on economic indicators and their potential impact on your investments.
+          Evaluate markets, economic conditions and opportunities
+          with disciplined analysis.
         </p>
+      </li>
 
-      </div>
-    </article>
-
-    <article class="research-card">
-
-      <div class="research-card-image">
-        <img
-          src="/sectoranalysispic.jpg"
-          alt="Bar chart comparing performance across market sectors"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div class="research-card-body">
-        <h3>Sector Analysis</h3>
-
+      <li class="service-process-step reveal-on-scroll">
+        <span class="service-process-num">03</span>
+        <h3>Portfolio management</h3>
         <p>
-          In-depth sector-specific research to identify opportunities and risks.
+          Translate strategy into portfolios that are constructed,
+          monitored and adjusted over time.
         </p>
+      </li>
 
-      </div>
-    </article>
-
-    <article class="research-card">
-
-      <div class="research-card-image">
-        <img
-          src="/companyanalysispic.jpg"
-          alt="Analyst reviewing a company financial report"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div class="research-card-body">
-        <h3>Company Analysis</h3>
-
+      <li class="service-process-step reveal-on-scroll">
+        <span class="service-process-num">04</span>
+        <h3>Corporate solutions</h3>
         <p>
-          Detailed analysis of individual companies to guide your investment choices.
+          Apply the same discipline to institutional liquidity,
+          investments and employee benefit needs.
         </p>
+      </li>
 
-      </div>
-    </article>
+    </ol>
+
+    <div class="service-proof-row reveal-on-scroll">
+      <span>Objective-led advice</span>
+      <span>Research-informed decisions</span>
+      <span>Disciplined portfolio oversight</span>
+      <span>Individual &amp; institutional solutions</span>
+    </div>
 
   </div>
 </section>
-
-<!-- ============================================================
-     SERVICE 3: PORTFOLIO AND FUND MANAGEMENT
-============================================================ -->
-<section
-  id="portfolio-fund-management"
-  class="section service-block service-block-white service-portfolio-section"
->
-  <div class="section-header-center">
-
-    <div class="service-section-index">
-      <span class="service-section-number">
-        03
-      </span>
+  <!-- ============================================================
+       CLOSING CTA
+  ============================================================ -->
+  <section class="page-band page-band-ink service-cta" aria-labelledby="services-cta-title">
+    <div class="service-cta-media" aria-hidden="true">
+      <img src="/services-hero.webp" alt="" loading="lazy" decoding="async">
     </div>
 
-    <h2>Portfolio and Fund Management</h2>
+    <div class="page-shell">
+      <div class="page-section-head reveal-on-scroll">
+        <p class="page-eyebrow page-eyebrow-light">Next step</p>
 
-    <p class="section-lead">
-      Our flagship management services are built to match every client's risk appetite and investment horizon.
-    </p>
+        <h2 id="services-cta-title" class="page-title-sm page-title-light">
+          Start with a conversation, not a product.
+        </h2>
 
-  </div>
-
-  <div class="service-portfolio-grid">
-
-    <article class="portfolio-service-card">
-
-      <div class="portfolio-card-media">
-        <img
-          src="/corporate.jpg"
-          alt="Modern commercial buildings representing portfolio management"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div
-        class="portfolio-card-overlay"
-        aria-hidden="true"
-      ></div>
-
-      <div class="portfolio-card-content">
-        <h3>Discretionary Portfolio Management</h3>
-
-        <p>
-          Experienced portfolio managers actively managing your investments to capitalize on market opportunities.
+        <p class="page-lead">
+          Tell an advisor what the capital is for and the horizon you have in
+          mind. We will tell you which of our services fits, or whether none of
+          them do.
         </p>
       </div>
 
-    </article>
+      <div class="service-cta-actions reveal-on-scroll" style="--reveal-delay: 100ms">
+        <a href="/contact" class="page-button page-button-invert">
+          Speak with an advisor
+        </a>
 
-    <article class="portfolio-service-card">
-
-      <div class="portfolio-card-media">
-        <img
-          src="/modelportfolio.jpg"
-          alt="Financial documents and calculator representing model portfolios"
-          loading="lazy"
-          decoding="async"
-        >
+        <a href="/subscribe" class="page-button page-button-ghost">
+          Start investing
+        </a>
       </div>
-
-      <div
-        class="portfolio-card-overlay"
-        aria-hidden="true"
-      ></div>
-
-      <div class="portfolio-card-content">
-        <h3>Model Portfolios</h3>
-
-        <p>
-          Diversified selections designed to match different risk profiles for individual and corporate clients.
-        </p>
-      </div>
-
-    </article>
-
-    <article class="portfolio-service-card">
-
-      <div class="portfolio-card-media">
-        <img
-          src="/mutualfunds.webp"
-          alt="Market chart representing mutual fund investments"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div
-        class="portfolio-card-overlay"
-        aria-hidden="true"
-      ></div>
-
-      <div class="portfolio-card-content">
-        <h3>Mutual Funds</h3>
-
-        <p>
-          Access to a wide range of mutual funds carefully selected to meet various investment needs.
-        </p>
-      </div>
-
-    </article>
-
-    <article class="portfolio-service-card">
-
-      <div class="portfolio-card-media">
-        <img
-          src="/alternativeinvestment.jpg"
-          alt="Modern property representing alternative investments"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div
-        class="portfolio-card-overlay"
-        aria-hidden="true"
-      ></div>
-
-      <div class="portfolio-card-content">
-        <h3>Alternative Investments</h3>
-
-        <p>
-          Opportunities to diversify with alternative assets such as real estate, private equity, and hedge funds.
-        </p>
-      </div>
-
-    </article>
-
-  </div>
-</section>
-
-<!-- ============================================================
-     SERVICE 4: CORPORATE INVESTMENT SCHEMES
-============================================================ -->
-<section
-  id="corporate-investment-schemes"
-  class="section service-block service-block-light service-corporate-section"
->
-  <div class="section-header-center">
-
-    <div class="service-section-index">
-      <span class="service-section-number">
-        04
-      </span>
     </div>
+  </section>
 
-    <h2>Corporate Investment Schemes</h2>
+</main>
 
-    <p class="section-lead">
-      For businesses looking to optimize their corporate assets and investments, we provide specialized services tailored to corporate financial needs:
-    </p>
-
-  </div>
-
-  <div class="service-corporate-grid">
-
-    <article class="corporate-service-card">
-
-      <div class="corporate-card-media">
-        <img
-          src="/companyanalysispic.jpg"
-          alt="Corporate finance professionals reviewing business documents"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div
-        class="corporate-card-overlay"
-        aria-hidden="true"
-      ></div>
-
-      <div class="corporate-card-content">
-        <h3>Corporate Cash Management</h3>
-
-        <p>
-          Efficiently manage your company's liquidity and cash flow.
-        </p>
-
-      </div>
-    </article>
-
-    <article class="corporate-service-card">
-
-      <div class="corporate-card-media">
-        <img
-          src="/photo-1522071820081-009f0129c71c.jpg"
-          alt="Professional team representing employee benefit planning"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-
-      <div
-        class="corporate-card-overlay"
-        aria-hidden="true"
-      ></div>
-
-      <div class="corporate-card-content">
-        <h3>Employee Benefit Plans</h3>
-
-        <p>
-          Design and administer employee retirement plans, ensuring compliance and employee satisfaction.
-        </p>
-
-      </div>
-    </article>
-
-  </div>
-</section>
-
-<%- include('../partials/footer') %>
+<%- include('../partials/footer', { hideFooterCta: true }) %>

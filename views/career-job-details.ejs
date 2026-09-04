@@ -1,25 +1,48 @@
 <%- include('partials/header', {
-  pageCss: '/css/pages/career-job-details.css'
+  pageCss: '/css/pages/career-job-details.css?v=2'
 }) %>
 
-<section class="inner-page-hero career-job-page-hero">
+<section class="page-hero" aria-labelledby="job-hero-title">
 
-  <div class="inner-page-hero-inner">
+  <div class="page-hero-media" aria-hidden="true">
+    <img
+      src="/hero-poster.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
+  </div>
 
-    <span class="hero-eyebrow">
-      Career Opportunity
-    </span>
+  <div class="page-hero-overlay" aria-hidden="true"></div>
 
-    <h1>
-      <%= job.title %>
-    </h1>
+  <div class="page-shell page-hero-inner">
 
-    <p>
-      <%= job.department %>
-      <% if (job.location) { %>
-        | <%= job.location %>
-      <% } %>
-    </p>
+    <div class="page-hero-copy">
+
+      <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/careers">Careers</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page"><%= job.title %></span>
+      </nav>
+
+      <h1
+        id="job-hero-title"
+        class="page-hero-title page-enter"
+        style="--page-enter-delay: 120ms"
+      >
+        <%= job.title %>
+      </h1>
+
+      <p
+        class="page-hero-summary page-enter"
+        style="--page-enter-delay: 240ms"
+      >
+        <%= job.department %><% if (job.location) { %> &middot; <%= job.location %><% } %>
+      </p>
+
+    </div>
 
   </div>
 

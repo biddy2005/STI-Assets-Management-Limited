@@ -457,9 +457,197 @@ async function sendNewsletterUnsubscribeToPowerAutomate({
   }
 }
 
+/*
+ * KYC documents are larger than a resume and there are three
+ * of them, so this flow gets its own timeout. Five seconds is
+ * enough for a contact form but not for a 13MB body on a slow
+ * connection.
+ */
+const SUBSCRIPTION_WEBHOOK_TIMEOUT_MS =
+  20_000;
+
+
+/**
+ * Send one subscription application to the Microsoft 365
+ * Power Automate workflow.
+ *
+ * PostgreSQL and private KYC storage remain the application's
+ * source of truth. The webhook exists so operations staff can
+ * work the application inside SharePoint or Teams.
+ *
+ * BVN and NIN are deliberately excluded from this payload.
+ * They are regulated identifiers, and forwarding them would
+ * copy them into a third system where this application can no
+ * longer control retention or access. Staff read them in the
+ * authenticated admin view instead, where each disclosure is
+ * written to the audit log.
+ */
+async function sendSubscriptionToPowerAutomate({
+  subscriptionId,
+  reference,
+  product,
+  fullName,
+  email,
+  phone,
+  principalAmount,
+  fixedDepositTenor,
+  riskAcceptance,
+  maturityMandate,
+  bankName,
+  accountName,
+  accountNumber,
+  submittedAt,
+  documents
+}) {
+  if (
+    !env.powerAutomateSubscriptionsUrl
+  ) {
+    return {
+      sent: false,
+      skipped: true,
+      statusCode: null
+    };
+  }
+
+
+  const controller =
+    new AbortController();
+
+
+  const timeout =
+    setTimeout(
+      () => {
+        controller.abort();
+      },
+
+      SUBSCRIPTION_WEBHOOK_TIMEOUT_MS
+    );
+
+
+  try {
+    const response =
+      await fetch(
+        env.powerAutomateSubscriptionsUrl,
+
+        {
+          method:
+            'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify({
+              schemaVersion:
+                1,
+
+              subscriptionId,
+
+              reference,
+
+              product,
+
+              fullName,
+
+              email,
+
+              /*
+               * The Power Automate schema expects strings.
+               * Prisma permits some of these to be null.
+               */
+              phone:
+                phone || '',
+
+              principalAmount:
+                principalAmount || '',
+
+              fixedDepositTenor:
+                fixedDepositTenor || '',
+
+              riskAcceptance,
+
+              maturityMandate:
+                maturityMandate || '',
+
+              bankName:
+                bankName || '',
+
+              accountName:
+                accountName || '',
+
+              accountNumber:
+                accountNumber || '',
+
+              submittedAt:
+                submittedAt instanceof Date
+                  ? submittedAt.toISOString()
+                  : String(
+                      submittedAt
+                    ),
+
+              /*
+               * Each document is inlined so the Flow can write
+               * it straight into SharePoint without calling
+               * back into this application.
+               */
+              documents:
+                (documents || []).map(
+                  (document) => ({
+                    kind:
+                      document.kind,
+
+                    originalName:
+                      document.originalName,
+
+                    mimeType:
+                      document.mimeType,
+
+                    fileSize:
+                      document.fileSize,
+
+                    contentBase64:
+                      document.contentBase64
+                  })
+                )
+            }),
+
+          signal:
+            controller.signal
+        }
+      );
+
+
+    if (!response.ok) {
+      const error =
+        new Error(
+          `Power Automate webhook returned HTTP ${response.status}.`
+        );
+
+      error.statusCode =
+        response.status;
+
+      throw error;
+    }
+
+
+    return {
+      sent: true,
+      skipped: false,
+      statusCode:
+        response.status
+    };
+  } finally {
+    clearTimeout(
+      timeout
+    );
+  }
+}
 module.exports = {
   sendContactToPowerAutomate,
   sendCareerApplicationToPowerAutomate,
   sendNewsletterToPowerAutomate,
-  sendNewsletterUnsubscribeToPowerAutomate
+  sendNewsletterUnsubscribeToPowerAutomate,
+  sendSubscriptionToPowerAutomate
 };

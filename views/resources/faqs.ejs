@@ -1,15 +1,51 @@
 <%- include('../partials/header', {
-  pageCss: '/css/pages/faqs.css'
+    pageCss: '/css/pages/faqs.css?v=2'
 }) %>
 
 <!-- ============================================================
      HERO
 ============================================================ -->
-<section class="inner-page-hero faqs-page-hero">
-  <div class="inner-page-hero-inner">
-    <span class="hero-eyebrow">Support Center</span>
-    <h1>Frequently Asked Questions</h1>
-    <p>Everything you need to know about investing with STI Assets Management Limited.</p>
+<section class="page-hero" aria-labelledby="faqs-hero-title">
+
+  <div class="page-hero-media" aria-hidden="true">
+    <img
+      src="/faqs-hero.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
+  </div>
+
+  <div class="page-hero-overlay" aria-hidden="true"></div>
+
+  <div class="page-shell page-hero-inner">
+    <div class="page-hero-copy">
+
+      <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/resources">Resources</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">FAQs</span>
+      </nav>
+
+      <h1
+        id="faqs-hero-title"
+        class="page-hero-title page-enter"
+        style="--page-enter-delay: 120ms"
+      >
+        Frequently asked questions.
+      </h1>
+
+      <p
+        class="page-hero-summary page-enter"
+        style="--page-enter-delay: 240ms"
+      >
+        What you need to know about investing with STI Assets Management
+        Limited.
+      </p>
+
+    </div>
   </div>
 </section>
 

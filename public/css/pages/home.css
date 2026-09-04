@@ -20,13 +20,13 @@
   --home-orange: #f68634;
   --home-ink: #17212b;
   --home-muted: #63717d;
-  --home-line: rgba(3, 54, 105, 0.13);
+  --home-line: rgba(3, 54, 105, 0.10);
   --home-surface: #f5f7f9;
   --home-surface-warm: #faf8f5;
-  --home-shell: 1240px;
-  --home-section-space: clamp(84px, 9vw, 138px);
-  --home-radius: 2px;
-  --home-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --home-shell: 1400px;
+  --home-section-space: clamp(52px, 5vw, 76px);
+  --home-radius: 8px;
+  --home-ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .home-shell {
@@ -34,63 +34,6 @@
   margin-inline: auto;
 }
 
-/* ============================================================
-   HOME-ONLY HEADER REFINEMENT
-   The global header remains unchanged for the rest of the site.
-============================================================ */
-
-.site-header {
-  height: 80px;
-  background: rgba(255, 255, 255, 0.96);
-  border-bottom: 1px solid rgba(3, 54, 105, 0.08);
-  box-shadow: none;
-}
-
-.site-header.is-scrolling,
-.site-header.is-sticky {
-  background: rgba(255, 255, 255, 0.985);
-  box-shadow: 0 10px 30px rgba(3, 54, 105, 0.07);
-}
-
-.nav-wrap {
-  height: 80px;
-  max-width: 1320px;
-}
-
-.logo-placeholder {
-  max-width: 195px;
-  height: 52px;
-  flex-basis: 195px;
-}
-
-.logo-placeholder img {
-  max-width: 195px;
-  max-height: 52px;
-}
-
-.btn-contact-cta {
-  border-radius: 2px;
-}
-
-@media (min-width: 1024px) {
-  .primary-nav ul {
-    gap: clamp(15px, 1.65vw, 24px);
-  }
-
-  .nav-link {
-    font-size: 0.88rem;
-    font-weight: 650;
-  }
-
-  .nav-actions {
-    gap: 10px;
-  }
-
-  .btn-contact-cta {
-    padding: 10px 17px;
-    font-size: 0.85rem;
-  }
-}
 
 /* ============================================================
    SHARED HOMEPAGE TYPOGRAPHY / LINKS
@@ -100,10 +43,11 @@
 .home-hero-eyebrow {
   margin: 0;
   color: var(--home-orange);
-  font-size: 0.72rem;
-  font-weight: 800;
-  line-height: 1.3;
-  letter-spacing: 0.16em;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.33;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -193,36 +137,58 @@
   border: 1px solid transparent;
   border-radius: var(--home-radius);
   font-size: 0.88rem;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.2;
   transition:
-    transform 260ms var(--home-ease),
-    background-color 260ms var(--home-ease),
-    border-color 260ms var(--home-ease),
-    color 260ms var(--home-ease);
+    transform 160ms var(--home-ease),
+    background-color 160ms var(--home-ease),
+    border-color 160ms var(--home-ease),
+    color 160ms var(--home-ease);
 }
 
+/* Primary: navy fill. Use on light surfaces. 12.2:1 with white text. */
 .home-button-primary {
   color: #ffffff;
-  background: var(--home-orange);
-  border-color: var(--home-orange);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .home-button-primary:hover {
   color: #ffffff;
-  background: #df752b;
-  border-color: #df752b;
+  background: #04477f;
+  border-color: #04477f;
   transform: translateY(-2px);
 }
 
-.home-button-primary .ui-icon {
-  transition: transform 260ms var(--home-ease);
+/* Invert: white fill, navy label. Use on navy bands and the hero photo. */
+.home-button-invert {
+  color: var(--color-primary);
+  background: #ffffff;
+  border-color: #ffffff;
 }
 
-.home-button-primary:hover .ui-icon {
-  transform: translate(3px, -3px);
+.home-button-invert:hover {
+  color: var(--color-primary);
+  background: #eef2f6;
+  border-color: #eef2f6;
+  transform: translateY(-2px);
 }
 
+/* Secondary: the partner to primary on light surfaces. */
+.home-button-secondary {
+  color: var(--color-primary);
+  background: #ffffff;
+  border-color: rgba(3, 54, 105, 0.22);
+}
+
+.home-button-secondary:hover {
+  color: var(--color-primary);
+  background: var(--color-bg-alt);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+/* Ghost: secondary action over photography. */
 .home-button-ghost {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.08);
@@ -237,12 +203,21 @@
   border-color: #ffffff;
 }
 
+/* Icon nudge applies to every variant, not just primary. */
+.home-button .ui-icon {
+  transition: transform 200ms var(--home-ease);
+}
+
+.home-button:hover .ui-icon {
+  transform: translate(3px, -3px);
+}
+
 .home-button:focus-visible,
 .home-text-link:focus-visible,
 .home-service-card-link:focus-visible,
 .home-insight-image-link:focus-visible,
 .home-insight-card h3 a:focus-visible {
-  outline: 3px solid rgba(246, 134, 52, 0.48);
+  outline: 3px solid #be5500;
   outline-offset: 4px;
 }
 
@@ -277,6 +252,29 @@
   object-position: center 46%;
   transform: scale(1.035);
   animation: homeHeroImage 1500ms var(--home-ease) both;
+}
+
+/*
+ * The video is injected by JS and fades in over the still.
+ * The still remains beneath it as the poster and as the
+ * permanent fallback on mobile and reduced-motion.
+ */
+.home-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  /*
+   * Delayed so the copy finishes arriving before the footage
+   * starts moving. Otherwise the two compete for attention.
+   */
+  transition: opacity 900ms var(--home-ease) 400ms;
+}
+
+.home-hero-video.is-ready {
+  opacity: 1;
 }
 
 .home-hero-overlay {
@@ -316,7 +314,11 @@
   flex-direction: column;
   justify-content: flex-start;
   min-height: inherit;
-  padding-top: clamp(94px, 12vh, 140px);
+  /*
+   * Must clear the 90px sticky header at every viewport
+   * height, hence the generous minimum.
+   */
+  padding-top: clamp(130px, 16vh, 180px);
   padding-bottom: 34px;
 }
 
@@ -326,31 +328,22 @@
 
 .home-hero-eyebrow {
   color: rgba(255, 255, 255, 0.78);
-  animation: homeHeroCopy 700ms var(--home-ease) 100ms both;
+  animation: homeHeroCopy 900ms var(--home-ease) 120ms both;
 }
 
 .home-hero-title {
   margin: 24px 0 0;
   color: #ffffff;
   font-size: clamp(3.35rem, 7.1vw, 6.75rem);
-  font-weight: 720;
+  font-weight: 600;
   line-height: 0.91;
   letter-spacing: -0.065em;
   text-wrap: balance;
-  animation: homeHeroCopy 760ms var(--home-ease) 170ms both;
+  animation: homeHeroCopy 900ms var(--home-ease) 220ms both;
 }
 
 .home-hero-title span {
   color: #ffffff;
-}
-
-.home-hero-title span::after {
-  content: "";
-  display: inline-block;
-  width: clamp(12px, 1.45vw, 22px);
-  height: clamp(12px, 1.45vw, 22px);
-  margin-left: 12px;
-  background: var(--home-orange);
 }
 
 .home-hero-summary {
@@ -360,7 +353,7 @@
   font-size: clamp(1rem, 1.5vw, 1.16rem);
   line-height: 1.75;
   text-wrap: pretty;
-  animation: homeHeroCopy 760ms var(--home-ease) 240ms both;
+  animation: homeHeroCopy 900ms var(--home-ease) 340ms both;
 }
 
 .home-hero-actions {
@@ -368,7 +361,7 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 34px;
-  animation: homeHeroCopy 760ms var(--home-ease) 310ms both;
+  animation: homeHeroCopy 900ms var(--home-ease) 460ms both;
 }
 
 .home-hero-foot {
@@ -376,8 +369,8 @@
   align-items: center;
   justify-content: flex-start;
   gap: 32px;
-  padding-top: 34px;
-  animation: homeHeroCopy 760ms var(--home-ease) 390ms both;
+  padding-top: 20px;
+  animation: homeHeroCopy 900ms var(--home-ease) 580ms both;
 }
 
 .home-hero-trust {
@@ -385,7 +378,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -411,7 +404,7 @@
 @keyframes homeHeroCopy {
   from {
     opacity: 0;
-    transform: translate3d(0, 24px, 0);
+    transform: translate3d(0, 32px, 0);
   }
   to {
     opacity: 1;
@@ -1145,7 +1138,7 @@
 }
 
 .home-insight-card h3 a:hover {
-  color: var(--home-orange);
+  color: var(--color-accent-action);
 }
 
 .home-insight-copy > p {
@@ -1469,25 +1462,8 @@
 
 @media (max-width: 767px) {
   :root {
-    --home-section-space: 72px;
+    --home-section-space: 44px;
   }
-
-  .site-header,
-  .nav-wrap {
-    height: 72px;
-  }
-
-  .logo-placeholder {
-    max-width: 168px;
-    height: 48px;
-    flex-basis: 168px;
-  }
-
-  .logo-placeholder img {
-    max-width: 168px;
-    max-height: 48px;
-  }
-
   .home-shell,
   .home-services-rail-wrap {
     width: min(calc(100% - 32px), var(--home-shell));
@@ -1540,12 +1516,6 @@
   .home-hero-title {
     font-size: clamp(2.85rem, 13vw, 4.25rem);
     line-height: 0.95;
-  }
-
-  .home-hero-title span::after {
-    width: 12px;
-    height: 12px;
-    margin-left: 8px;
   }
 
   .home-hero-summary {
@@ -1804,8 +1774,17 @@
     width: 100%;
   }
 
+  /*
+   * A single full-bleed white pill outweighs the headline on a
+   * dark hero. Constrain it so the action stays obvious without
+   * dominating.
+   */
+  .home-hero-actions {
+    max-width: 320px;
+  }
+
   :root {
-    --home-section-space: 68px;
+    --home-section-space: 40px;
   }
 
   .home-investment-row {
@@ -1841,11 +1820,21 @@
 @media (prefers-reduced-motion: reduce) {
   .home-hero-media img,
   .home-hero-eyebrow,
+  .home-hero-trust,
   .home-hero-title,
   .home-hero-summary,
   .home-hero-actions,
   .home-hero-foot {
     animation: none !important;
+  }
+
+  /*
+   * The video is not injected at all under reduced motion,
+   * but guard the transition in case it is already in the DOM
+   * when the preference changes mid-session.
+   */
+  .home-hero-video {
+    transition: none !important;
   }
 
   .home-motion-ready [data-reveal],
@@ -1868,5 +1857,220 @@
 
   .home-services-rail {
     scroll-behavior: auto;
+  }
+}
+/* ===========================================================
+   STICKY STACKED INVESTMENT CARDS
+   -----------------------------------------------------------
+   Each row sticks below the header as it scrolls, and the next
+   row rides up over it. The previous card's title stays
+   visible, so the stack reads as a deck rather than the cards
+   simply disappearing.
+
+   Pure CSS: sticky positioning does all of it.
+   =========================================================== */
+
+@media (min-width: 1024px) {
+
+  /*
+   * The list must not be a flex or grid container with its own
+   * overflow, or sticky children have nothing to stick within.
+   */
+  .home-investment-list {
+    display: block;
+  }
+
+  .home-investment-row {
+    position: sticky;
+
+    /*
+     * 110px clears the 90px sticky header. Each subsequent card
+     * stops 64px lower, which is what leaves the previous
+     * card's title strip on show.
+     */
+    top: 110px;
+
+    margin-bottom: 0;
+
+    /*
+     * An opaque background is essential. Without it the card
+     * beneath shows through as they overlap.
+     */
+    background: #ffffff;
+    border: 1px solid var(--home-line);
+    border-radius: var(--home-radius);
+    overflow: hidden;
+
+    /*
+     * A shadow on the leading edge sells the stacking. Without
+     * it the cards look like they are merging rather than
+     * sliding over one another.
+     */
+    box-shadow: 0 -8px 24px rgba(3, 54, 105, 0.06);
+  }
+
+  .home-investment-row:nth-child(2) { top: 174px; }
+  .home-investment-row:nth-child(3) { top: 238px; }
+
+  /*
+   * Each card needs a full viewport of scroll beneath it, or
+   * there is no distance over which the next one can travel.
+   */
+  .home-investment-row:not(:last-child) {
+    margin-bottom: 40px;
+  }
+
+  /*
+   * Tail space so the final card can settle before the section
+   * ends and the whole stack scrolls away together.
+   */
+  .home-investment-list::after {
+    content: "";
+    display: block;
+    height: 30vh;
+  }
+}
+
+
+/*
+ * Mobile stacking needs the cards to fit inside the viewport,
+ * or there is no room for one to sit while the next travels.
+ * The image is capped and the padding tightened to buy that
+ * space back.
+ */
+@media (max-width: 1023px) {
+  .home-investment-list {
+    display: block;
+  }
+
+  .home-investment-row {
+    position: sticky;
+    top: 88px;
+    margin-bottom: 45vh;
+    background: var(--home-navy-deep);
+    box-shadow: 0 -10px 30px rgba(2, 32, 62, 0.55);
+    padding: 22px;
+  }
+
+  .home-investment-row:nth-child(2) { top: 106px; }
+  .home-investment-row:nth-child(3) { top: 124px; }
+
+  .home-investment-row .home-investment-image {
+    max-height: 180px;
+  }
+
+  .home-investment-row .home-investment-image img {
+    height: 180px;
+    object-fit: cover;
+  }
+
+  .home-investment-list::after {
+    content: "";
+    display: block;
+    height: 8vh;
+  }
+}
+
+/*
+ * Below 600px there is not enough height for the effect to
+ * read at all, so the rows behave normally.
+ */
+@media (max-width: 599px) {
+  .home-investment-row {
+    position: static;
+    margin-bottom: 18px;
+    box-shadow: none;
+  }
+
+  .home-investment-list::after {
+    display: none;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .home-investment-row {
+    position: static !important;
+    box-shadow: none;
+  }
+
+  .home-investment-list::after {
+    display: none;
+  }
+}
+/* ===========================================================
+   STICKY STACKED INVESTMENT CARDS
+   -----------------------------------------------------------
+   Each row sticks below the header as it scrolls and the next
+   rides up over it, leaving the previous card's title strip on
+   show. Pure CSS: sticky positioning does all of it.
+   =========================================================== */
+
+@media (min-width: 1024px) {
+
+  /*
+   * Grid children can be sticky, but the grid's own gap fights
+   * the stack. Block layout gives each row its own flow.
+   */
+  .home-investment-list {
+    display: block;
+  }
+
+  .home-investment-row {
+    position: sticky;
+
+    /*
+     * 110px clears the 90px header. Each card stops 64px lower
+     * than the last, and that gap is what stays visible of the
+     * card underneath.
+     */
+    top: 110px;
+
+    /*
+     * An opaque background is essential. The band is navy, so
+     * the card must be navy too, or the row beneath shows
+     * through where they overlap.
+     */
+    background: var(--home-navy-deep);
+
+    margin-bottom: clamp(18px, 2vw, 28px);
+
+    /*
+     * Leading-edge shadow sells the overlap. Without it the
+     * cards read as merging rather than sliding over.
+     */
+    box-shadow: 0 -10px 30px rgba(2, 32, 62, 0.55);
+  }
+
+  .home-investment-row:nth-child(2) { top: 174px; }
+  .home-investment-row:nth-child(3) { top: 238px; }
+
+  /*
+   * Hover tint must stay opaque now that cards overlap, so the
+   * translucent version is replaced with a solid mix.
+   */
+  .home-investment-row:hover {
+    background: #0a3560;
+  }
+
+  /*
+   * Tail space so the last card can settle before the whole
+   * stack scrolls away together.
+   */
+  .home-investment-list::after {
+    content: "";
+    display: block;
+    height: 28vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-investment-row {
+    position: static !important;
+    box-shadow: none;
+  }
+
+  .home-investment-list::after {
+    display: none;
   }
 }

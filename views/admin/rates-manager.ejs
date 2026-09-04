@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Rates</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    /*
+      Scoped to this screen. The grid is dense by design: the
+      whole point is to see and edit the published table at
+      once, the way it appears on the public site.
+    */
+    .rates-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .rates-product-tab {
+      padding: 9px 16px;
+      border: 1px solid rgba(3, 54, 105, 0.18);
+      border-radius: 999px;
+      background: #ffffff;
+      color: #5b6b78;
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .rates-product-tab.active {
+      background: #033669;
+      border-color: #033669;
+      color: #ffffff;
+    }
+
+    .rates-grid-wrap {
+      overflow-x: auto;
+      border: 1px solid #e6ebf0;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .rates-grid {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    .rates-grid th,
+    .rates-grid td {
+      padding: 0;
+      border: 1px solid #e6ebf0;
+      text-align: center;
+    }
+
+    .rates-grid thead th {
+      padding: 12px 10px;
+      background: #033669;
+      color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .rates-grid thead th.rates-amount-head {
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    .rates-grid tbody th {
+      padding: 10px 16px;
+      background: #fafbfc;
+      color: #033669;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    /*
+      The input fills its cell so the grid reads as a table
+      rather than a form. Borders come from the cell.
+    */
+    .rates-grid input {
+      width: 100%;
+      padding: 11px 8px;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 0.9rem;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      color: #1c2833;
+    }
+
+    .rates-grid input:focus {
+      outline: 2px solid #033669;
+      outline-offset: -2px;
+      background: #f2f7fc;
+    }
+
+    .rates-grid input::placeholder {
+      color: #b9c4cd;
+    }
+
+    .rates-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .rates-save {
+      padding: 13px 28px;
+      border: 1px solid #033669;
+      border-radius: 8px;
+      background: #033669;
+      color: #ffffff;
+      font: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .rates-save:hover { background: #04477f; }
+
+    .rates-hint {
+      margin: 0;
+      color: #5b6b78;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .rates-saved {
+      margin: 0 0 20px;
+      padding: 13px 16px;
+      background: rgba(30, 126, 52, 0.07);
+      border: 1px solid rgba(30, 126, 52, 0.2);
+      border-radius: 8px;
+      color: #1e7e34;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">STIAM Admin</a>
+      <form action="/auth/logout" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn-nav" type="submit">Log Out</button>
+      </form>
+    </div>
+  </header>
+
+  <section class="section">
+
+    <h1>Manage rates</h1>
+
+    <p class="rates-hint" style="margin-bottom: 22px;">
+      Type the rate into each cell as a percentage, for example
+      <strong>8.5</strong> for 8.50%. Leave a cell empty if you do not publish
+      a rate for that combination. Saving replaces every rate for the selected
+      product.
+    </p>
+
+    <% if (saved) { %>
+      <p class="rates-saved">Rates saved.</p>
+    <% } %>
+
+    <!-- Product tabs -->
+    <div class="rates-toolbar">
+      <% products.forEach(function (item) { %>
+        <a
+          href="/admin/rates?product=<%= item.key %>"
+          class="rates-product-tab <%= item.key === product.key ? 'active' : '' %>"
+        ><%= item.label %></a>
+      <% }) %>
+    </div>
+
+    <form method="POST" action="/admin/rates">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="product" value="<%= product.key %>">
+
+      <div class="rates-grid-wrap">
+        <table class="rates-grid">
+          <thead>
+            <tr>
+              <th class="rates-amount-head" rowspan="2">Amount</th>
+              <th colspan="<%= tenors.length %>">Tenor</th>
+            </tr>
+            <tr>
+              <% tenors.forEach(function (tenor) { %>
+                <th scope="col"><%= tenor.label %></th>
+              <% }) %>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% grid.forEach(function (row) { %>
+              <tr>
+                <th scope="row"><%= row.label %></th>
+
+                <% row.cells.forEach(function (cell) { %>
+                  <td>
+                    <input
+                      id="<%= cell.name %>"
+                      name="<%= cell.name %>"
+                      type="number"
+                      inputmode="decimal"
+                      step="0.01"
+                      min="0"
+                      max="100"
+                      placeholder="—"
+                      value="<%= cell.value %>"
+                      aria-label="<%= row.label %> at <%= cell.label %>"
+                    >
+                  </td>
+                <% }) %>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rates-actions">
+        <button type="submit" class="rates-save">
+          Save <%= product.label %> rates
+        </button>
+
+        <p class="rates-hint">
+          <% if (lastUpdated) { %>
+            Last updated <%= new Date(lastUpdated).toLocaleString('en-GB') %>.
+          <% } else { %>
+            No rates published for this product yet.
+          <% } %>
+        </p>
+      </div>
+    </form>
+
+    <p style="margin-top: 28px;">
+      <a href="/admin/dashboard">Back to dashboard</a>
+    </p>
+
+  </section>
+</body>
+</html>

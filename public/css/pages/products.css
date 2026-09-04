@@ -1,2140 +1,748 @@
-/* ============================================================
-   STI ASSETS MANAGEMENT
-   PRODUCTS PAGE
-============================================================ */
-/* ============================================================
-   PRODUCTS HERO
-============================================================ */
+/* ===========================================================
+   PRODUCTS
+   -----------------------------------------------------------
+   Reuses .service-layout, .service-aside and
+   .service-capabilities from services.css so the two pages
+   share one section pattern.
 
-.products-page-hero {
-  --hero-bg-image:
-    url(
-      "/heropic.png"
-    );
+   Load order: style.css → page-system.css → services.css →
+   this file.
+   =========================================================== */
+
+
+/* ===========================================================
+   COMPARISON
+   The terms a prospect is deciding between, above the prose.
+   =========================================================== */
+
+.product-compare {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--page-line);
 }
 
-/* ============================================================
-   PRODUCTS HERO ENTRANCE
-============================================================ */
-
-.products-page-hero .hero-eyebrow {
-  animation:
-    products-hero-enter 620ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    80ms both;
-}
-
-.products-page-hero h1 {
-  animation:
-    products-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    160ms both;
-}
-
-.products-page-hero p {
-  animation:
-    products-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    240ms both;
-}
-
-@keyframes products-hero-enter {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-
-/* ============================================================
-   PRODUCT PAGE SECTIONS
-============================================================ */
-
-.product-block {
-  width: 100%;
-  max-width: none;
-
-  margin: 0;
-  padding: 88px 20px;
-}
-
-.product-block-white {
-  background: #ffffff;
-}
-
-.product-block-alt {
-  background: #f7f9fb;
-}
-
-.product-block-light {
-  background:
-    linear-gradient(
-      180deg,
-      #f8fafc 0%,
-      #f4f7fa 100%
-    );
-}
-
-.product-block > * {
-  width: 100%;
-  max-width: var(--max-width);
-
-  margin-right: auto;
-  margin-left: auto;
-}
-
-
-/* ============================================================
-   PRODUCT NUMBER LABELS
-============================================================ */
-
-.product-section-index {
+.product-compare-col {
   display: flex;
-  justify-content: flex-start;
-
-  margin-bottom: 14px;
+  flex-direction: column;
+  padding: 30px 32px 30px 0;
+  margin-right: 32px;
+  border-right: 1px solid var(--page-line);
 }
 
-.product-section-number {
-  position: relative;
+.product-compare-col:last-child {
+  padding-right: 0;
+  margin-right: 0;
+  border-right: 0;
+}
 
-  display: inline-block;
-  padding-bottom: 8px;
+.product-compare-num {
+  margin: 0 0 12px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--page-orange);
+}
 
-  color: var(--color-accent);
-  font-size: 0.78rem;
-  font-weight: 800;
+.product-compare-name {
+  margin: 0 0 22px;
+  color: var(--page-navy);
+  font-size: 1.15rem;
+  font-weight: 600;
   line-height: 1.3;
-  letter-spacing: 0.16em;
+  letter-spacing: -0.02em;
 }
 
-.product-section-number::after {
-  content: "";
+/* The short code sits under the name, in mono. */
+.product-compare-name span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--page-muted);
+}
 
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.product-compare-specs {
+  margin: 0;
+}
 
-  width: 18px;
-  height: 2px;
+.product-compare-specs > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--page-line);
+}
 
-  background: var(--color-accent);
+/*
+ * No trailing rule: the column ends on content, not a line
+ * hanging in space.
+ */
+.product-compare-specs > div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.product-compare-specs dt {
+  flex-shrink: 0;
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.product-compare-specs dd {
+  margin: 0;
+  text-align: right;
+  color: var(--page-navy);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nothing to push down now, so trim the column's own padding. */
+.product-compare-col {
+  padding-bottom: 0;
+}
+
+
+/* ===========================================================
+   RISK BADGE
+   Colour alone must not carry the meaning, so the word is
+   always present.
+   =========================================================== */
+
+.product-risk {
+  display: inline-block;
+  padding: 3px 10px;
   border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.product-risk-low {
+  background: rgba(30, 126, 52, 0.1);
+  color: #1e7e34;
+}
+
+.product-risk-mod {
+  background: rgba(246, 134, 52, 0.14);
+  color: #a8500f;
+}
+
+.page-band-ink .product-risk-low {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.page-band-ink .product-risk-mod {
+  background: rgba(246, 134, 52, 0.24);
+  color: #ffc08e;
 }
 
 
-/* ============================================================
-   INITIAL PRODUCT TYPOGRAPHY
-============================================================ */
+/* ===========================================================
+   TERMS BLOCK
+   Sits in the sticky aside of each product section.
+   =========================================================== */
 
-.product-section
-  .product-info-side h2 {
-  margin: 0 0 18px;
-
-  color: var(--color-primary);
-  font-size: clamp(2rem, 3.6vw, 2.65rem);
-  font-weight: 800;
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-
-  text-wrap: balance;
+.product-terms {
+  margin: 28px 0 0;
+  border-top: 1px solid var(--page-line);
 }
 
-.product-section
-  .product-info-side > p {
-  margin: 0 0 28px;
+.page-band-ink .product-terms {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
 
-  color: var(--color-text-muted);
-  font-size: 0.98rem;
-  line-height: 1.78;
+.product-terms > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--page-line);
+}
+
+.page-band-ink .product-terms > div {
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.product-terms dt {
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-band-ink .product-terms dt {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.product-terms dd {
+  margin: 0;
+  text-align: right;
+  color: var(--page-navy);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.page-band-ink .product-terms dd {
+  color: #ffffff;
+}
+
+.product-section .service-aside .page-button {
+  margin-top: 28px;
 }
 
 
-/* ============================================================
-   TERM ICON FOUNDATION
-============================================================ */
+/* ===========================================================
+   DISCLAIMER
+   =========================================================== */
 
-.product-section
-  .product-terms-icon {
-  color: var(--color-primary);
-}
-
-.product-section
-  .product-terms-icon .ui-icon {
-  width: 21px;
-  height: 21px;
+.product-disclaimer {
+  max-width: 80ch;
+  margin: 28px 0 0;
+  color: var(--page-muted);
+  font-size: 0.82rem;
+  line-height: 1.7;
 }
 
 
-/* ============================================================
-   MOBILE
-============================================================ */
+/* ===========================================================
+   RATE GUIDE TABLE
+   -----------------------------------------------------------
+   REPLACE the existing "RATE GUIDE" block in
+   public/css/pages/products.css with everything below.
+
+   The old .rate-guide-visual and .rate-guide-scroll rules
+   styled an uploaded image and are no longer used.
+   =========================================================== */
+
+.rate-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+}
+
+.rate-tables {
+  display: grid;
+  gap: 32px;
+  min-width: 0;
+}
+
+
+/* ---------- Table block ---------- */
+
+.rate-table-block {
+  margin: 0;
+  min-width: 0;
+}
+
+.rate-table-caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--page-navy);
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.rate-table-caption span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--page-muted);
+}
+
+/* ---------- Tabs ---------- */
+
+.rate-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 4px;
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: 999px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.rate-tab {
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--page-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 200ms var(--page-ease),
+    color 200ms var(--page-ease);
+}
+
+.rate-tab:hover { color: var(--page-navy); }
+
+.rate-tab.active {
+  background: var(--page-navy);
+  color: #ffffff;
+}
+
+.rate-tab:focus-visible {
+  outline: 3px solid var(--color-accent-action);
+  outline-offset: 2px;
+}
+
+/*
+ * Panels only hide once JS confirms the tabs work. Without
+ * this gate a script failure would leave two of three rate
+ * tables permanently invisible.
+ */
+.rate-tabs-ready .rate-table-block[hidden] {
+  display: none;
+}
 
 @media (max-width: 767px) {
-  .product-block {
-    padding: 66px 16px;
-  }
-
-  .product-section
-    .product-info-side h2 {
-    font-size: 2rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .product-block {
-    padding-right: 14px;
-    padding-left: 14px;
-  }
-}
-
-
-/* ============================================================
-   REDUCED MOTION
-============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  .products-page-hero .hero-eyebrow,
-  .products-page-hero h1,
-  .products-page-hero p {
-    animation: none;
-  }
-}
-
-/* ============================================================
-   MONEY MARKET NOTE
-============================================================ */
-
-.product-money-market-section
-  .money-market-showcase {
-  width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-
-  padding:
-    clamp(26px, 4vw, 48px);
-
-  background:
-    linear-gradient(
-      145deg,
-      #f8fafc 0%,
-      #ffffff 62%,
-      #f7f9fb 100%
-    );
-
-  border: 0;
-  border-radius: 20px;
-  box-shadow: none;
-}
-
-
-/* ============================================================
-   MONEY MARKET OVERVIEW
-============================================================ */
-
-.product-money-market-section
-  .money-market-overview {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  align-items: end;
-  gap: 28px;
-}
-
-.product-money-market-section
-  .money-market-copy {
-  min-width: 0;
-}
-
-.product-money-market-section
-  .money-market-copy h2 {
-  max-width: 720px;
-  margin: 0 0 18px;
-
-  color: var(--color-primary);
-  font-size:
-    clamp(1.6rem, 2.4vw, 2.05rem);
-
-  font-weight: 800;
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-
-  text-wrap: balance;
-}
-
-.product-money-market-section
-  .money-market-copy > p {
-  max-width: 760px;
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.98rem;
-  line-height: 1.78;
-}
-
-
-/* ============================================================
-   MONEY MARKET FACTS
-============================================================ */
-
-.product-money-market-section
-  .money-market-facts {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  gap: 12px;
-
-  min-width: 0;
-}
-
-.product-money-market-section
-  .money-market-fact {
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-
-  min-width: 0;
-  padding: 17px 18px 17px 21px;
-
-  background: #ffffff;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.09);
-
-  border-radius: 14px;
-
-  box-shadow:
-    0 8px 24px
-    rgba(3, 54, 105, 0.04);
-
-  overflow: hidden;
-
-  transition:
-    transform 260ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    border-color 260ms ease,
-
-    box-shadow 260ms
-      cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.product-money-market-section
-  .money-market-fact::before {
-  content: "";
-
-  position: absolute;
-  top: 14px;
-  bottom: 14px;
-  left: 0;
-
-  width: 3px;
-
-  background: var(--color-accent);
-  border-radius: 0 999px 999px 0;
-}
-
-.product-money-market-section
-  .money-market-fact-label {
-  color: var(--color-primary);
-  font-size: 0.73rem;
-  font-weight: 800;
-  line-height: 1.4;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-}
-
-.product-money-market-section
-  .money-market-fact-value {
-  color: var(--color-text-muted);
-  font-size: 0.94rem;
-  font-weight: 650;
-  line-height: 1.5;
-
-  overflow-wrap: anywhere;
-}
-
-
-/* ============================================================
-   MONEY MARKET DETAIL GRID
-============================================================ */
-
-.product-money-market-section
-  .money-market-detail-grid {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  align-items: stretch;
-  gap: 22px;
-
-  margin-top: 32px;
-}
-
-
-/* ============================================================
-   MONEY MARKET IMAGE
-============================================================ */
-
-.product-money-market-section
-  .money-market-image {
-  position: relative;
-
-  min-width: 0;
-  width: 100%;
-  height: 310px;
-  min-height: 0;
-  margin: 0;
-
-  overflow: hidden;
-
-  background: #e9eef3;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.08);
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 14px 36px
-    rgba(3, 54, 105, 0.07);
-}
-
-.product-money-market-section
-  .money-market-image::after {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      180deg,
-      transparent 68%,
-      rgba(3, 54, 105, 0.1) 100%
-    );
-
-  pointer-events: none;
-}
-
-.product-money-market-section
-  .money-market-image img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-  object-position: center;
-
-  transition:
-    transform 500ms
-    cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-
-/* ============================================================
-   MONEY MARKET BENEFITS
-============================================================ */
-
-.product-money-market-section
-  .money-market-benefits {
-  display: grid;
-  grid-template-rows:
-    auto minmax(0, 1fr);
-
-  min-width: 0;
-  padding: 28px;
-
-  background: rgba(255, 255, 255, 0.72);
-
-  border: 0;
-  border-radius: 16px;
-  box-shadow: none;
-}
-
-.product-money-market-section
-  .money-market-benefits-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 18px;
-
-  padding-bottom: 19px;
-}
-
-.product-money-market-section
-  .money-market-benefits h3 {
-  margin: 0;
-
-  color: var(--color-primary);
-  font-size: 1.32rem;
-  font-weight: 800;
-  line-height: 1.3;
-}
-
-.product-money-market-section
-  .money-market-risk {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-
-  flex: 0 0 auto;
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  line-height: 1.4;
-}
-
-.product-money-market-section
-  .money-market-risk span {
-  font-weight: 650;
-}
-
-.product-money-market-section
-  .money-market-risk strong {
-  color: var(--color-success);
-  font-weight: 800;
-}
-
-
-/* ============================================================
-   BENEFIT GRID
-============================================================ */
-
-.product-money-market-section
-  .money-market-benefit-grid {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  grid-auto-rows: 1fr;
-  gap: 12px;
-
-  min-width: 0;
-}
-
-.product-money-market-section
-  .money-market-benefit {
-  display: grid;
-  grid-template-columns:
-    24px minmax(0, 1fr);
-
-  align-content: start;
-  gap: 11px;
-
-  min-width: 0;
-  padding: 18px;
-
-  background: #f8fafc;
-
-border:
-  1px solid rgba(3, 54, 105, 0.05);
-
-border-radius: 12px;
-
-  transition:
-    transform 250ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    background-color 250ms ease,
-
-    border-color 250ms ease,
-
-    box-shadow 250ms
-      cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.product-money-market-section
-  .money-market-benefit-icon {
-  display: inline-flex;
-
-  width: 24px;
-  height: 24px;
-
-  color: var(--color-success);
-}
-
-.product-money-market-section
-  .money-market-benefit-icon .ui-icon {
-  width: 22px;
-  height: 22px;
-}
-
-.product-money-market-section
-  .money-market-benefit-copy {
-  min-width: 0;
-}
-
-.product-money-market-section
-  .money-market-benefit h4 {
-  margin: 0 0 5px;
-
-  color: var(--color-primary);
-  font-size: 0.94rem;
-  font-weight: 750;
-  line-height: 1.4;
-}
-
-.product-money-market-section
-  .money-market-benefit p {
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.84rem;
-  line-height: 1.6;
-
-  overflow-wrap: anywhere;
-}
-
-
-/* ============================================================
-   INTERACTIONS
-============================================================ */
-
-@media (hover: hover) {
-  .product-money-market-section
-    .money-market-fact:hover {
-    transform: translateY(-2px);
-
-    border-color:
-      rgba(3, 54, 105, 0.15);
-
-    box-shadow:
-      0 13px 28px
-      rgba(3, 54, 105, 0.07);
-  }
-
-  .product-money-market-section
-    .money-market-image:hover img {
-    transform: scale(1.025);
-  }
-
-  .product-money-market-section
-    .money-market-benefit:hover {
-    transform: translateY(-2px);
-
-    background: #ffffff;
-
-    border-color:
-      rgba(3, 54, 105, 0.13);
-
-    box-shadow:
-      0 10px 24px
-      rgba(3, 54, 105, 0.06);
-  }
-}
-
-
-/* ============================================================
-   RESPONSIVENESS
-============================================================ */
-
-@media (min-width: 640px) {
-  .product-money-market-section
-    .money-market-facts {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .product-money-market-section
-    .money-market-benefit-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 980px) {
-  .product-money-market-section
-    .money-market-overview {
-    grid-template-columns:
-      minmax(0, 1.35fr)
-      minmax(270px, 0.65fr);
-
-    gap: clamp(42px, 5vw, 68px);
-  }
-
-  .product-money-market-section
-    .money-market-facts {
-    grid-template-columns:
-      minmax(0, 1fr);
-  }
-
-  .product-money-market-section
-    .money-market-detail-grid {
-    grid-template-columns:
-      minmax(0, 0.88fr)
-      minmax(0, 1.12fr);
-  }
-
-  .product-money-market-section
-    .money-market-image {
-    height: 420px;
-  }
-}
-
-@media (max-width: 639px) {
-  .product-money-market-section
-    .money-market-showcase {
-    padding: 22px 18px;
-    border-radius: 16px;
-  }
-
-  .product-money-market-section
-    .money-market-detail-grid {
-    margin-top: 25px;
-  }
-
-  .product-money-market-section
-    .money-market-benefits {
-    padding: 23px 18px;
-  }
-
-  .product-money-market-section
-    .money-market-benefits-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .product-money-market-section
-    .money-market-image {
-    height: 270px;
-  }
-}
-
-@media (max-width: 360px) {
-  .product-money-market-section
-    .money-market-showcase {
-    padding-right: 15px;
-    padding-left: 15px;
-  }
-
-  .product-money-market-section
-    .money-market-benefit {
-    padding: 16px 14px;
-  }
-}
-
-
-/* ============================================================
-   REDUCED MOTION
-============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  .product-money-market-section
-    .money-market-fact,
-
-  .product-money-market-section
-    .money-market-image img,
-
-  .product-money-market-section
-    .money-market-benefit {
-    transition: none;
-  }
-}
-
-/* ============================================================
-   FIXED INCOME NOTE
-============================================================ */
-
-.product-fixed-income-section
-  .fixed-income-showcase {
-  width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-
-  padding:
-    clamp(26px, 4vw, 48px);
-
-  background: #ffffff;
-
-  border: 0;
-  border-radius: 20px;
-  box-shadow: none;
-}
-
-
-/* ============================================================
-   FIXED INCOME OVERVIEW
-============================================================ */
-
-.product-fixed-income-section
-  .fixed-income-overview {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  align-items: center;
-  gap: 28px;
-}
-
-.product-fixed-income-section
-  .fixed-income-copy {
-  min-width: 0;
-}
-
-.product-fixed-income-section
-  .fixed-income-copy h2 {
-  max-width: 720px;
-  margin: 0 0 18px;
-
-  color: var(--color-primary);
-
-  font-size:
-    clamp(1.6rem, 2.4vw, 2.05rem);
-
-  font-weight: 800;
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-
-  text-wrap: balance;
-}
-
-.product-fixed-income-section
-  .fixed-income-copy > p {
-  max-width: 720px;
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.98rem;
-  line-height: 1.78;
-}
-
-
-/* ============================================================
-   FIXED INCOME FACTS
-============================================================ */
-
-.product-fixed-income-section
-  .fixed-income-facts {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 12px;
-
-  min-width: 0;
-}
-
-.product-fixed-income-section
-  .fixed-income-fact {
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-
-  min-width: 0;
-  padding: 17px 18px 17px 21px;
-
-  background: #ffffff;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.09);
-
-  border-radius: 14px;
-
-  box-shadow:
-    0 8px 24px
-    rgba(3, 54, 105, 0.04);
-
-  overflow: hidden;
-
-  transition:
-    transform 260ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    border-color 260ms ease,
-
-    box-shadow 260ms
-      cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.product-fixed-income-section
-  .fixed-income-fact::before {
-  content: "";
-
-  position: absolute;
-  top: 14px;
-  bottom: 14px;
-  left: 0;
-
-  width: 3px;
-
-  background: var(--color-accent);
-  border-radius: 0 999px 999px 0;
-}
-
-.product-fixed-income-section
-  .fixed-income-fact-label {
-  color: var(--color-primary);
-  font-size: 0.73rem;
-  font-weight: 800;
-  line-height: 1.4;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-}
-
-.product-fixed-income-section
-  .fixed-income-fact-value {
-  color: var(--color-text-muted);
-  font-size: 0.94rem;
-  font-weight: 650;
-  line-height: 1.5;
-
-  overflow-wrap: anywhere;
-}
-
-/* ============================================================
-   FIXED INCOME DETAIL GRID
-============================================================ */
-
-.product-fixed-income-section
-  .fixed-income-detail-grid {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  align-items: stretch;
-  gap: 22px;
-
-  margin-top: 32px;
-}
-
-
-/* ============================================================
-   FIXED INCOME BENEFITS
-============================================================ */
-
-.product-fixed-income-section
-  .fixed-income-benefits {
-  display: grid;
-  grid-template-rows:
-    auto minmax(0, 1fr);
-
-  min-width: 0;
-  padding: 28px;
-
-  background: rgba(255, 255, 255, 0.72);
-
-  border: 0;
-  border-radius: 16px;
-  box-shadow: none;
-}
-
-.product-fixed-income-section
-  .fixed-income-benefits-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 18px;
-
-  padding-bottom: 19px;
-}
-
-.product-fixed-income-section
-  .fixed-income-risk {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-
-  flex: 0 0 auto;
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  line-height: 1.4;
-}
-
-.product-fixed-income-section
-  .fixed-income-risk span {
-  font-weight: 650;
-}
-
-.product-fixed-income-section
-  .fixed-income-risk strong {
-  color: var(--color-accent);
-  font-weight: 800;
-}
-
-.product-fixed-income-section
-  .fixed-income-benefits h3 {
-  margin: 0;
-
-  color: var(--color-primary);
-  font-size: 1.32rem;
-  font-weight: 800;
-  line-height: 1.3;
-}
-
-
-/* ============================================================
-   FIXED INCOME BENEFIT GRID
-============================================================ */
-
-.product-fixed-income-section
-  .fixed-income-benefit-grid {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  grid-auto-rows: 1fr;
-  gap: 12px;
-
-  min-width: 0;
-}
-
-.product-fixed-income-section
-  .fixed-income-benefit {
-  display: grid;
-  grid-template-columns:
-    24px minmax(0, 1fr);
-
-  align-content: start;
-  gap: 11px;
-
-  min-width: 0;
-  padding: 18px;
-
-  background: #f8fafc;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.05);
-
-  border-radius: 12px;
-
-  box-shadow: none;
-
-  transition:
-    transform 250ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    background-color 250ms ease,
-
-    border-color 250ms ease,
-
-    box-shadow 250ms
-      cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.product-fixed-income-section
-  .fixed-income-benefit-icon {
-  display: inline-flex;
-
-  width: 24px;
-  height: 24px;
-
-  color: var(--color-success);
-}
-
-.product-fixed-income-section
-  .fixed-income-benefit-icon .ui-icon {
-  width: 22px;
-  height: 22px;
-}
-
-.product-fixed-income-section
-  .fixed-income-benefit-copy {
-  min-width: 0;
-}
-
-.product-fixed-income-section
-  .fixed-income-benefit h4 {
-  margin: 0 0 5px;
-
-  color: var(--color-primary);
-  font-size: 0.94rem;
-  font-weight: 750;
-  line-height: 1.4;
-}
-
-.product-fixed-income-section
-  .fixed-income-benefit p {
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.84rem;
-  line-height: 1.6;
-
-  overflow-wrap: anywhere;
-}
-
-
-/* ============================================================
-   FIXED INCOME IMAGE
-============================================================ */
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-image {
-  position: relative;
-
-  min-width: 0;
-  width: 100%;
-  height: 310px;
-  min-height: 0;
-  margin: 0;
-
-  overflow: hidden;
-
-  background: #e9eef3;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.08);
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 14px 36px
-    rgba(3, 54, 105, 0.07);
-}
-
-.product-fixed-income-section
-  .fixed-income-image::after {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(3, 54, 105, 0.02) 55%,
-      rgba(3, 54, 105, 0.13) 100%
-    );
-
-  pointer-events: none;
-}
-
-.product-fixed-income-section
-  .fixed-income-image img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-  object-position: center;
-
-  transition:
-    transform 500ms
-    cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-
-/* ============================================================
-   FIXED INCOME INTERACTIONS
-============================================================ */
-
-@media (hover: hover) {
-  .product-fixed-income-section
-    .fixed-income-benefit:hover {
-    transform: translateY(-2px);
-
-    border-color:
-      rgba(3, 54, 105, 0.14);
-
-    box-shadow:
-      0 11px 26px
-      rgba(3, 54, 105, 0.065);
-  }
-
-  .product-fixed-income-section
-  .fixed-income-fact:hover {
-  transform: translateY(-2px);
-
-  border-color:
-    rgba(3, 54, 105, 0.15);
-
-  box-shadow:
-    0 13px 28px
-    rgba(3, 54, 105, 0.07);
-}
-
-  .product-fixed-income-section
-    .fixed-income-image:hover img {
-    transform: scale(1.025);
-  }
-}
-
-
-/* ============================================================
-   FIXED INCOME RESPONSIVENESS
-============================================================ */
-
-@media (min-width: 640px) {
-  .product-fixed-income-section
-    .fixed-income-benefit-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 980px) {
-  .product-fixed-income-section
-    .fixed-income-overview {
-    grid-template-columns:
-      minmax(0, 1.35fr)
-      minmax(280px, 0.65fr);
-
-    gap: clamp(42px, 5vw, 68px);
-  }
-
-  .product-fixed-income-section
-  .fixed-income-facts {
-  grid-template-columns:
-    minmax(0, 1fr);
-}
-
-  .product-fixed-income-section
-    .fixed-income-detail-grid {
-    grid-template-columns:
-      minmax(0, 1.12fr)
-      minmax(0, 0.88fr);
-  }
-
-  .product-fixed-income-section
-    .fixed-income-image {
-    height: 420px;
-  }
-}
-
-@media (max-width: 639px) {
-  .product-fixed-income-section
-    .fixed-income-showcase {
-    padding: 22px 18px;
-    border-radius: 16px;
-  }
-
-  .product-fixed-income-section
-    .fixed-income-detail-grid {
-    margin-top: 25px;
-  }
-
-  .product-fixed-income-section
-    .product-fixed-income-section
-  .fixed-income-benefits-header {
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 6px;
-}
-
-  .product-fixed-income-section
-    .fixed-income-benefits {
-    padding: 23px 18px;
-  }
-
-  .product-fixed-income-section
-    .fixed-income-image {
-    height: 270px;
-  }
-}
-
-@media (max-width: 360px) {
-  .product-fixed-income-section
-    .fixed-income-showcase {
-    padding-right: 15px;
-    padding-left: 15px;
-  }
-
-  .product-fixed-income-section
-    .fixed-income-benefit {
-    padding: 16px 14px;
-  }
-}
-
-
-/* ============================================================
-   FIXED INCOME REDUCED MOTION
-============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  .product-fixed-income-section
-    .fixed-income-benefit,
-
-  .product-fixed-income-section
-    .fixed-income-image img {
-    transition: none;
-  }
-}
-
-/* ============================================================
-   FIXED INCOME DOLLAR NOTE
-============================================================ */
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-showcase {
-  width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-
-  padding:
-    clamp(26px, 4vw, 48px);
-
-  background:
-    linear-gradient(
-      145deg,
-      #f8fafc 0%,
-      #ffffff 62%,
-      #f7f9fb 100%
-    );
-
-  border: 0;
-  border-radius: 20px;
-  box-shadow: none;
-}
-
-
-/* ============================================================
-   DOLLAR NOTE OVERVIEW
-============================================================ */
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-overview {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  align-items: end;
-  gap: 28px;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-copy {
-  min-width: 0;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-copy h2 {
-  max-width: 760px;
-  margin: 0 0 18px;
-
-  color: var(--color-primary);
-
-  font-size:
-    clamp(1.6rem, 2.4vw, 2.05rem);
-
-  font-weight: 800;
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-
-  text-wrap: balance;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-copy > p {
-  max-width: 780px;
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.98rem;
-  line-height: 1.78;
-}
-
-
-/* ============================================================
-   DOLLAR NOTE FACTS
-============================================================ */
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-facts {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  gap: 12px;
-
-  min-width: 0;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-fact {
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-
-  min-width: 0;
-  padding: 17px 18px 17px 21px;
-
-  background: #ffffff;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.09);
-
-  border-radius: 14px;
-
-  box-shadow:
-    0 8px 24px
-    rgba(3, 54, 105, 0.04);
-
-  overflow: hidden;
-
-  transition:
-    transform 260ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    border-color 260ms ease,
-
-    box-shadow 260ms
-      cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-fact::before {
-  content: "";
-
-  position: absolute;
-  top: 14px;
-  bottom: 14px;
-  left: 0;
-
-  width: 3px;
-
-  background: var(--color-accent);
-  border-radius: 0 999px 999px 0;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-fact-label {
-  color: var(--color-primary);
-  font-size: 0.73rem;
-  font-weight: 800;
-  line-height: 1.4;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-fact-value {
-  color: var(--color-text-muted);
-  font-size: 0.94rem;
-  font-weight: 650;
-  line-height: 1.5;
-
-  overflow-wrap: anywhere;
-}
-
-
-/* ============================================================
-   DOLLAR NOTE DETAIL GRID
-============================================================ */
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-detail-grid {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  align-items: stretch;
-  gap: 22px;
-
-  margin-top: 32px;
-}
-
-
-/* ============================================================
-   DOLLAR NOTE IMAGE
-============================================================ */
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-image {
-  position: relative;
-
-  min-width: 0;
-  min-height: 310px;
-  margin: 0;
-
-  overflow: hidden;
-
-  background: #e9eef3;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.08);
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 14px 36px
-    rgba(3, 54, 105, 0.07);
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-image::after {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      180deg,
-      transparent 65%,
-      rgba(3, 54, 105, 0.14) 100%
-    );
-
-  pointer-events: none;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-image img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-  object-position: center;
-
-  transition:
-    transform 500ms
-    cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-
-/* ============================================================
-   DOLLAR NOTE BENEFITS
-============================================================ */
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefits {
-  display: grid;
-  grid-template-rows:
-    auto minmax(0, 1fr);
-
-  min-width: 0;
-  padding: 28px;
-
-  background: rgba(255, 255, 255, 0.72);
-
-  border: 0;
-  border-radius: 16px;
-  box-shadow: none;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefits-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 18px;
-
-  padding-bottom: 19px;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefits h3 {
-  margin: 0;
-
-  color: var(--color-primary);
-  font-size: 1.32rem;
-  font-weight: 800;
-  line-height: 1.3;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-risk {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-
-  flex: 0 0 auto;
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  line-height: 1.4;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-risk span {
-  font-weight: 650;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-risk strong {
-  color: var(--color-accent);
-  font-weight: 800;
-}
-
-
-/* ============================================================
-   DOLLAR NOTE BENEFIT GRID
-============================================================ */
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefit-grid {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  grid-auto-rows: 1fr;
-  gap: 12px;
-
-  min-width: 0;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefit {
-  display: grid;
-  grid-template-columns:
-    24px minmax(0, 1fr);
-
-  align-content: start;
-  gap: 11px;
-
-  min-width: 0;
-  padding: 18px;
-
-  background: #f8fafc;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.05);
-
-  border-radius: 12px;
-
-  transition:
-    transform 250ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    background-color 250ms ease,
-
-    border-color 250ms ease,
-
-    box-shadow 250ms
-      cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefit-icon {
-  display: inline-flex;
-
-  width: 24px;
-  height: 24px;
-
-  color: var(--color-success);
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefit-icon .ui-icon {
-  width: 22px;
-  height: 22px;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefit-copy {
-  min-width: 0;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefit h4 {
-  margin: 0 0 5px;
-
-  color: var(--color-primary);
-  font-size: 0.94rem;
-  font-weight: 750;
-  line-height: 1.4;
-}
-
-.product-fixed-income-dollar-section
-  .fixed-income-dollar-benefit p {
-  margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: 0.84rem;
-  line-height: 1.6;
-
-  overflow-wrap: anywhere;
-}
-
-
-/* ============================================================
-   DOLLAR NOTE INTERACTIONS
-============================================================ */
-
-@media (hover: hover) {
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-fact:hover {
-    transform: translateY(-2px);
-
-    border-color:
-      rgba(3, 54, 105, 0.15);
-
-    box-shadow:
-      0 13px 28px
-      rgba(3, 54, 105, 0.07);
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-image:hover img {
-    transform: scale(1.025);
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-benefit:hover {
-    transform: translateY(-2px);
-
-    background: #ffffff;
-
-    border-color:
-      rgba(3, 54, 105, 0.13);
-
-    box-shadow:
-      0 10px 24px
-      rgba(3, 54, 105, 0.06);
-  }
-}
-
-
-/* ============================================================
-   DOLLAR NOTE RESPONSIVENESS
-============================================================ */
-
-@media (min-width: 640px) {
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-facts {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-benefit-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 980px) {
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-overview {
-    grid-template-columns:
-      minmax(0, 1.35fr)
-      minmax(270px, 0.65fr);
-
-    gap: clamp(42px, 5vw, 68px);
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-facts {
-    grid-template-columns:
-      minmax(0, 1fr);
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-detail-grid {
-    grid-template-columns:
-      minmax(0, 0.88fr)
-      minmax(0, 1.12fr);
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-image {
-    height: 420px;
-  }
-}
-
-@media (max-width: 639px) {
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-showcase {
-    padding: 22px 18px;
-    border-radius: 16px;
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-detail-grid {
-    margin-top: 25px;
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-benefits {
-    padding: 23px 18px;
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-benefits-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-image {
-    height: 270px;
-  }
-}
-
-@media (max-width: 360px) {
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-showcase {
-    padding-right: 15px;
-    padding-left: 15px;
-  }
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-benefit {
-    padding: 16px 14px;
-  }
-}
-
-
-/* ============================================================
-   DOLLAR NOTE REDUCED MOTION
-============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-fact,
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-image img,
-
-  .product-fixed-income-dollar-section
-    .fixed-income-dollar-benefit {
-    transition: none;
-  }
-}
-
-/* ============================================================
-   RATE GUIDE
-============================================================ */
-
-.product-rate-section
-  .rate-guide-showcase {
-  width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-
-  padding:
-    clamp(26px, 4vw, 48px);
-
-  background: #ffffff;
-
-  border: 0;
-  border-radius: 20px;
-  box-shadow: none;
-}
-
-
-/* ============================================================
-   RATE GUIDE HEADER
-============================================================ */
-
-.product-rate-section
-  .rate-guide-header {
-  margin-bottom: 28px;
-}
-
-.product-rate-section
-  .rate-guide-header h2 {
-  margin: 0;
-
-  color: var(--color-primary);
-
-  font-size:
-    clamp(2rem, 3.2vw, 2.45rem);
-
-  font-weight: 800;
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-}
-
-
-/* ============================================================
-   RATE GUIDE LAYOUT
-============================================================ */
-
-.product-rate-section
-  .rate-guide-layout {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr);
-
-  align-items: stretch;
-  gap: 20px;
-
-  min-width: 0;
-}
-
-
-/* ============================================================
-   RATE GUIDE TABLE
-============================================================ */
-
-.product-rate-section
-  .rate-guide-visual {
-  min-width: 0;
-  margin: 0;
-}
-
-.product-rate-section
-  .rate-guide-table-scroll {
-  width: 100%;
-  max-width: 100%;
-
-  overflow-x: auto;
-  overflow-y: hidden;
-
-  background: #ffffff;
-
-  border:
-    1px solid rgba(3, 54, 105, 0.09);
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 12px 32px
-    rgba(3, 54, 105, 0.055);
-
-  overscroll-behavior-inline: contain;
-  -webkit-overflow-scrolling: touch;
-
-  scrollbar-width: thin;
-  scrollbar-color:
-    rgba(3, 54, 105, 0.32)
-    transparent;
-}
-
-.product-rate-section
-  .rate-guide-table-scroll::-webkit-scrollbar {
-  height: 7px;
-}
-
-.product-rate-section
-  .rate-guide-table-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.product-rate-section
-  .rate-guide-table-scroll::-webkit-scrollbar-thumb {
-  background:
-    rgba(3, 54, 105, 0.28);
-
-  border-radius: 999px;
-}
-
-.product-rate-section
-  .rate-guide-table-scroll:focus-visible {
-  outline:
-    3px solid rgba(246, 134, 52, 0.28);
-
-  outline-offset: 4px;
-}
-
-.product-rate-section
-  .rate-guide-table-scroll img {
-  display: block;
-
-  width: 760px;
-  max-width: none;
-  height: auto;
-
-  object-fit: contain;
-}
-
-
-/* ============================================================
-   RATE GUIDE NOTES
-============================================================ */
-
-.product-rate-section
-  .rate-guide-notes {
-  align-self: center;
-
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-
-.product-rate-section
-  .rate-guide-notes-title {
-  margin: 0 0 14px;
-
-  color: var(--color-primary);
-
-  font-size: 0.95rem;
-  font-weight: 800;
-  line-height: 1.4;
-}
-
-.product-rate-section
-  .rate-guide-notes-list {
-  display: grid;
-  gap: 14px;
-
-  margin: 0;
-  padding: 0;
-
-  color: var(--color-text-muted);
-
-  font-size: 0.9rem;
-  line-height: 1.7;
-
-  list-style: none;
-}
-
-.product-rate-section
-  .rate-guide-notes-list li {
-  position: relative;
-
-  padding-left: 20px;
-}
-
-.product-rate-section
-  .rate-guide-notes-list li::before {
-  content: "";
-
-  position: absolute;
-  top: 0.72em;
-  left: 0;
-
-  width: 6px;
-  height: 6px;
-
-  background: #033669;
-  border-radius: 50%;
-
-  transform: translateY(-50%);
-}
-
-/* ============================================================
-   RATE GUIDE DESKTOP
-============================================================ */
-
-@media (min-width: 900px) {
-  .product-rate-section
-    .rate-guide-layout {
-    grid-template-columns:
-      minmax(0, 1.36fr)
-      minmax(280px, 0.64fr);
-
-    gap: 24px;
-  }
-
-  .product-rate-section
-    .rate-guide-table-scroll {
-    height: 100%;
-    aspect-ratio: 1024 / 363;
-
-    overflow: hidden;
-  }
-
-  .product-rate-section
-    .rate-guide-table-scroll img {
+  .rate-tablist {
+    border-radius: var(--page-radius);
     width: 100%;
-    max-width: 100%;
-    height: 100%;
+  }
 
-    object-fit: contain;
+  .rate-tab {
+    flex: 1 1 auto;
+    padding: 9px 12px;
+    font-size: 0.8rem;
   }
 }
 
-
-/* ============================================================
-   RATE GUIDE MOBILE
-============================================================ */
-
-@media (max-width: 639px) {
-  .product-rate-section
-    .rate-guide-showcase {
-    padding: 22px 18px;
-    border-radius: 16px;
-  }
-
-  .product-rate-section
-    .rate-guide-header {
-    margin-bottom: 22px;
-  }
-  .product-rate-section
-  .rate-guide-notes {
-  margin-top: 4px;
+/*
+ * Horizontal scroll is focusable so a keyboard user can reach
+ * the columns that overflow on a narrow viewport.
+ */
+.rate-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
 }
 
-.product-rate-section
-  .rate-guide-notes-title {
-  margin-bottom: 10px;
+.rate-scroll:focus-visible {
+  outline: 3px solid var(--color-accent-action);
+  outline-offset: -3px;
 }
 
-.product-rate-section
-  .rate-guide-notes-list {
-  gap: 10px;
 
+/* ---------- Table ---------- */
+
+.rate-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+
+.rate-table thead th {
+  padding: 13px 14px;
+  background: var(--page-navy);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rate-table thead th.rate-amount-head {
+  text-align: left;
+}
+
+.rate-table tbody th {
+  padding: 13px 14px;
+  color: var(--page-navy);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--page-line);
+}
+
+.rate-table tbody td {
+  padding: 13px 14px;
+  color: var(--page-ink);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  border-bottom: 1px solid var(--page-line);
+}
+
+.rate-table tbody tr:last-child th,
+.rate-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Zebra striping earns its place on a dense numeric grid. */
+.rate-table tbody tr:nth-child(odd) th,
+.rate-table tbody tr:nth-child(odd) td {
+  background: var(--page-surface);
+}
+
+.rate-none {
+  color: var(--page-muted);
+}
+
+
+/* ---------- Notes ---------- */
+
+.rate-notes {
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
+}
+
+.rate-notes-title {
+  margin: 0 0 16px;
+  color: var(--page-navy);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.rate-notes-list {
+  margin: 0 0 22px;
+  padding-left: 18px;
+}
+
+.rate-notes-list li {
+  margin-bottom: 12px;
+  color: var(--page-muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.rate-notes-list li:last-child {
+  margin-bottom: 0;
+}
+
+
+/* ---------- Empty state ---------- */
+
+.rate-empty {
+  margin: 0;
+  padding: 26px;
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
+  color: var(--page-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+
+/* ---------- Screen-reader only ---------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
   padding: 0;
-
-  font-size: 0.86rem;
-  line-height: 1.65;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
-}
 
-@media (max-width: 360px) {
-  .product-rate-section
-    .rate-guide-showcase {
-    padding-right: 15px;
-    padding-left: 15px;
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1023px) {
+  .rate-layout {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* ============================================================
-   PRODUCTS SCROLL REVEALS
-============================================================ */
+@media (max-width: 767px) {
+  .rate-notes {
+    padding: 22px;
+  }
 
-.products-reveal {
-  opacity: 0;
-  translate: 0 24px;
+  .rate-table thead th,
+  .rate-table tbody th,
+  .rate-table tbody td {
+    padding: 11px 12px;
+  }
+}
 
+
+/* ===========================================================
+   CLOSING CTA
+   =========================================================== */
+
+.product-cta {
+  padding-bottom: calc(var(--page-section-space) + 48px);
+}
+
+.product-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+
+/* ===========================================================
+   RESPONSIVE
+   =========================================================== */
+
+@media (max-width: 1023px) {
+  .product-compare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .product-compare-col {
+    padding: 26px 0;
+    margin-right: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--page-line);
+  }
+}
+
+@media (max-width: 767px) {
+  .product-compare-specs > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .product-compare-specs dd {
+    text-align: left;
+  }
+
+  .product-cta-actions .page-button {
+    width: 100%;
+  }
+}
+
+/* ===========================================================
+   RATE CALCULATOR
+   Append to public/css/pages/products.css
+   =========================================================== */
+
+.rate-calc {
+  padding: clamp(26px, 3.5vw, 38px);
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
+  box-shadow:
+    0 2px 2px rgba(3, 54, 105, 0.04),
+    0 8px 16px -4px rgba(3, 54, 105, 0.06);
+}
+
+.rate-calc-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.rate-calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.rate-calc-field label {
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rate-calc-field input,
+.rate-calc-field select {
+  width: 100%;
+  padding: 13px 14px;
+  color: var(--page-ink);
+  background: #ffffff;
+  border: 1px solid rgba(3, 54, 105, 0.18);
+  border-radius: var(--radius, 6px);
+  font: inherit;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
   transition:
-    opacity 680ms
-      cubic-bezier(0.22, 1, 0.36, 1),
-
-    translate 680ms
-      cubic-bezier(0.22, 1, 0.36, 1);
-
-  transition-delay:
-    var(--reveal-delay, 0ms);
-
-  will-change:
-    opacity,
-    translate;
+    border-color 150ms var(--page-ease),
+    box-shadow 150ms var(--page-ease);
 }
 
-.products-reveal.reveal-left {
-  translate: -28px 0;
+.rate-calc-field input:focus,
+.rate-calc-field select:focus {
+  outline: none;
+  border-color: var(--page-navy);
+  box-shadow: 0 0 0 3px rgba(3, 54, 105, 0.12);
 }
 
-.products-reveal.reveal-right {
-  translate: 28px 0;
-}
-
-.products-reveal.is-visible {
-  opacity: 1;
-  translate: 0 0;
+.rate-calc-field input:disabled,
+.rate-calc-field select:disabled {
+  background: var(--page-surface);
+  color: var(--page-muted);
+  cursor: not-allowed;
 }
 
 
-/* ============================================================
-   PRODUCTS REDUCED MOTION
-============================================================ */
+/* ---------- Status ---------- */
 
-@media (prefers-reduced-motion: reduce) {
-  .products-reveal {
-    opacity: 1;
-    translate: none;
-    transition: none;
-    will-change: auto;
+.rate-calc-status {
+  margin: 16px 0 0;
+  color: var(--page-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.rate-calc-status:empty {
+  display: none;
+}
+
+.rate-calc-status.is-error {
+  color: #a63a35;
+}
+
+
+/* ---------- Result ---------- */
+
+.rate-calc-result {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 26px;
+  padding-top: 26px;
+  border-top: 1px solid var(--page-line);
+}
+
+.rate-calc-figure {
+  padding-right: 24px;
+  margin-right: 24px;
+  border-right: 1px solid var(--page-line);
+}
+
+.rate-calc-figure:last-child {
+  padding-right: 0;
+  margin-right: 0;
+  border-right: 0;
+}
+
+.rate-calc-figure-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rate-calc-figure-value {
+  display: block;
+  color: var(--page-navy);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* The maturity value is the figure people came for. */
+.rate-calc-figure-total .rate-calc-figure-value {
+  font-size: 1.6rem;
+}
+
+
+/* ---------- Disclaimer and actions ---------- */
+
+.rate-calc-disclaimer {
+  max-width: 90ch;
+  margin: 26px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid var(--page-line);
+  color: var(--page-muted);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.rate-calc-disclaimer strong {
+  color: var(--page-ink);
+  font-weight: 600;
+}
+
+.rate-calc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1023px) {
+  .rate-calc-inputs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rate-calc-result {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 0;
+  }
+
+  .rate-calc-figure:nth-child(2n) {
+    padding-right: 0;
+    margin-right: 0;
+    border-right: 0;
   }
 }
 
-.product-section[id] {
-  scroll-margin-top: 110px;
+@media (max-width: 620px) {
+  .rate-calc-inputs,
+  .rate-calc-result {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rate-calc-figure {
+    padding: 0 0 18px;
+    margin: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--page-line);
+  }
+
+  .rate-calc-figure:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .rate-calc-actions .page-button {
+    width: 100%;
+  }
 }

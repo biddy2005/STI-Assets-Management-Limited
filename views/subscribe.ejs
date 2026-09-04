@@ -1,0 +1,481 @@
+<%- include('partials/header', {
+  pageCss: '/css/pages/subscribe.css?v=',
+  pageTitle: 'Open an Investment Account | STI Assets Management Limited',
+  pageDescription: 'Complete your individual subscription and submit your KYC documents to open an investment account with STI Assets Management Limited.'
+}) %>
+
+<main id="main-content" class="sub-page">
+
+  <section class="sub-hero">
+    <div class="sub-hero-media" aria-hidden="true">
+      <img
+        src="/products-hero.webp"
+        alt=""
+        fetchpriority="high"
+        decoding="async"
+      >
+    </div>
+
+    <div class="sub-hero-overlay" aria-hidden="true"></div>
+
+    <div class="sub-shell">
+      <p class="sub-eyebrow">Individual subscription</p>
+      <h1 class="sub-hero-title">Open your investment account.</h1>
+      <p class="sub-hero-lead">
+        This is the online version of our Individual Subscription Form. It takes
+        about ten minutes. Have your BVN, NIN, bank details and your KYC
+        documents ready before you start.
+      </p>
+
+      <p class="sub-hero-alt">
+        Prefer to complete it offline?
+        <a
+          href="/downloads/sti-individual-subscription-form.pdf"
+          download
+        >
+          Download the PDF form
+          <span aria-hidden="true">&darr;</span>
+        </a>
+        and email it to
+        <a href="mailto:info@stiassetmgt.com">info@stiassetmgt.com</a>
+        with your documents.
+      </p>
+    </div>
+  </section>
+
+  <div class="sub-shell sub-layout">
+
+    <!-- Progress rail -->
+    <aside class="sub-rail" aria-label="Form progress">
+      <ol class="sub-rail-list">
+        <li class="sub-rail-item is-active" data-rail="1"><span>1</span> Product</li>
+        <li class="sub-rail-item" data-rail="2"><span>2</span> Personal details</li>
+        <li class="sub-rail-item" data-rail="3"><span>3</span> Investment</li>
+        <li class="sub-rail-item" data-rail="4"><span>4</span> Banking</li>
+        <li class="sub-rail-item" data-rail="5"><span>5</span> Documents</li>
+        <li class="sub-rail-item" data-rail="6"><span>6</span> Confirm</li>
+      </ol>
+    </aside>
+
+    <form
+      id="subscriptionForm"
+      class="sub-form"
+      action="/api/subscriptions"
+      method="post"
+      enctype="multipart/form-data"
+      novalidate
+    >
+      <input
+        type="hidden"
+        name="_csrf"
+        value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"
+      />
+
+      <!-- Honeypot. Hidden from users, attractive to bots. -->
+      <div class="sub-hp" aria-hidden="true">
+        <label for="company_website">Company website</label>
+        <input
+          type="text"
+          id="company_website"
+          name="company_website"
+          tabindex="-1"
+          autocomplete="off"
+        />
+      </div>
+
+       <div
+        class="sub-summary"
+        data-error-summary
+        role="alert"
+        tabindex="-1"
+        hidden
+      >
+        <p class="sub-summary-title">Please check the following</p>
+        <ul data-error-summary-list></ul>
+      </div>
+
+      <!-- ============ 1. PRODUCT ============ -->
+      <fieldset class="sub-section" data-step="1">
+        <legend class="sub-section-title">Investment product</legend>
+        <p class="sub-section-note">Select the product you wish to subscribe to.</p>
+
+        <div class="sub-choice-grid">
+          <label class="sub-choice">
+            <input type="radio" name="product" value="MONEY_MARKET_NOTE" required />
+            <span class="sub-choice-body">
+              <span class="sub-choice-name">STIAM Money Market Note</span>
+              <span class="sub-choice-meta">Short tenor &middot; Naira &middot; High liquidity</span>
+            </span>
+          </label>
+
+          <label class="sub-choice">
+            <input type="radio" name="product" value="FIXED_INCOME_NOTE" />
+            <span class="sub-choice-body">
+              <span class="sub-choice-name">STIAM Fixed Income Note</span>
+              <span class="sub-choice-meta">Fixed tenor &middot; Naira &middot; Fixed return</span>
+            </span>
+          </label>
+
+          <label class="sub-choice">
+            <input type="radio" name="product" value="FIXED_INCOME_DOLLAR_NOTE" />
+            <span class="sub-choice-body">
+              <span class="sub-choice-name">STIAM Fixed Income Dollar Note</span>
+              <span class="sub-choice-meta">Fixed tenor &middot; US dollar &middot; Fixed return</span>
+            </span>
+          </label>
+        </div>
+        <p class="sub-error" data-error-for="product"></p>
+      </fieldset>
+
+      <!-- ============ 2. PERSONAL ============ -->
+      <fieldset class="sub-section" data-step="2">
+        <legend class="sub-section-title">Personal information</legend>
+
+        <div class="sub-grid sub-grid-3">
+          <div class="sub-field">
+            <label for="firstName">First name <span aria-hidden="true">*</span></label>
+            <input id="firstName" name="firstName" type="text" autocomplete="given-name" required />
+            <p class="sub-error" data-error-for="firstName"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="middleName">Middle name</label>
+            <input id="middleName" name="middleName" type="text" autocomplete="additional-name" />
+          </div>
+
+          <div class="sub-field">
+            <label for="surname">Surname <span aria-hidden="true">*</span></label>
+            <input id="surname" name="surname" type="text" autocomplete="family-name" required />
+            <p class="sub-error" data-error-for="surname"></p>
+          </div>
+        </div>
+
+        <div class="sub-grid sub-grid-3">
+          <div class="sub-field">
+            <label for="maidenName">Maiden name</label>
+            <input id="maidenName" name="maidenName" type="text" />
+          </div>
+
+          <div class="sub-field">
+            <label for="gender">Gender <span aria-hidden="true">*</span></label>
+            <select id="gender" name="gender" required>
+              <option value="">Select</option>
+              <option>Female</option>
+              <option>Male</option>
+              <option>Prefer not to say</option>
+            </select>
+            <p class="sub-error" data-error-for="gender"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="dateOfBirth">Date of birth <span aria-hidden="true">*</span></label>
+            <input id="dateOfBirth" name="dateOfBirth" type="date" autocomplete="bday" required />
+            <p class="sub-error" data-error-for="dateOfBirth"></p>
+          </div>
+        </div>
+
+        <div class="sub-grid sub-grid-3">
+          <div class="sub-field">
+            <label for="maritalStatus">Marital status <span aria-hidden="true">*</span></label>
+            <select id="maritalStatus" name="maritalStatus" required>
+              <option value="">Select</option>
+              <option>Single</option>
+              <option>Married</option>
+              <option>Divorced</option>
+              <option>Widowed</option>
+            </select>
+            <p class="sub-error" data-error-for="maritalStatus"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="stateOfOrigin">State of origin <span aria-hidden="true">*</span></label>
+            <input id="stateOfOrigin" name="stateOfOrigin" type="text" required />
+            <p class="sub-error" data-error-for="stateOfOrigin"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="lga">L.G.A. <span aria-hidden="true">*</span></label>
+            <input id="lga" name="lga" type="text" required />
+            <p class="sub-error" data-error-for="lga"></p>
+          </div>
+        </div>
+
+        <div class="sub-field">
+          <label for="residentialAddress">Residential address <span aria-hidden="true">*</span></label>
+          <textarea id="residentialAddress" name="residentialAddress" rows="2" autocomplete="street-address" required></textarea>
+          <p class="sub-error" data-error-for="residentialAddress"></p>
+        </div>
+
+        <div class="sub-grid sub-grid-3">
+          <div class="sub-field">
+            <label for="phone">Phone number <span aria-hidden="true">*</span></label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" required />
+            <p class="sub-error" data-error-for="phone"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="email">Email address <span aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+            <p class="sub-error" data-error-for="email"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="occupation">Occupation <span aria-hidden="true">*</span></label>
+            <input id="occupation" name="occupation" type="text" required />
+            <p class="sub-error" data-error-for="occupation"></p>
+          </div>
+        </div>
+
+        <div class="sub-field">
+          <span class="sub-label">Employment status <span aria-hidden="true">*</span></span>
+          <div class="sub-pill-row">
+            <label class="sub-pill"><input type="radio" name="employmentStatus" value="EMPLOYED" required /><span>Employed</span></label>
+            <label class="sub-pill"><input type="radio" name="employmentStatus" value="SELF_EMPLOYED" /><span>Self-employed</span></label>
+            <label class="sub-pill"><input type="radio" name="employmentStatus" value="UNEMPLOYED" /><span>Unemployed</span></label>
+            <label class="sub-pill"><input type="radio" name="employmentStatus" value="RETIRED" /><span>Retired</span></label>
+          </div>
+          <p class="sub-error" data-error-for="employmentStatus"></p>
+        </div>
+
+        <div class="sub-grid sub-grid-3">
+          <div class="sub-field">
+            <label for="meansOfIdentification">Means of identification <span aria-hidden="true">*</span></label>
+            <select id="meansOfIdentification" name="meansOfIdentification" required>
+              <option value="">Select</option>
+              <option>National Identity Card (NIN slip)</option>
+              <option>International Passport</option>
+              <option>Driver's Licence</option>
+              <option>Permanent Voter's Card</option>
+            </select>
+            <p class="sub-error" data-error-for="meansOfIdentification"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="idNumber">I.D. number <span aria-hidden="true">*</span></label>
+            <input id="idNumber" name="idNumber" type="text" required />
+            <p class="sub-error" data-error-for="idNumber"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="nationality">Nationality <span aria-hidden="true">*</span></label>
+            <input id="nationality" name="nationality" type="text" value="Nigerian" required />
+            <p class="sub-error" data-error-for="nationality"></p>
+          </div>
+        </div>
+
+        <h3 class="sub-subheading">Next of kin</h3>
+
+        <div class="sub-grid sub-grid-3">
+          <div class="sub-field">
+            <label for="nextOfKinName">Full name <span aria-hidden="true">*</span></label>
+            <input id="nextOfKinName" name="nextOfKinName" type="text" required />
+            <p class="sub-error" data-error-for="nextOfKinName"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="nextOfKinRelationship">Relationship <span aria-hidden="true">*</span></label>
+            <input id="nextOfKinRelationship" name="nextOfKinRelationship" type="text" required />
+            <p class="sub-error" data-error-for="nextOfKinRelationship"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="nextOfKinPhone">Phone number <span aria-hidden="true">*</span></label>
+            <input id="nextOfKinPhone" name="nextOfKinPhone" type="tel" required />
+            <p class="sub-error" data-error-for="nextOfKinPhone"></p>
+          </div>
+        </div>
+
+        <div class="sub-field">
+          <label for="nextOfKinAddress">Next of kin residential address <span aria-hidden="true">*</span></label>
+          <textarea id="nextOfKinAddress" name="nextOfKinAddress" rows="2" required></textarea>
+          <p class="sub-error" data-error-for="nextOfKinAddress"></p>
+        </div>
+
+        <div class="sub-grid sub-grid-2">
+          <div class="sub-field">
+            <label for="natureOfBusiness">Nature of business</label>
+            <input id="natureOfBusiness" name="natureOfBusiness" type="text" />
+          </div>
+
+          <div class="sub-field">
+            <label for="estimatedAnnualIncome">Estimated annual income (Naira)</label>
+            <input id="estimatedAnnualIncome" name="estimatedAnnualIncome" type="text" inputmode="numeric" data-money />
+            <p class="sub-error" data-error-for="estimatedAnnualIncome"></p>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ============ 3. INVESTMENT ============ -->
+      <fieldset class="sub-section" data-step="3">
+        <legend class="sub-section-title">Investment information</legend>
+
+        <div class="sub-field sub-field-narrow">
+          <label for="principalAmount">Investment amount / principal <span aria-hidden="true">*</span></label>
+          <input id="principalAmount" name="principalAmount" type="text" inputmode="numeric" data-money required />
+          <p class="sub-help">Enter the amount you intend to invest.</p>
+          <p class="sub-error" data-error-for="principalAmount"></p>
+        </div>
+
+        <div class="sub-field">
+          <span class="sub-label">Fixed deposit tenor <span aria-hidden="true">*</span></span>
+          <div class="sub-pill-row">
+            <label class="sub-pill"><input type="radio" name="fixedDepositTenor" value="Less than 1 year" required /><span>Less than 1 year</span></label>
+            <label class="sub-pill"><input type="radio" name="fixedDepositTenor" value="1 - 3 years" /><span>1 to 3 years</span></label>
+            <label class="sub-pill"><input type="radio" name="fixedDepositTenor" value="3 - 5 years" /><span>3 to 5 years</span></label>
+            <label class="sub-pill"><input type="radio" name="fixedDepositTenor" value="5 - 10 years" /><span>5 to 10 years</span></label>
+            <label class="sub-pill"><input type="radio" name="fixedDepositTenor" value="More than 10 years" /><span>More than 10 years</span></label>
+          </div>
+          <p class="sub-error" data-error-for="fixedDepositTenor"></p>
+        </div>
+
+        <div class="sub-field">
+          <span class="sub-label">Level of investment risk acceptance <span aria-hidden="true">*</span></span>
+          <p class="sub-help">1 indicates the lowest, 5 indicates the highest.</p>
+          <div class="sub-scale">
+            <% [1,2,3,4,5].forEach(function (n) { %>
+              <label class="sub-scale-item">
+                <input type="radio" name="riskAcceptance" value="<%= n %>" required />
+                <span><%= n %></span>
+              </label>
+            <% }); %>
+          </div>
+          <p class="sub-error" data-error-for="riskAcceptance"></p>
+        </div>
+
+        <div class="sub-field">
+          <span class="sub-label">At maturity <span aria-hidden="true">*</span></span>
+          <div class="sub-stack">
+            <label class="sub-pill sub-pill-block"><input type="radio" name="maturityMandate" value="ROLLOVER_PRINCIPAL_AND_INTEREST" required /><span>Rollover principal &amp; interest</span></label>
+            <label class="sub-pill sub-pill-block"><input type="radio" name="maturityMandate" value="ROLLOVER_PRINCIPAL_PAY_INTEREST" /><span>Rollover principal &amp; pay interest only</span></label>
+            <label class="sub-pill sub-pill-block"><input type="radio" name="maturityMandate" value="PAY_PRINCIPAL_AND_INTEREST" /><span>Pay principal and interest</span></label>
+          </div>
+          <p class="sub-error" data-error-for="maturityMandate"></p>
+        </div>
+      </fieldset>
+
+      <!-- ============ 4. BANKING ============ -->
+      <fieldset class="sub-section" data-step="4">
+        <legend class="sub-section-title">Banking (settlement) details</legend>
+        <p class="sub-section-note">
+          Returns and redemptions are paid only to an account in your own name.
+        </p>
+
+        <div class="sub-grid sub-grid-2">
+          <div class="sub-field">
+            <label for="bankName">Bank name <span aria-hidden="true">*</span></label>
+            <input id="bankName" name="bankName" type="text" required />
+            <p class="sub-error" data-error-for="bankName"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="accountName">Account name <span aria-hidden="true">*</span></label>
+            <input id="accountName" name="accountName" type="text" required />
+            <p class="sub-error" data-error-for="accountName"></p>
+          </div>
+        </div>
+
+        <div class="sub-grid sub-grid-3">
+          <div class="sub-field">
+            <label for="accountNumber">Account number <span aria-hidden="true">*</span></label>
+            <input id="accountNumber" name="accountNumber" type="text" inputmode="numeric" maxlength="10" required />
+            <p class="sub-help">10-digit NUBAN.</p>
+            <p class="sub-error" data-error-for="accountNumber"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="bvn">BVN <span aria-hidden="true">*</span></label>
+            <input id="bvn" name="bvn" type="text" inputmode="numeric" maxlength="11" autocomplete="off" required />
+            <p class="sub-error" data-error-for="bvn"></p>
+          </div>
+
+          <div class="sub-field">
+            <label for="nin">NIN</label>
+            <input id="nin" name="nin" type="text" inputmode="numeric" maxlength="11" autocomplete="off" />
+            <p class="sub-error" data-error-for="nin"></p>
+          </div>
+        </div>
+
+        <p class="sub-secure-note">
+          Your BVN and NIN are encrypted before they are stored and are never
+          included in any onward notification. Only authorised STI staff can
+          view them, and every access is logged.
+        </p>
+      </fieldset>
+
+      <!-- ============ 5. DOCUMENTS ============ -->
+      <fieldset class="sub-section" data-step="5">
+        <legend class="sub-section-title">Supporting documents</legend>
+        <p class="sub-section-note">PDF, JPG or PNG.</p>
+
+        <div class="sub-upload-grid">
+          <div class="sub-upload" data-upload>
+            <label for="passportPhoto">Passport photograph <span aria-hidden="true">*</span></label>
+            <input id="passportPhoto" name="passportPhoto" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" data-max-mb="2" required />
+            <p class="sub-help">Maximum 2MB.</p>
+            <p class="sub-filename" data-filename></p>
+            <p class="sub-error" data-error-for="passportPhoto"></p>
+          </div>
+
+          <div class="sub-upload" data-upload>
+            <label for="idDocument">Means of identification <span aria-hidden="true">*</span></label>
+            <input id="idDocument" name="idDocument" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" data-max-mb="4" required />
+            <p class="sub-help">Driver's licence, international passport or NIN. Maximum 4MB.</p>
+            <p class="sub-filename" data-filename></p>
+            <p class="sub-error" data-error-for="idDocument"></p>
+          </div>
+
+          <div class="sub-upload" data-upload>
+            <label for="utilityBill">Utility bill <span aria-hidden="true">*</span></label>
+            <input id="utilityBill" name="utilityBill" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" data-max-mb="4" required />
+            <p class="sub-help">Water, waste or electricity, dated within the last 3 months. Maximum 4MB.</p>
+            <p class="sub-filename" data-filename></p>
+            <p class="sub-error" data-error-for="utilityBill"></p>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ============ 6. ATTESTATION ============ -->
+      <fieldset class="sub-section" data-step="6">
+        <legend class="sub-section-title">Client attestation</legend>
+
+        <label class="sub-check">
+          <input type="checkbox" name="attestationAccepted" required />
+          <span>
+            To the best of my knowledge, I confirm that the information
+            contained in this form is accurate and complete.
+          </span>
+        </label>
+        <p class="sub-error" data-error-for="attestationAccepted"></p>
+
+        <label class="sub-check">
+          <input type="checkbox" name="privacyAcknowledged" required />
+          <span>
+            I have read and accept the
+            <a href="/privacy-policy" target="_blank" rel="noopener">privacy policy</a>
+            and consent to STI Assets Management Limited processing my personal
+            data for the purpose of this subscription.
+          </span>
+        </label>
+        <p class="sub-error" data-error-for="privacyAcknowledged"></p>
+
+        <p class="sub-disclaimer">
+          Returns are not guaranteed and past performance does not predict
+          future results. Submitting this form is an application to invest and
+          does not by itself create a binding investment.
+        </p>
+
+        <div class="sub-actions">
+          <button type="submit" class="sub-submit" id="subscriptionSubmit">
+            <span data-submit-label>Submit application</span>
+          </button>
+          <p class="sub-form-error" data-error-for="_form" role="alert"></p>
+        </div>
+      </fieldset>
+
+    </form>
+  </div>
+</main>
+
+<script src="/js/subscribe-form.js?v=subscribe-1" defer></script>
+
+<%- include('partials/footer', { hideFooterCta: true }) %>

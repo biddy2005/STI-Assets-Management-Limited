@@ -1,12 +1,49 @@
 <%- include('../partials/header', {
-  pageCss: '/css/pages/downloads.css'
+  pageCss: '/css/pages/downloads.css?v=2'
 }) %>
 
-<section class="inner-page-hero downloads-page-hero">
-  <div class="inner-page-hero-inner">
-    <span class="hero-eyebrow">Resources</span>
-    <h1>STIAM Daily Market Digest</h1>
-    <p>Introducing the STIAM Daily Market Digest, your ultimate guide to navigating the world of business and finance! Our team of expert analysts has scoured the markets to bring you the most relevant and up-to-date news and insights on a daily basis. From stock market updates and earnings reports to industry trends and economic indicators, the STIAM Daily Market Digest has got you covered.</p>
+<section class="page-hero" aria-labelledby="downloads-hero-title">
+
+  <div class="page-hero-media" aria-hidden="true">
+    <img
+      src="/faqs-hero.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
+  </div>
+
+  <div class="page-hero-overlay" aria-hidden="true"></div>
+
+  <div class="page-shell page-hero-inner">
+    <div class="page-hero-copy">
+
+      <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/resources">Resources</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Daily digest</span>
+      </nav>
+
+      <h1
+        id="downloads-hero-title"
+        class="page-hero-title page-enter"
+        style="--page-enter-delay: 120ms"
+      >
+        Daily market digest.
+      </h1>
+
+      <p
+        class="page-hero-summary page-enter"
+        style="--page-enter-delay: 240ms"
+      >
+        A daily read on Nigerian markets from our research team, covering
+        equities, fixed income, earnings and the economic indicators that move
+        them.
+      </p>
+
+    </div>
   </div>
 </section>
 

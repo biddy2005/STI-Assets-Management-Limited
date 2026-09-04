@@ -252,3 +252,189 @@ model RateGuide {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum SubscriptionStatus {
+  NEW
+  UNDER_REVIEW
+  KYC_INCOMPLETE
+  APPROVED
+  REJECTED
+}
+
+enum SubscriptionProduct {
+  MONEY_MARKET_NOTE
+  FIXED_INCOME_NOTE
+  FIXED_INCOME_DOLLAR_NOTE
+}
+
+enum EmploymentStatus {
+  UNEMPLOYED
+  SELF_EMPLOYED
+  EMPLOYED
+  RETIRED
+}
+
+enum MaturityMandate {
+  ROLLOVER_PRINCIPAL_AND_INTEREST
+  ROLLOVER_PRINCIPAL_PAY_INTEREST
+  PAY_PRINCIPAL_AND_INTEREST
+}
+
+model Subscription {
+  id Int @id @default(autoincrement())
+
+  // A short public code the client can quote when they call.
+  // Example: STI-2026-4F9K2A
+  reference String @unique
+
+  // ---- Investment product -------------------------------
+  product SubscriptionProduct
+
+  // ---- Personal information -----------------------------
+  firstName     String
+  middleName    String?
+  surname       String
+  maidenName    String?
+  gender        String
+  dateOfBirth   DateTime
+  maritalStatus String
+  stateOfOrigin String
+  lga           String
+
+  residentialAddress String
+  phone              String
+  email              String
+  occupation         String
+
+  employmentStatus EmploymentStatus
+
+  meansOfIdentification String
+  idNumber              String
+  nationality           String
+
+  // ---- Next of kin --------------------------------------
+  nextOfKinName         String
+  nextOfKinRelationship String
+  nextOfKinPhone        String
+  nextOfKinAddress      String
+
+  natureOfBusiness      String?
+  estimatedAnnualIncome Decimal? @db.Decimal(18, 2)
+
+  // ---- Investment information ---------------------------
+  principalAmount Decimal @db.Decimal(18, 2)
+
+  // Free text band, e.g. "1-3 years", matching the paper form.
+  fixedDepositTenor String
+
+  // 1 (lowest) to 5 (highest), as printed on the form.
+  riskAcceptance Int
+
+  maturityMandate MaturityMandate
+
+  // ---- Banking (settlement) details ----------------------
+  bankName      String
+  accountName   String
+  accountNumber String
+
+  // ---- Regulated identifiers ----------------------------
+  //
+  // Stored as AES-256-GCM ciphertext in the format
+  // v1.<iv>.<authTag>.<ciphertext>.
+  //
+  // Never select these into a list view. Decrypt only in the
+  // authenticated detail view, and write an audit entry when
+  // you do. The *Last4 columns exist so staff can match a
+  // record without decrypting anything.
+  bvnEncrypted String
+  bvnLast4     String  @db.VarChar(4)
+  ninEncrypted String?
+  ninLast4     String? @db.VarChar(4)
+
+  // ---- KYC documents ------------------------------------
+  //
+  // Object keys live under the kyc/ prefix in R2, separate
+  // from resumes/ so the two retention domains never mix.
+  passportStorageKey   String
+  passportOriginalName String
+  passportMimeType     String
+  passportFileSize     Int
+
+  idDocStorageKey   String
+  idDocOriginalName String
+  idDocMimeType     String
+  idDocFileSize     Int
+
+  utilityBillStorageKey   String
+  utilityBillOriginalName String
+  utilityBillMimeType     String
+  utilityBillFileSize     Int
+
+  // ---- Attestation and consent --------------------------
+  attestationAccepted   Boolean   @default(false)
+  attestationAcceptedAt DateTime?
+
+  privacyAcknowledged   Boolean   @default(false)
+  privacyAcknowledgedAt DateTime?
+  privacyNoticeVersion  String?
+
+  // ---- Workflow -----------------------------------------
+  status SubscriptionStatus @default(NEW)
+
+  reviewedById Int?
+  reviewedAt   DateTime?
+  reviewNote   String?
+
+  // ---- Power Automate forwarding ------------------------
+  //
+  // PostgreSQL and R2 are the source of truth. These columns
+  // record whether the Microsoft 365 hand-off succeeded so a
+  // failed webhook can be retried without guessing.
+  forwardedToPowerAutomate Boolean   @default(false)
+  forwardedAt              DateTime?
+  forwardingError          String?
+
+  submittedIpHash String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+  @@index([reference])
+}
+
+model ProductRate {
+  id Int @id @default(autoincrement())
+
+  // Reuses the SubscriptionProduct enum already in the schema
+  // so the calculator and the subscription form cannot drift
+  // apart on product naming.
+  product SubscriptionProduct
+
+  // Inclusive tenor band, in days.
+  tenorMinDays Int
+  tenorMaxDays Int
+
+  // Inclusive amount band. maxAmount null means "and above",
+  // which is how the top tier is expressed.
+  minAmount Decimal  @db.Decimal(18, 2)
+  maxAmount Decimal? @db.Decimal(18, 2)
+
+  // Annualised rate as a percentage, e.g. 18.50 for 18.5%.
+  ratePercent Decimal @db.Decimal(6, 3)
+
+  // Rates are indicative and change weekly. Keeping old rows
+  // inactive rather than deleting them preserves a record of
+  // what was advertised on a given date.
+  isActive      Boolean  @default(true)
+  effectiveFrom DateTime @default(now())
+
+  note String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([product, isActive])
+  @@index([product, tenorMinDays, minAmount])
+}

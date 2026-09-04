@@ -17,11 +17,6 @@ const digestRoutes =
     './admin.digests.routes'
   );
 
-const rateGuideRoutes =
-  require(
-    './admin.rate-guide.routes'
-  );
-
 const newsRoutes =
   require(
     './admin.news.routes'
@@ -67,11 +62,6 @@ router.use(
 router.use(
   '/downloads',
   digestRoutes
-);
-
-router.use(
-  '/rate-guide',
-  rateGuideRoutes
 );
 
 router.use(

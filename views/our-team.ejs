@@ -1,81 +1,97 @@
 <%- include('partials/header', {
-  pageCss: '/css/pages/our-team.css'
+  pageCss: '/css/pages/our-team.css?v=2'
 }) %>
 
 <!-- ============================================================
      HERO SECTION
 ============================================================ -->
-<section class="inner-page-hero team-page-hero">
-  <div class="inner-page-hero-inner">
-    <span class="hero-eyebrow">Our People</span>
-    <h1>Our Leadership &amp; Team</h1>
-    <p>The people driving STI Assets Management forward.</p>
+<section class="page-hero" aria-labelledby="team-hero-title">
+  <div class="page-hero-media" aria-hidden="true">
+    <img
+      src="/team-hero.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
+  </div>
+
+  <div class="page-hero-overlay" aria-hidden="true"></div>
+
+  <div class="page-shell page-hero-inner">
+    <div class="page-hero-copy">
+      <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Our team</span>
+      </nav>
+
+      <h1
+        id="team-hero-title"
+        class="page-hero-title page-enter"
+        style="--page-enter-delay: 120ms"
+      >
+        The people managing your capital.
+      </h1>
+
+      <p
+        class="page-hero-summary page-enter"
+        style="--page-enter-delay: 240ms"
+      >
+        Our board and leadership team bring over a century of combined
+        experience across banking, treasury, investment management and public
+        service.
+      </p>
+    </div>
   </div>
 </section>
 
-<!-- ============================================================
-     SEGMENTED TEAM VIEW SWITCH
-============================================================ -->
-<div class="team-switch-container">
-
-  <div
-    class="team-switch-pill"
-    aria-label="Choose a leadership group"
-  >
-
-    <button
-      type="button"
-      class="team-switch-btn active"
-      data-target="board-view"
-      aria-controls="board-view"
-    >
-      Board Members
-    </button>
-
-    <button
-      type="button"
-      class="team-switch-btn"
-      data-target="management-view"
-      aria-controls="management-view"
-    >
-      Leadership Team
-    </button>
-
-  </div>
-
-</div>
 
 <!-- ============================================================
      BOARD OF DIRECTORS (view)
 ============================================================ -->
 <div id="board-view" class="team-view">
-  <section
-  class="leadership-header"
-  aria-labelledby="board-directors-title"
->
+    <section class="page-shell" aria-labelledby="board-directors-title">
+    <div class="page-section-head-split reveal-on-scroll">
+      <div>
+        <p class="page-eyebrow">Our leadership</p>
 
-  <div class="values-eyebrow-row team-section-eyebrow">
-    <span class="eyebrow">Our Leadership</span>
-  </div>
+        <h2 id="board-directors-title" class="page-title-sm">
+          Board of directors.
+        </h2>
 
-  <h2
-    class="leadership-heading"
-    id="board-directors-title"
-  >
-    Board of Directors
-  </h2>
+        <p class="page-lead">
+          A group of seasoned professionals with deep industry expertise and a
+          shared commitment to driving sustainable value.
+        </p>
+      </div>
 
-  <p class="leadership-description">
-    Our Board of Directors brings together a diverse group of seasoned professionals with deep industry expertise and a shared commitment to driving sustainable value.
-  </p>
+      <div class="team-switch-pill" aria-label="Choose a leadership group">
+        <button
+          type="button"
+          class="team-switch-btn active"
+          data-target="board-view"
+          aria-controls="board-view"
+        >
+          Board members
+        </button>
 
-</section>
+        <button
+          type="button"
+          class="team-switch-btn"
+          data-target="management-view"
+          aria-controls="management-view"
+        >
+          Leadership team
+        </button>
+      </div>
+    </div>
+  </section>
 
   <div class="leadership-grid">
     <!-- Tier 1: Main 3 Senior Executive Roles -->
     <div class="leadership-tier leadership-tier-1">
 
-          <div class="leadership-card"
+          <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms"
            data-name="Godson Echegile"
            data-role="Chairman"
            data-bio="Ambassador Godson Echegile is a highly accomplished financial consultant and analyst with over three decades of experience in the financial sector. A First-Class graduate in Actuarial Science from the University of Lagos, he also holds an MSc in Finance and an MBA in Management, which underline his strong expertise in financial theory and practice. His career spans pivotal roles in leading financial institutions, including Assistant General Manager, Executive Director, and Acting Managing Director at Group Merchant Bank/Commercial Trust Bank Ltd. Notably, he contributed to Citi Bank Nigeria as Assistant Manager for Foreign Exchange and Nigeria Intercontinental Merchant Bank as Manager/Treasurer, showcasing his deep knowledge of banking operations and strategic leadership.&#10;&#10;Beyond finance, Ambassador Echegile has left a significant mark in public service and education. As a Nigerian Ambassador from 2008 to 2012, he furthered Nigeria’s diplomatic interests globally. His leadership roles include serving as a Board Member of the National University Commission and Pro-Chancellor of Delta State University of Science and Technology, Ozoro. Currently, as Chairman of the Board of Directors, Ambassador Echegile continues to exemplify visionary leadership, strategic acumen, and a commitment to advancing financial and educational institutions.">
@@ -87,7 +103,7 @@
         
       </div>
       
-      <div class="leadership-card"
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms"
            data-name="Abimbola Oguntunde"
            data-role="Executive Vice Chairman"
            data-bio="An experienced banker, economist, and certified project manager, with over 30 years’ experience in the banking industry, management consulting and international public sector. He held top management positions at leading institutions (UBA, Sterling and Diamond Bank) in the Nigerian financial services industry.&#10;&#10;Abimbola is a first class graduate of Economics from the University of Lagos and holds an MBA in International Banking and Finance with Distinction from the University of Birmingham, United Kingdom. He has international working exposure and brings to bear his enormous wealth of experience in galvanizing the growth and advancement of STI Assets Management Limited.">
@@ -101,7 +117,7 @@
 
     
 
-      <div class="leadership-card"
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms"
            data-name="Momohjimoh Raji"
            data-role="MD/CEO"
            data-bio="Raji is a seasoned professional with over 20 years of banking experience. He has held various capacities of competence ranging from Treasurer at the United Bank for Africa Plc and Head, Treasury and Correspondent Banking in Diamond Bank Plc. He is highly skilled and experienced in local and International financial markets, which he brings to bear as MD/CEO.&#10;&#10;Raji holds a BSc and MSc degrees in Economics from the University of Ilorin and Lagos, respectively, and an MBA in Banking from the Bangor University of Scotland, UK. He is an Associate Member of the Chartered Institutes of Bankers of Nigeria and Scotland and also a member of the Association for Financial Professionals (AFP) of the USA. He is a fellow of the Institutes of Credit Administration of Nigeria, an Alumnus of Lagos Business School, and a certified sponsored individual of the Securities and Exchange Commission (SEC), Nigeria.">
@@ -116,7 +132,7 @@
 
     <!-- Tier 2: Lower Row with Exactly 4 Cards -->
     <div class="leadership-tier leadership-tier-2">
-      <div class="leadership-card"
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms"
            data-name="Ihuoma Ugochi"
            data-role="Non-Executive Director"
            data-bio="Ugochi Odemelam is a seasoned professional with over 30 years of experience in banking and insurance. She holds an MBA from ESUT Business School and is a member of the Nigerian Institute of Management (NIM), the Chartered Insurance Institute of Nigeria (CIIN), and the Chartered Insurance Institute of London (CII London). An alumna of Lagos Business School and the Kellogg School of Management, Chicago, she has attended numerous management and development programs locally and internationally. Since joining Sovereign Trust Insurance Plc in 1995, Ugochi has gained extensive expertise across various divisions, area office operations, and committee roles, solidifying her position as a leader in the insurance sector.">
@@ -127,7 +143,7 @@
         <span class="leadership-role">Non-Executive Director</span>
       </div>
 
-      <div class="leadership-card"
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms"
            data-name="Olaotan Soyinka"
            data-role="Non-Executive Director"
            data-bio="An erudite and well-grounded underwriter with over 25 years cognate experience. He is a seasoned professional and brings to bear his overwhelming wealth of experience in providing instructive supervision at the Board level for STI Assets Management Limited. He is the current Managing Director/Chief Executive Officer of Sovereign Trust Insurance.&#10;&#10;Soyinka is a graduate of Insurance from University of Lagos who also holds an MSc degree in Marketing from the same university. He is an alumnus of the Lagos Business School and an Associate of the Chartered Insurance Institute of Nigeria.">
@@ -138,7 +154,7 @@
         <span class="leadership-role">Non-Executive Director</span>
       </div>
 
-      <div class="leadership-card"
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms"
            data-name="Sade Ogunde"
            data-role="Independent Director"
            data-bio="Mrs. Sade Ogunde is an accomplished accountant and finance expert with over 30 years of experience. She holds a B.Sc. in Economics from the University of Ife (now Obafemi Awolowo University), is a fellow of the Institute of Chartered Accountants of Nigeria (ICAN) and is certified by the International Facility Management Association (IFMA). Her career began at Deloitte Haskins and Sells as an auditor, followed by significant roles at UAC of Nigeria Plc, where she served as Management Accountant, Divisional Commercial Director, Group Treasurer, and Finance Director of UPDC Plc before retiring in 2016. She has honed her expertise through courses at renowned institutions like Harvard Business School and Cranfield University. Currently, Mrs. Ogunde is a management and financial consultant and serves on corporate boards, including First World Communities Limited, FSDH Asset Management Limited, and ICRISAT in India. She also holds independent directorships at R.T. Briscoe Plc and Briscoe Properties Limited. Her extensive experience, strategic insight, and leadership have established her as a prominent figure in the finance and corporate management sectors.">
@@ -149,7 +165,7 @@
         <span class="leadership-role">Independent Director</span>
       </div>
 
-      <div class="leadership-card"
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms"
            data-name="Nkemdilim A. Adi"
            data-role="Independent Director"
            data-bio="Nkemdilim A. Adi is a seasoned economist with a distinguished career at the Central Bank of Nigeria (CBN), where she retired as Director in 2021. With a strong academic foundation (BSc in Economics from the University of Maiduguri and MSc from Enugu State University of Technology), Nkemdilim contributed significantly to Nigeria's financial sector. Her tenure at the CBN involved key roles in monetary policy formulation, economic research, financial regulation, and risk management. She played a pivotal role in stabilizing the economy, ensuring regulatory compliance, and safeguarding the integrity of the financial system. Renowned for her expertise in macroeconomic analysis, policy development, and leadership, Nkemdilim combines technical proficiency with excellent communication skills to address complex economic issues. Her commitment to economic development has made her a respected voice in the Nigerian financial landscape, and she remains a valuable resource for organizations seeking strategic insights into economic and financial matters.">
@@ -167,31 +183,45 @@
      EXECUTIVE MANAGEMENT (view)
 ============================================================ -->
 <div id="management-view" class="team-view hidden">
-  <section class="section management-team-section">
-    <div
-  class="leadership-header"
-  aria-labelledby="management-team-title"
->
+  <section class="page-shell" aria-labelledby="management-team-title">
+    <div class="page-section-head-split reveal-on-scroll">
+      <div>
+        <p class="page-eyebrow">Our people</p>
 
-  <div class="values-eyebrow-row team-section-eyebrow">
-    <span class="eyebrow">Our Management</span>
-  </div>
+        <h2 id="management-team-title" class="page-title-sm">
+          Leadership team.
+        </h2>
 
-  <h2
-    class="leadership-heading"
-    id="management-team-title"
-  >
-    Meet Our Management Team
-  </h2>
+        <p class="page-lead">
+          Deep operational expertise and tactical execution, driving institutional
+          performance and sustainable client value.
+        </p>
+      </div>
 
-  <p class="leadership-description">
-    Our dedicated management team brings together deep operational expertise and tactical execution strategies to drive institutional performance and deliver sustainable client value.
-  </p>
+      <div class="team-switch-pill" aria-label="Choose a leadership group">
+        <button
+          type="button"
+          class="team-switch-btn"
+          data-target="board-view"
+          aria-controls="board-view"
+        >
+          Board members
+        </button>
 
-</div>
+        <button
+          type="button"
+          class="team-switch-btn active"
+          data-target="management-view"
+          aria-controls="management-view"
+        >
+          Leadership team
+        </button>
+      </div>
+    </div>
+  </section>
 
     <div class="management-team-grid">
-      <div class="leadership-card" data-name="Oluwemimo Omotoso" data-role="Head, Investment &amp; Trading" data-bio="Oluwemimo Omotoso is an experienced professional with over 20 years in financial services, specializing in treasury, fixed income trading, treasury operations, and treasury risk management. Renowned for transforming underperforming units into profit leaders, he led the turnaround of Coronation Merchant Bank’s fixed income trading, a strategic business unit and established its most profitable commercial bill trading unit. An associate of the Institute of Chartered Accountants of Nigeria (ICAN) and ACI Certified Dealer, Oluwemimo holds both undergraduate and postgraduate degrees from the University of Ibadan.">
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms" data-name="Oluwemimo Omotoso" data-role="Head, Investment &amp; Trading" data-bio="Oluwemimo Omotoso is an experienced professional with over 20 years in financial services, specializing in treasury, fixed income trading, treasury operations, and treasury risk management. Renowned for transforming underperforming units into profit leaders, he led the turnaround of Coronation Merchant Bank’s fixed income trading, a strategic business unit and established its most profitable commercial bill trading unit. An associate of the Institute of Chartered Accountants of Nigeria (ICAN) and ACI Certified Dealer, Oluwemimo holds both undergraduate and postgraduate degrees from the University of Ibadan.">
         <div class="leadership-portrait">
           <img src="https://stiassetmgt.com/wp-content/uploads/2026/05/Wemimo.jpg" alt="Oluwemimo Omotoso" loading="lazy" decoding="async">
         </div>
@@ -199,7 +229,7 @@
         <span class="leadership-role">Head, Investment &amp; Trading</span>
       </div>
 
-      <div class="leadership-card" data-name="Samuel Akinola" data-role="Chief Financial Officer" data-bio="Samuel is a highly skilled finance and accounting professional with an impressive track record spanning over eight years. He has excelled in roles as both an accountant and analyst at Staad Capital Limited. Prior to joining Staad capital, he gained valuable audit experience during his tenure at Riverdale Professional Services, a renowned audit firm. Samuel holds a Bachelor of Science degree in Accounting from Obafemi Awolowo University (OAU), Ile-Ife, Osun State. He is an Associate member of the esteemed Institute of Chartered Accountants of Nigeria (ICAN).">
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms" data-name="Samuel Akinola" data-role="Chief Financial Officer" data-bio="Samuel is a highly skilled finance and accounting professional with an impressive track record spanning over eight years. He has excelled in roles as both an accountant and analyst at Staad Capital Limited. Prior to joining Staad capital, he gained valuable audit experience during his tenure at Riverdale Professional Services, a renowned audit firm. Samuel holds a Bachelor of Science degree in Accounting from Obafemi Awolowo University (OAU), Ile-Ife, Osun State. He is an Associate member of the esteemed Institute of Chartered Accountants of Nigeria (ICAN).">
         <div class="leadership-portrait">
           <img src="https://stiassetmgt.com/wp-content/uploads/2025/10/T3.png" alt="Samuel Akinola" loading="lazy" decoding="async">
         </div>
@@ -207,7 +237,7 @@
         <span class="leadership-role">Chief Financial Officer</span>
       </div>
 
-      <div class="leadership-card" data-name="Bukola Ononye" data-role="Head, Human Resources/Admin" data-bio="Bukola Ononye is a strategic Human Resources professional with extensive experience in driving people-focused initiatives and aligning HR strategy with business objectives. As Head of Human Resources and Administration at STI Assets Management Limited, she leads efforts to strengthen organizational culture, enhance employee engagement, and promote a high-performance workplace. She holds a Bachelor’s Degree in Business Administration, a Professional Certificate in Public Relations from the Institute of Administrators &amp; Economic Planners of Nigeria. She is pursuing an MBA in Business Administration with specialization in Human Resource Management. Bukola has completed several advanced trainings in HR Leadership, Performance Management, Employee Experience, Workforce Planning, and Labour Relations. She also holds various certifications, including AML/CFT, Fraud Management, and Sustainable Banking from Diamond Academy, among others. With a leadership style anchored on empathy, structure, and innovation, Bukola continues to champion people development, culture evolution, and the integration of modern HR practices that position STI Assets Management as an employer of choice.">
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms" data-name="Bukola Ononye" data-role="Head, Human Resources/Admin" data-bio="Bukola Ononye is a strategic Human Resources professional with extensive experience in driving people-focused initiatives and aligning HR strategy with business objectives. As Head of Human Resources and Administration at STI Assets Management Limited, she leads efforts to strengthen organizational culture, enhance employee engagement, and promote a high-performance workplace. She holds a Bachelor’s Degree in Business Administration, a Professional Certificate in Public Relations from the Institute of Administrators &amp; Economic Planners of Nigeria. She is pursuing an MBA in Business Administration with specialization in Human Resource Management. Bukola has completed several advanced trainings in HR Leadership, Performance Management, Employee Experience, Workforce Planning, and Labour Relations. She also holds various certifications, including AML/CFT, Fraud Management, and Sustainable Banking from Diamond Academy, among others. With a leadership style anchored on empathy, structure, and innovation, Bukola continues to champion people development, culture evolution, and the integration of modern HR practices that position STI Assets Management as an employer of choice.">
         <div class="leadership-portrait">
           <img src="https://stiassetmgt.com/wp-content/uploads/2025/10/B2.png" alt="Bukola Ononye" loading="lazy" decoding="async">
         </div>
@@ -215,7 +245,7 @@
         <span class="leadership-role">Head, Human Resources/Admin</span>
       </div>
 
-      <div class="leadership-card" data-name="Bidemi Ajamajebi" data-role="Head, Information Technology" data-bio="Bidemi is an experienced IT professional with a strong technical foundation built on a Bachelor’s degree in Mathematics and industry certifications in Cloud Computing and Systems Engineering. Over the years, he has developed expertise in system administration, network management, and data analytics through work in diverse IT environments. Currently, he serves as an IT Officer, where he manages complex IT infrastructures, ensures seamless operations, and upholds system security and reliability. In his previous roles, Bidemi has overseen system and network configurations for dozens of users, designed and enforced secure firewall and router policies, and maintained high availability in mission-critical environments. He has resolved frequent network performance issues, implemented robust backup strategies, and coordinated migrations or upgrades to support growing business needs. Bidemi brings these achievements to every new challenge: ensuring secure, efficient, and scalable IT infrastructure. At STI Asset, his aim is to leverage this experience to strengthen systems, support innovation, and drive performance that meets both today’s demands and tomorrow’s possibilities.">
+      <div class="leadership-card reveal-on-scroll" style="--reveal-delay: 60ms" data-name="Bidemi Ajamajebi" data-role="Head, Information Technology" data-bio="Bidemi is an experienced IT professional with a strong technical foundation built on a Bachelor’s degree in Mathematics and industry certifications in Cloud Computing and Systems Engineering. Over the years, he has developed expertise in system administration, network management, and data analytics through work in diverse IT environments. Currently, he serves as an IT Officer, where he manages complex IT infrastructures, ensures seamless operations, and upholds system security and reliability. In his previous roles, Bidemi has overseen system and network configurations for dozens of users, designed and enforced secure firewall and router policies, and maintained high availability in mission-critical environments. He has resolved frequent network performance issues, implemented robust backup strategies, and coordinated migrations or upgrades to support growing business needs. Bidemi brings these achievements to every new challenge: ensuring secure, efficient, and scalable IT infrastructure. At STI Asset, his aim is to leverage this experience to strengthen systems, support innovation, and drive performance that meets both today’s demands and tomorrow’s possibilities.">
         <div class="leadership-portrait">
           <img src="https://stiassetmgt.com/wp-content/uploads/2025/10/B1.png" alt="Bidemi Ajamajebi" loading="lazy" decoding="async">
         </div>

@@ -1,25 +1,50 @@
 <%- include('partials/header', {
-  pageCss: '/css/pages/contact.css'
+    pageCss: '/css/pages/contact.css?v=2'
 }) %>
 
 <!-- ============================================================
      CONTACT HERO
 ============================================================ -->
-<section class="inner-page-hero contact-page-hero">
+<section class="page-hero" aria-labelledby="contact-hero-title">
 
-  <div class="inner-page-hero-inner">
+  <div class="page-hero-media" aria-hidden="true">
+    <img
+      src="/hero-poster.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
+  </div>
 
-    <span class="hero-eyebrow">
-      Get In Touch
-    </span>
+  <div class="page-hero-overlay" aria-hidden="true"></div>
 
-    <h1>
-      Let's Have A Conversation
-    </h1>
+  <div class="page-shell page-hero-inner">
 
-    <p>
-      We'd love to hear from you. Reach out and our team will get back to you shortly.
-    </p>
+    <div class="page-hero-copy">
+
+      <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Contact</span>
+      </nav>
+
+      <h1
+        id="contact-hero-title"
+        class="page-hero-title page-enter"
+        style="--page-enter-delay: 120ms"
+      >
+        Let's have a conversation.
+      </h1>
+
+      <p
+        class="page-hero-summary page-enter"
+        style="--page-enter-delay: 240ms"
+      >
+        Reach out and a member of our team will come back to you within one
+        business day.
+      </p>
+
+    </div>
 
   </div>
 
@@ -154,7 +179,7 @@
           <div class="contact-info-copy">
 
             <h3>
-              Email Address
+              Email address
             </h3>
 
             <p>
@@ -200,7 +225,7 @@
           <div class="contact-info-copy">
 
             <h3>
-              Phone Number
+              Phone number
             </h3>
 
             <p>
@@ -265,7 +290,7 @@
           <div class="contact-info-copy">
 
             <h3>
-              Follow Us on Social Media
+              Follow us on social media
             </h3>
 
             <div class="contact-social-row">
@@ -490,7 +515,7 @@
 
 
             <label>
-              Phone Number
+              Phone number
 
               <input
                 type="tel"
@@ -540,17 +565,12 @@
   <div class="contact-map-shell">
 
     <header class="contact-map-header">
-
-      <div class="values-eyebrow-row contact-map-eyebrow">
-        <span class="eyebrow">
-          Location
-        </span>
-      </div>
-
-      <h2>
-        Find Us Here!
-      </h2>
-
+      <p class="page-eyebrow">Location</p>
+      <h2 class="page-title-sm">Victoria Island, Lagos.</h2>
+      <p class="page-lead">
+        Plot 169b Moshood Olugbani Street. Visitors are welcome Monday to
+        Friday, 8:00am to 5:00pm.
+      </p>
     </header>
 
 

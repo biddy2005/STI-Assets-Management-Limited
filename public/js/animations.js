@@ -1154,11 +1154,20 @@ const legalRevealGroups = [
           const baseDelay =
             Number(group.delay || 0);
 
+          /*
+           * Cap the per-item delay. Beyond roughly 45ms the
+           * gap between items in the same grid row becomes
+           * visible during a normal scroll, so the last card
+           * is still fading in while its neighbours are solid.
+           */
           const stagger =
-            Number(group.stagger || 0);
+            Math.min(
+              Number(group.stagger || 0),
+              45
+            );
 
           const delay = Math.min(
-            baseDelay + (index * stagger),
+            baseDelay + Math.min(index * stagger, 180),
             280
           );
 

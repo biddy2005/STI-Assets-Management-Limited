@@ -20,6 +20,15 @@ const resumeDirectory =
     'resumes'
   );
 
+const kycDirectory =
+  path.join(
+    __dirname,
+    '..',
+    'storage',
+    'private',
+    'kyc'
+  );
+
 
 /*
  * ============================================================
@@ -49,14 +58,6 @@ const newsUploadDirectory =
     'news'
   );
 
-
-const rateGuideUploadDirectory =
-  path.join(
-    publicUploadDirectory,
-    'rate-guide'
-  );
-
-
 /*
  * These directories are intentionally ignored by Git.
  *
@@ -66,9 +67,9 @@ const rateGuideUploadDirectory =
 const requiredStorageDirectories =
   [
     resumeDirectory,
+    kycDirectory,
     digestUploadDirectory,
-    newsUploadDirectory,
-    rateGuideUploadDirectory
+    newsUploadDirectory
   ];
 
 
@@ -86,7 +87,7 @@ requiredStorageDirectories.forEach(
 
 module.exports = {
   resumeDirectory,
+  kycDirectory,
   digestUploadDirectory,
-  newsUploadDirectory,
-  rateGuideUploadDirectory
+  newsUploadDirectory
 };

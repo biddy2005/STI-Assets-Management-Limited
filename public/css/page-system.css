@@ -1,0 +1,958 @@
+/* ===========================================================
+   STI SHARED PAGE SYSTEM
+   -----------------------------------------------------------
+   Extracted from the homepage so every inner page inherits the
+   same tokens, typography, bands, cards and motion.
+
+   Load AFTER style.css and BEFORE any page-specific stylesheet:
+
+     <link rel="stylesheet" href="/css/style.css">
+     <link rel="stylesheet" href="/css/page-system.css">
+     <link rel="stylesheet" href="<%= pageCss %>">
+
+   Rules here are deliberately unprefixed by page name. A page
+   stylesheet should only contain what is genuinely unique to
+   that page.
+   =========================================================== */
+
+:root {
+  /* Mirrors the homepage token block exactly. */
+  --page-navy: #033669;
+  --page-navy-deep: #02284f;
+  --page-navy-soft: #0a477c;
+  --page-orange: #f68634;
+  --page-ink: #17212b;
+  --page-muted: #63717d;
+  --page-line: rgba(3, 54, 105, 0.10);
+  --page-surface: #f5f7f9;
+  --page-surface-warm: #faf8f5;
+  --page-shell: 1400px;
+  --page-section-space: clamp(52px, 5vw, 76px);
+  --page-radius: 8px;
+  --page-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+
+/* ===========================================================
+   SHELL
+   =========================================================== */
+
+.page-shell {
+  width: min(calc(100% - 48px), var(--page-shell));
+  margin-inline: auto;
+}
+
+
+/* ===========================================================
+   BANDS
+
+   Alternate .page-band-light and .page-band-ink down the page.
+   The polarity flip is what gives the homepage its spine, and
+   inner pages read flat without it.
+   =========================================================== */
+
+.page-band {
+  padding: var(--page-section-space) 0;
+}
+
+.page-band-light {
+  background: #ffffff;
+}
+
+.page-band-soft {
+  background: var(--page-surface);
+}
+
+.page-band-ink {
+  background: var(--page-navy);
+  color: #ffffff;
+}
+
+
+/* ===========================================================
+   SECTION HEADERS
+
+   Left aligned by default. Centred section headers are the
+   strongest "template" tell in web design, and the homepage
+   never uses them.
+   =========================================================== */
+
+.page-section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  max-width: 62ch;
+  margin-bottom: 44px;
+}
+
+/*
+ * Header with a trailing link on the right, as used by the
+ * homepage services and products bands.
+ */
+.page-section-head-split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: none;
+  margin-bottom: 44px;
+}
+
+.page-section-head-split > div {
+  max-width: 62ch;
+}
+
+.page-eyebrow {
+  margin: 0;
+  color: var(--page-orange);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.33;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* No decorative rule beneath eyebrows. The mono face carries it. */
+.page-eyebrow::after {
+  content: none;
+}
+
+.page-eyebrow-light {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.page-title {
+  margin: 18px 0 0;
+  color: var(--page-navy);
+  font-size: clamp(2.35rem, 3.8vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.03;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.page-title-sm {
+  margin: 18px 0 0;
+  color: var(--page-navy);
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.page-title-light,
+.page-band-ink .page-title,
+.page-band-ink .page-title-sm {
+  color: #ffffff;
+}
+
+.page-lead {
+  max-width: 62ch;
+  margin: 18px 0 0;
+  color: var(--page-muted);
+  font-size: 1rem;
+  line-height: 1.78;
+}
+
+.page-band-ink .page-lead {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+
+/* ===========================================================
+   BODY COPY
+   =========================================================== */
+
+.page-prose p {
+  max-width: 68ch;
+  margin: 0 0 18px;
+  color: var(--page-muted);
+  font-size: 1rem;
+  line-height: 1.78;
+}
+
+.page-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.page-band-ink .page-prose p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+
+/* ===========================================================
+   TEXT LINK
+   Matches .home-text-link, including the underline sweep.
+   =========================================================== */
+
+.page-text-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  width: fit-content;
+  padding-bottom: 5px;
+  color: var(--page-navy);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+.page-text-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.32);
+  transform-origin: left center;
+  transition: transform 220ms var(--page-ease);
+}
+
+.page-text-link:hover::after {
+  transform: scaleX(1);
+}
+
+.page-text-link .ui-icon {
+  transition: transform 220ms var(--page-ease);
+}
+
+.page-text-link:hover .ui-icon {
+  transform: translate(3px, -3px);
+}
+
+.page-text-link-light,
+.page-band-ink .page-text-link {
+  color: #ffffff;
+}
+
+
+/* ===========================================================
+   CARDS
+   8px radius and stacked hairline shadows, per DESIGN.md.
+   =========================================================== */
+
+.page-card {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
+  box-shadow:
+    0 1px 1px rgba(3, 54, 105, 0.04),
+    0 2px 2px rgba(3, 54, 105, 0.05);
+  transition:
+    transform 200ms var(--page-ease),
+    box-shadow 200ms var(--page-ease),
+    border-color 200ms var(--page-ease);
+}
+
+/* Hover lift is gated to real pointers; touch fires false hovers. */
+@media (hover: hover) and (pointer: fine) {
+  .page-card-lift:hover {
+    transform: translateY(-4px);
+    border-color: rgba(3, 54, 105, 0.18);
+    box-shadow:
+      0 2px 2px rgba(3, 54, 105, 0.05),
+      0 8px 16px -4px rgba(3, 54, 105, 0.08),
+      0 24px 32px -8px rgba(3, 54, 105, 0.06);
+  }
+}
+
+/*
+ * On a navy band a navy card is invisible. A translucent
+ * white surface with a hairline reads as a card without
+ * introducing another colour.
+ */
+.page-card-ink {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .page-card-ink.page-card-lift:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.24);
+    box-shadow: none;
+  }
+}
+
+.page-card-title {
+  margin: 0 0 12px;
+  color: var(--page-navy);
+  font-size: 1.28rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.page-card-ink .page-card-title {
+  color: #ffffff;
+}
+
+.page-card-text {
+  margin: 0;
+  color: var(--page-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.page-card-ink .page-card-text {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.page-card-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 22px;
+  border-radius: var(--page-radius);
+  background: rgba(3, 54, 105, 0.06);
+  color: var(--page-navy);
+}
+
+.page-card-ink .page-card-icon {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+
+/* ===========================================================
+   GRIDS
+   =========================================================== */
+
+.page-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.page-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.page-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.page-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/*
+ * Asymmetric split, as used by the homepage About band. Prefer
+ * this over a 50/50 column for text-plus-image sections.
+ */
+.page-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(36px, 5vw, 72px);
+  align-items: center;
+}
+
+.page-split-reverse > *:first-child { order: 2; }
+
+
+/* ===========================================================
+   FACT ROW
+   The pattern already working on Who We Are: a row of short
+   value/label pairs separated by hairlines.
+   =========================================================== */
+
+.page-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0;
+  margin-top: 36px;
+  border-top: 1px solid var(--page-line);
+  padding-top: 26px;
+}
+
+.page-fact {
+  padding-right: 28px;
+  margin-right: 28px;
+  border-right: 1px solid var(--page-line);
+}
+
+.page-fact:last-child {
+  padding-right: 0;
+  margin-right: 0;
+  border-right: 0;
+}
+
+.page-fact-value {
+  display: block;
+  color: var(--page-navy);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.page-fact-label {
+  display: block;
+  margin-top: 4px;
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-band-ink .page-fact-value { color: #ffffff; }
+.page-band-ink .page-fact-label { color: rgba(255, 255, 255, 0.55); }
+.page-band-ink .page-fact { border-right-color: rgba(255, 255, 255, 0.15); }
+.page-band-ink .page-facts { border-top-color: rgba(255, 255, 255, 0.15); }
+
+
+/* ===========================================================
+   MEDIA
+   =========================================================== */
+
+.page-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--page-radius);
+}
+
+.page-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms var(--page-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .page-media:hover img {
+    transform: scale(1.03);
+  }
+}
+
+/* Floating stat badge, as used over the About image. */
+.page-media-badge {
+  position: absolute;
+  right: 0;
+  bottom: 26px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 14px 22px;
+  background: var(--page-navy);
+  color: #ffffff;
+  border-radius: var(--page-radius) 0 0 var(--page-radius);
+}
+
+.page-media-badge strong {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.page-media-badge span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+
+/* ===========================================================
+   INNER PAGE HERO
+   Compact counterpart to the homepage hero: same typography
+   and left alignment, roughly half the height.
+   =========================================================== */
+
+.page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--page-navy-deep);
+}
+
+.page-hero-media,
+.page-hero-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.page-hero-media { z-index: -3; }
+
+.page-hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 46%;
+}
+
+.page-hero-overlay {
+  z-index: -2;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2, 32, 62, 0.94) 0%,
+      rgba(3, 54, 105, 0.87) 42%,
+      rgba(3, 54, 105, 0.58) 72%,
+      rgba(2, 40, 79, 0.34) 100%
+    );
+}
+
+.page-hero-inner {
+  /*
+   * Must clear the 90px sticky header at every viewport height.
+   */
+  padding-top: clamp(130px, 15vh, 170px);
+  padding-bottom: clamp(56px, 7vh, 84px);
+}
+
+.page-hero-copy {
+  max-width: 850px;
+}
+
+.page-hero-title {
+  margin: 18px 0 0;
+  color: #ffffff;
+  font-size: clamp(2.6rem, 5vw, 4.4rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.page-hero-summary {
+  max-width: 60ch;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* Breadcrumb sits above the title, in the eyebrow slot. */
+.page-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-breadcrumb a { color: rgba(255, 255, 255, 0.6); }
+.page-breadcrumb a:hover { color: #ffffff; }
+.page-breadcrumb span[aria-current] { color: var(--page-orange); }
+
+
+/* ===========================================================
+   ENTRANCE MOTION
+   Mirrors the homepage: fade plus a short rise, ease-out.
+   =========================================================== */
+
+.page-enter {
+  animation: pageEnter 900ms var(--page-ease) both;
+  animation-delay: var(--page-enter-delay, 0ms);
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 32px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+
+/* ===========================================================
+   RESPONSIVE
+   =========================================================== */
+
+@media (max-width: 1023px) {
+  .page-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .page-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .page-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page-split-reverse > *:first-child { order: 0; }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --page-section-space: 44px;
+  }
+
+  .page-shell {
+    width: calc(100% - 32px);
+  }
+
+  .page-grid-2,
+  .page-grid-3,
+  .page-grid-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page-card { padding: 24px; }
+
+  .page-fact {
+    padding-right: 20px;
+    margin-right: 20px;
+    margin-bottom: 16px;
+  }
+
+  .page-media-badge {
+    right: 16px;
+    bottom: 16px;
+    border-radius: var(--page-radius);
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none !important;
+  }
+
+  .page-card,
+  .page-media img,
+  .page-text-link::after,
+  .page-text-link .ui-icon {
+    transition: none;
+  }
+
+  .page-card-lift:hover { transform: none; }
+  .page-media:hover img { transform: none; }
+}
+
+/* ===========================================================
+   STATEMENT LIST
+   For two or three prose items. A card would box a paragraph
+   and leave the row half empty; numbered rows fill the width
+   and read as deliberate.
+   =========================================================== */
+
+.page-statement-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.page-band-light .page-statement-list,
+.page-band-soft .page-statement-list {
+  border-top-color: var(--page-line);
+}
+
+.page-statement {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 0 28px;
+  padding: 32px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.page-band-light .page-statement,
+.page-band-soft .page-statement {
+  border-bottom-color: var(--page-line);
+}
+
+.page-statement-num {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: var(--page-orange);
+  padding-top: 5px;
+}
+
+.page-statement-title {
+  margin: 0 0 10px;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--page-navy);
+}
+
+.page-band-ink .page-statement-title { color: #ffffff; }
+
+.page-statement-text {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--page-muted);
+  font-size: 1rem;
+  line-height: 1.78;
+}
+
+.page-band-ink .page-statement-text {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+
+/* ===========================================================
+   DECLARATIONS
+   Vision and mission set at statement scale rather than boxed.
+   =========================================================== */
+
+.page-declarations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(36px, 5vw, 80px);
+}
+
+.page-declaration {
+  padding-top: 26px;
+  border-top: 2px solid var(--page-navy);
+}
+
+.page-declaration-text {
+  margin: 16px 0 0;
+  color: var(--page-navy);
+  font-size: clamp(1.25rem, 1.9vw, 1.6rem);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@media (max-width: 767px) {
+  .page-statement {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 26px 0;
+  }
+
+  .page-declarations {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ===========================================================
+   BREATHER
+   Full-bleed image band separating two dense text sections.
+   =========================================================== */
+
+.page-breather {
+  display: block;
+  height: clamp(240px, 32vh, 420px);
+  overflow: hidden;
+}
+
+.page-breather img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+}
+
+/* ===========================================================
+   SCROLL REVEAL
+   Uses the site-wide .reveal-on-scroll observer already in
+   animations.js. Elements are only hidden once JS confirms
+   the observer exists, so content stays visible if JS fails.
+   =========================================================== */
+
+.js-motion .reveal-on-scroll {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 800ms var(--page-ease),
+    transform 800ms var(--page-ease);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js-motion .reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/*
+ * The image inside a media block scales back from a slight
+ * zoom rather than sliding, so the frame stays put while the
+ * picture settles.
+ */
+.js-motion .reveal-zoom img {
+  transform: scale(1.06);
+  transition: transform 1100ms var(--page-ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js-motion .reveal-zoom.is-visible img {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-motion .reveal-on-scroll,
+  .js-motion .reveal-zoom img {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ===========================================================
+   BUTTONS
+   Mirrors .home-button so inner pages get the same treatment
+   without loading home.css.
+   =========================================================== */
+
+.page-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 15px 30px;
+  border: 1px solid transparent;
+  border-radius: var(--page-radius);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  transition:
+    transform 160ms var(--page-ease),
+    background-color 160ms var(--page-ease),
+    border-color 160ms var(--page-ease),
+    color 160ms var(--page-ease);
+}
+
+.page-button-primary {
+  background: var(--page-navy);
+  border-color: var(--page-navy);
+  color: #ffffff;
+}
+
+.page-button-primary:hover {
+  background: #04477f;
+  border-color: #04477f;
+  transform: translateY(-2px);
+}
+
+/* White fill for use on navy bands. */
+.page-button-invert {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: var(--page-navy);
+}
+
+.page-button-invert:hover {
+  background: #eef2f6;
+  border-color: #eef2f6;
+  transform: translateY(-2px);
+}
+
+.page-button-ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.page-button-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-button:hover { transform: none; }
+}
+
+.service-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: clamp(40px, 5vw, 80px);
+  align-items: start;
+}
+
+.service-aside {
+  position: sticky;
+  top: 130px;
+}
+.service-num {
+  margin: 0 0 14px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--page-orange);
+}
+
+.service-aside .page-lead + .page-lead {
+  margin-top: 14px;
+}
+
+.service-aside .page-text-link {
+  margin-top: 24px;
+}
+
+
+/* ===========================================================
+   CAPABILITIES
+   Hairline-separated rows rather than cards. Two or three
+   short items in a card grid leave the row half empty.
+   =========================================================== */
+
+.service-capabilities {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--page-line);
+}
+
+.page-band-ink .service-capabilities {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+.service-capability {
+  padding: 25px 0;
+  border-bottom: 1px solid var(--page-line);
+}
+.service-capability h3 {
+  margin: 0 0 10px;
+  color: var(--page-navy);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.page-band-ink .service-capability h3 {
+  color: #ffffff;
+}
+
+.service-capability p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--page-muted);
+  font-size: 0.97rem;
+  line-height: 1.78;
+}
+
+.page-band-ink .service-capability p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 1023px) {
+  .service-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  /* Sticky positioning is unhelpful once the columns stack. */
+  .service-aside {
+    position: static;
+  }
+
+}
+
+@media (max-width: 767px) {
+  .service-capability {
+    padding: 22px 0;
+  }
+}

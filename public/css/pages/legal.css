@@ -277,7 +277,7 @@
 
   .legal-content a:hover {
     color:
-      var(--color-accent);
+      var(--color-primary);
   }
 
 }

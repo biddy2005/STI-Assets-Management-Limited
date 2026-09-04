@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= subscription.reference %> | Subscription</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a href="/admin/dashboard" class="logo">STIAM Admin</a>
+      <form action="/auth/logout" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn-nav" type="submit">Log Out</button>
+      </form>
+    </div>
+  </header>
+
+  <section class="section">
+    <p style="margin-bottom: 8px;">
+      <a href="/admin/subscriptions">&larr; All subscriptions</a>
+    </p>
+
+    <h1 style="font-family: monospace;"><%= subscription.reference %></h1>
+
+    <p style="color: #5b6b78;">
+      Received
+      <%= new Date(subscription.createdAt).toLocaleString('en-GB') %>
+      &middot; Status: <strong><%= subscription.status.replace(/_/g, ' ') %></strong>
+    </p>
+
+    <!-- ============ KYC DOCUMENTS ============ -->
+    <div class="card" style="margin-bottom: 20px;">
+      <h2>KYC documents</h2>
+      <p style="color: #5b6b78; font-size: 0.88rem;">
+        Downloads are streamed through this authenticated page and are recorded
+        in the audit log.
+      </p>
+
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="padding: 10px 0; border-bottom: 1px solid #e6ebf0;">
+          <a href="/admin/subscriptions/<%= subscription.id %>/document/passport">
+            Passport photograph
+          </a>
+          <span style="color: #5b6b78; font-size: 0.82rem;">
+            &mdash; <%= subscription.passportOriginalName %>
+            (<%= Math.round(subscription.passportFileSize / 1024) %> KB)
+          </span>
+        </li>
+
+        <li style="padding: 10px 0; border-bottom: 1px solid #e6ebf0;">
+          <a href="/admin/subscriptions/<%= subscription.id %>/document/identification">
+            Means of identification
+          </a>
+          <span style="color: #5b6b78; font-size: 0.82rem;">
+            &mdash; <%= subscription.idDocOriginalName %>
+            (<%= Math.round(subscription.idDocFileSize / 1024) %> KB)
+          </span>
+        </li>
+
+        <li style="padding: 10px 0;">
+          <a href="/admin/subscriptions/<%= subscription.id %>/document/utility-bill">
+            Utility bill
+          </a>
+          <span style="color: #5b6b78; font-size: 0.82rem;">
+            &mdash; <%= subscription.utilityBillOriginalName %>
+            (<%= Math.round(subscription.utilityBillFileSize / 1024) %> KB)
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ============ REGULATED IDENTIFIERS ============ -->
+    <div class="card" style="margin-bottom: 20px; border-left: 3px solid #f68634;">
+      <h2>Regulated identifiers</h2>
+
+      <% if (revealed && revealed.error) { %>
+        <p style="color: #c0392b;"><%= revealed.error %></p>
+
+      <% } else if (revealed) { %>
+        <p style="color: #c0392b; font-size: 0.85rem;">
+          Revealed. This disclosure has been recorded in the audit log.
+        </p>
+
+        <p style="font-family: monospace; font-size: 1.1rem;">
+          BVN: <strong><%= revealed.bvn %></strong><br />
+          NIN: <strong><%= revealed.nin || 'Not provided' %></strong>
+        </p>
+
+      <% } else { %>
+        <p style="font-family: monospace; font-size: 1.1rem; color: #5b6b78;">
+          BVN: &bull;&bull;&bull;&bull;&bull;&bull;&bull;<%= subscription.bvnLast4 %><br />
+          NIN:
+          <% if (subscription.ninLast4) { %>
+            &bull;&bull;&bull;&bull;&bull;&bull;&bull;<%= subscription.ninLast4 %>
+          <% } else { %>
+            Not provided
+          <% } %>
+        </p>
+
+        <p style="color: #5b6b78; font-size: 0.85rem;">
+          These values are encrypted at rest. Revealing them is logged against
+          your account. Only do so when you need them for verification.
+        </p>
+
+        <form
+          method="POST"
+          action="/admin/subscriptions/<%= subscription.id %>/reveal"
+        >
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="btn-nav">Reveal BVN and NIN</button>
+        </form>
+      <% } %>
+    </div>
+
+    <!-- ============ CLIENT DETAILS ============ -->
+    <div class="card" style="margin-bottom: 20px;">
+      <h2>Client</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tbody>
+          <%
+            const rows = [
+              ['Full name', [subscription.firstName, subscription.middleName, subscription.surname].filter(Boolean).join(' ')],
+              ['Maiden name', subscription.maidenName || '—'],
+              ['Gender', subscription.gender],
+              ['Date of birth', new Date(subscription.dateOfBirth).toLocaleDateString('en-GB')],
+              ['Marital status', subscription.maritalStatus],
+              ['State of origin', subscription.stateOfOrigin],
+              ['L.G.A.', subscription.lga],
+              ['Nationality', subscription.nationality],
+              ['Residential address', subscription.residentialAddress],
+              ['Phone', subscription.phone],
+              ['Email', subscription.email],
+              ['Occupation', subscription.occupation],
+              ['Employment status', subscription.employmentStatus.replace(/_/g, ' ')],
+              ['Means of identification', subscription.meansOfIdentification],
+              ['I.D. number', subscription.idNumber],
+              ['Nature of business', subscription.natureOfBusiness || '—'],
+              ['Estimated annual income', subscription.estimatedAnnualIncome ? Number(subscription.estimatedAnnualIncome).toLocaleString('en-NG') : '—']
+            ];
+          %>
+          <% rows.forEach(function (row) { %>
+            <tr style="border-top: 1px solid #e6ebf0;">
+              <th style="text-align: left; padding: 9px 12px 9px 0; width: 230px; color: #5b6b78; font-weight: 500;"><%= row[0] %></th>
+              <td style="padding: 9px 0;"><%= row[1] %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============ NEXT OF KIN ============ -->
+    <div class="card" style="margin-bottom: 20px;">
+      <h2>Next of kin</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tbody>
+          <% [
+            ['Name', subscription.nextOfKinName],
+            ['Relationship', subscription.nextOfKinRelationship],
+            ['Phone', subscription.nextOfKinPhone],
+            ['Address', subscription.nextOfKinAddress]
+          ].forEach(function (row) { %>
+            <tr style="border-top: 1px solid #e6ebf0;">
+              <th style="text-align: left; padding: 9px 12px 9px 0; width: 230px; color: #5b6b78; font-weight: 500;"><%= row[0] %></th>
+              <td style="padding: 9px 0;"><%= row[1] %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============ INVESTMENT + BANKING ============ -->
+    <div class="card" style="margin-bottom: 20px;">
+      <h2>Investment and settlement</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tbody>
+          <% [
+            ['Product', subscription.product.replace(/_/g, ' ')],
+            ['Principal', Number(subscription.principalAmount).toLocaleString('en-NG')],
+            ['Tenor', subscription.fixedDepositTenor],
+            ['Risk acceptance', subscription.riskAcceptance + ' of 5'],
+            ['At maturity', subscription.maturityMandate.replace(/_/g, ' ')],
+            ['Bank', subscription.bankName],
+            ['Account name', subscription.accountName],
+            ['Account number', subscription.accountNumber]
+          ].forEach(function (row) { %>
+            <tr style="border-top: 1px solid #e6ebf0;">
+              <th style="text-align: left; padding: 9px 12px 9px 0; width: 230px; color: #5b6b78; font-weight: 500;"><%= row[0] %></th>
+              <td style="padding: 9px 0;"><%= row[1] %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============ WORKFLOW ============ -->
+    <div class="card" style="margin-bottom: 20px;">
+      <h2>Review</h2>
+
+      <p style="font-size: 0.85rem; color: #5b6b78;">
+        Microsoft 365 forwarding:
+        <% if (subscription.forwardedToPowerAutomate) { %>
+          sent <%= new Date(subscription.forwardedAt).toLocaleString('en-GB') %>
+        <% } else if (subscription.forwardingError) { %>
+          <span class="state-fail">failed &mdash; <%= subscription.forwardingError %></span>
+        <% } else { %>
+          not sent
+        <% } %>
+      </p>
+
+      <form
+        method="POST"
+        action="/admin/subscriptions/<%= subscription.id %>/status"
+        class="form"
+      >
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+        <label>
+          Status
+          <select name="status">
+            <% statuses.forEach(function (status) { %>
+              <option
+                value="<%= status %>"
+                <%= subscription.status === status ? 'selected' : '' %>
+              ><%= status.replace(/_/g, ' ') %></option>
+            <% }) %>
+          </select>
+        </label>
+
+        <label>
+          Review note
+          <textarea
+            name="reviewNote"
+            rows="3"
+            placeholder="What is outstanding, or why this was approved or rejected."
+          ><%= subscription.reviewNote || '' %></textarea>
+        </label>
+
+        <button type="submit" class="btn-nav">Save review</button>
+      </form>
+    </div>
+
+    <!-- ============ DELETE ============ -->
+    <div class="card" style="border-left: 3px solid #c0392b;">
+      <h2>Delete</h2>
+      <p style="color: #5b6b78; font-size: 0.88rem;">
+        Removes this application and its three stored documents permanently.
+        This cannot be undone.
+      </p>
+
+      <form
+        method="POST"
+        action="/admin/subscriptions/<%= subscription.id %>/delete"
+        onsubmit="return confirm('Delete <%= subscription.reference %> and all its KYC documents? This cannot be undone.');"
+      >
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" class="btn-nav" style="background: #c0392b; color: #ffffff;">
+          Delete application
+        </button>
+      </form>
+    </div>
+  </section>
+</body>
+</html>

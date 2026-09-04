@@ -1,62 +1,54 @@
 <%- include('../partials/header', {
-  pageCss: '/css/pages/news-article.css'
+  pageCss: '/css/pages/news-article.css?v=2'
 }) %>
 
 <!-- ============================================================
      ARTICLE HERO
 ============================================================ -->
-<section class="inner-page-hero news-article-page-hero">
+<section class="page-hero" aria-labelledby="article-hero-title">
 
-  <div class="inner-page-hero-inner">
-
-    <span class="hero-eyebrow">
-      Resources
-    </span>
-
-    <h1>
-      <%= article.title %>
-    </h1>
-
-    <% if (formattedDate) { %>
-
-      <div class="news-article-hero-meta">
-
-        <svg
-          class="ui-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.75"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <rect
-            x="3"
-            y="5"
-            width="18"
-            height="16"
-            rx="2"
-          ></rect>
-
-          <path d="M3 10h18"></path>
-          <path d="M8 3v4"></path>
-          <path d="M16 3v4"></path>
-        </svg>
-
-        <span>
-          <%= formattedDate %>
-        </span>
-
-      </div>
-
-    <% } %>
-
+  <div class="page-hero-media" aria-hidden="true">
+    <img
+      src="/faqs-hero.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
   </div>
 
-</section>
+  <div class="page-hero-overlay" aria-hidden="true"></div>
 
+  <div class="page-shell page-hero-inner">
+    <div class="page-hero-copy">
+
+      <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/news">News</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Article</span>
+      </nav>
+
+      <h1
+        id="article-hero-title"
+        class="page-hero-title page-enter"
+        style="--page-enter-delay: 120ms"
+      >
+        <%= article.title %>
+      </h1>
+
+      <% if (formattedDate) { %>
+        <p
+          class="page-hero-summary page-enter"
+          style="--page-enter-delay: 240ms"
+        >
+          Published <%= formattedDate %>
+        </p>
+      <% } %>
+
+    </div>
+  </div>
+</section>
 <!-- ============================================================
      ARTICLE CONTENT
 ============================================================ -->

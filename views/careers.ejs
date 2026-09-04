@@ -1,12 +1,43 @@
 <%- include('partials/header', {
-  pageCss: '/css/pages/careers.css'
+  pageCss: '/css/pages/careers.css?v=2'
 }) %>
 
-<section class="inner-page-hero careers-page-hero">
-  <div class="inner-page-hero-inner">
-    <span class="hero-eyebrow">Join Our Team</span>
-    <h1>Careers at STIAM</h1>
-    <p>Build a meaningful career in asset management. Explore our open opportunities and help us deliver disciplined, research-driven wealth solutions for our clients.</p>
+<section class="page-hero" aria-labelledby="careers-hero-title">
+  <div class="page-hero-media" aria-hidden="true">
+    <img
+      src="/hero-poster.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
+  </div>
+
+  <div class="page-hero-overlay" aria-hidden="true"></div>
+
+  <div class="page-shell page-hero-inner">
+    <div class="page-hero-copy">
+      <nav class="page-breadcrumb page-enter" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Careers</span>
+      </nav>
+
+      <h1
+        id="careers-hero-title"
+        class="page-hero-title page-enter"
+        style="--page-enter-delay: 120ms"
+      >
+        Build a career in asset management.
+      </h1>
+
+      <p
+        class="page-hero-summary page-enter"
+        style="--page-enter-delay: 240ms"
+      >
+        Help us deliver disciplined, research-driven wealth solutions for
+        individuals and institutions across Nigeria.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -63,7 +94,7 @@
         <header class="careers-column-header">
 
           <h2>
-            Open Roles
+            Open roles
           </h2>
 
         </header>
@@ -245,7 +276,7 @@
           <header class="careers-form-header">
 
             <h2>
-              Apply Now
+              Apply now
             </h2>
 
           </header>

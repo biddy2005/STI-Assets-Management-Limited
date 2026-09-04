@@ -5,43 +5,16 @@
 
 
 /* ============================================================
-   HERO
-============================================================ */
-
-.career-job-page-hero {
-  --hero-bg-image:
-    url(
-      "/heropic.png"
-    );
-}
-
-.career-job-page-hero
-  .inner-page-hero-inner {
-  width: 100%;
-  max-width: 850px;
-}
-
-
-/* ============================================================
    PAGE
 ============================================================ */
 
 .career-job-section {
-  width: 100%;
-
-  padding:
-    clamp(64px, 8vw, 96px)
-    20px
-    clamp(80px, 9vw, 112px);
-
-  background:
-    #ffffff;
+  padding: var(--page-section-space) 0;
+  background: var(--page-surface);
 }
 
 .career-job-shell {
-  width: 100%;
-  max-width: 1180px;
-
+  width: min(calc(100% - 48px), 1180px);
   margin: 0 auto;
 }
 
@@ -117,34 +90,22 @@
 
 .career-job-department {
   display: inline-block;
-
-  margin-bottom: 10px;
-
-  color:
-    var(--color-accent);
-
-  font-size: 0.76rem;
-  font-weight: 800;
-
-  letter-spacing: 0.075em;
+  margin-bottom: 12px;
+  color: var(--page-orange);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .career-job-intro h2 {
-  margin:
-    0 0 17px;
-
-  color:
-    var(--color-primary);
-
-  font-size:
-    clamp(1.8rem, 3.2vw, 2.5rem);
-
-  font-weight: 800;
-  line-height: 1.2;
-
-  letter-spacing:
-    -0.03em;
+  margin: 0 0 18px;
+  color: var(--page-navy);
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
 }
 
 .career-job-intro p {
@@ -170,17 +131,13 @@
 }
 
 .career-job-block h3 {
-  margin:
-    0 0 16px;
-
-  color:
-    var(--color-primary);
-
-  font-size: 0.84rem;
-  font-weight: 800;
+  margin: 0 0 16px;
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
   line-height: 1.45;
-
-  letter-spacing: 0.035em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -229,56 +186,42 @@
 ============================================================ */
 
 .career-job-facts {
-  padding:
-    26px 25px;
-
-  background:
-    #f8fafc;
-
-  border:
-    1px solid
-    rgba(3, 54, 105, 0.08);
-
-  border-radius: 16px;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid var(--page-line);
+  border-radius: var(--page-radius);
+  box-shadow:
+    0 2px 2px rgba(3, 54, 105, 0.04),
+    0 8px 16px -4px rgba(3, 54, 105, 0.06);
 }
 
 .career-job-facts h2 {
-  margin:
-    0 0 22px;
-
-  color:
-    var(--color-primary);
-
-  font-size: 1.2rem;
-  font-weight: 800;
+  margin: 0 0 22px;
+  color: var(--page-navy);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .career-job-fact {
   display: grid;
   gap: 5px;
-
-  padding:
-    14px 0;
-
-  border-top:
-    1px solid
-    rgba(3, 54, 105, 0.08);
+  padding: 14px 0;
+  border-top: 1px solid var(--page-line);
 }
 
 .career-job-fact span {
-  color:
-    var(--color-text-muted);
-
-  font-size: 0.75rem;
-  font-weight: 600;
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .career-job-fact strong {
-  color:
-    var(--color-primary);
-
-  font-size: 0.9rem;
-  font-weight: 750;
+  color: var(--page-navy);
+  font-size: 0.92rem;
+  font-weight: 600;
   line-height: 1.5;
 }
 
@@ -300,17 +243,16 @@
   color:
     #ffffff;
 
-  background:
-    var(--color-accent);
+  background: var(--page-navy);
 
   border:
     1px solid
-    var(--color-accent);
+    var(--page-navy);
 
-  border-radius: 9px;
+  border-radius: var(--page-radius);
 
-  font-size: 0.87rem;
-  font-weight: 750;
+  font-size: 0.92rem;
+  font-weight: 600;
 
   text-decoration: none;
 
@@ -344,16 +286,13 @@
 
   .career-job-back:hover {
     color:
-      var(--color-accent);
+      var(--color-accent-action);
   }
 
   .career-job-apply:hover {
-    transform:
-      translateY(-2px);
-
-    box-shadow:
-      0 10px 24px
-      rgba(246, 134, 52, 0.22);
+    background: #04477f;
+    border-color: #04477f;
+    transform: translateY(-2px);
   }
 
 }
@@ -362,7 +301,7 @@
 .career-job-apply:focus-visible {
   outline:
     3px solid
-    rgba(246, 134, 52, 0.28);
+    var(--color-focus-on-light);
 
   outline-offset: 4px;
 }

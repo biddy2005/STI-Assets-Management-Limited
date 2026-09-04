@@ -9,9 +9,9 @@ const env =
 
 const {
   resumeDirectory,
+  kycDirectory,
   digestUploadDirectory,
-  newsUploadDirectory,
-  rateGuideUploadDirectory
+  newsUploadDirectory
 } = require(
   '../config/storage'
 );
@@ -73,17 +73,6 @@ const publicStorageCategories = {
     localUrlPrefix:
       '/uploads/digests'
   },
-
-  rateGuide: {
-    localDirectory:
-      rateGuideUploadDirectory,
-
-    objectPrefix:
-      'rate-guide',
-
-    localUrlPrefix:
-      '/uploads/rate-guide'
-  }
 };
 
 
@@ -92,6 +81,33 @@ const publicStorageCategories = {
  */
 const privateResumeObjectPrefix =
   'resumes';
+
+
+const privateKycObjectPrefix =
+  'kyc';
+
+
+/*
+ * Private files are grouped by category so résumés and KYC
+ * documents never share a prefix or a retention rule.
+ * Storage keys themselves stay flat: validateStorageKey
+ * rejects slashes on purpose.
+ */
+function resolvePrivateCategory(
+  category
+) {
+  if (category === 'kyc') {
+    return {
+      directory: kycDirectory,
+      objectPrefix: privateKycObjectPrefix
+    };
+  }
+
+  return {
+    directory: resumeDirectory,
+    objectPrefix: privateResumeObjectPrefix
+  };
+}
 
 
 /**
@@ -368,7 +384,6 @@ async function deleteLocalFile(
  *
  * news
  * digests
- * rateGuide
  */
 async function savePublicFile({
   category,
@@ -574,7 +589,8 @@ async function deletePublicFile({
 async function savePrivateFile({
   storageKey,
   body,
-  contentType
+  contentType,
+  category
 }) {
   const key =
     validateStorageKey(
@@ -589,7 +605,7 @@ async function savePrivateFile({
     const localPath =
       await writeLocalFile({
         directory:
-          resumeDirectory,
+          resolvePrivateCategory(category).directory,
 
         storageKey:
           key,
@@ -611,7 +627,7 @@ async function savePrivateFile({
 
 
   const objectKey =
-    `${privateResumeObjectPrefix}/${key}`;
+    `${resolvePrivateCategory(category).objectPrefix}/${key}`;
 
 
   await putR2Object({
@@ -648,7 +664,8 @@ async function savePrivateFile({
  * Retrieve one PRIVATE applicant résumé.
  */
 async function getPrivateFile({
-  storageKey
+  storageKey,
+  category
 }) {
   const key =
     validateStorageKey(
@@ -662,12 +679,12 @@ async function getPrivateFile({
   ) {
     const localPath =
       path.join(
-        resumeDirectory,
+        resolvePrivateCategory(category).directory,
         key
       );
 
 
- let body;
+    let body;
 
 
     try {
@@ -711,10 +728,10 @@ async function getPrivateFile({
 
 
   const objectKey =
-    `${privateResumeObjectPrefix}/${key}`;
+    `${resolvePrivateCategory(category).objectPrefix}/${key}`;
 
 
-    let object;
+  let object;
 
 
   try {
@@ -773,7 +790,8 @@ async function getPrivateFile({
  * Delete one PRIVATE applicant résumé.
  */
 async function deletePrivateFile({
-  storageKey
+  storageKey,
+  category
 }) {
   const key =
     validateStorageKey(
@@ -787,7 +805,7 @@ async function deletePrivateFile({
   ) {
     const localPath =
       path.join(
-        resumeDirectory,
+        resolvePrivateCategory(category).directory,
         key
       );
 
@@ -811,7 +829,7 @@ async function deletePrivateFile({
 
 
   const objectKey =
-    `${privateResumeObjectPrefix}/${key}`;
+    `${resolvePrivateCategory(category).objectPrefix}/${key}`;
 
 
   await deleteR2Object({

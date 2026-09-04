@@ -47,9 +47,17 @@
   class="home-hero"
   aria-labelledby="home-hero-title"
 >
-  <div class="home-hero-media" aria-hidden="true">
+  <div
+    class="home-hero-media"
+    aria-hidden="true"
+    data-hero-media
+    data-video-webm="/media/hero-lagos.webm"
+    data-video-mp4="/media/hero-lagos.mp4"
+    data-video-webm-mobile="/media/hero-lagos-mobile.webm"
+    data-video-mp4-mobile="/media/hero-lagos-mobile.mp4"
+  >
     <img
-      src="/pexels-taiwo-samson-1239982962-38511754.webp"
+      src="/hero-poster.webp"
       alt=""
       fetchpriority="high"
       decoding="async"
@@ -60,10 +68,6 @@
 
   <div class="home-shell home-hero-inner">
     <div class="home-hero-copy">
-      <p class="home-hero-eyebrow">
-        STI Assets Management Limited
-      </p>
-
       <h1 id="home-hero-title" class="home-hero-title">
         Your capital.<br>
         <span>Managed with purpose.</span>
@@ -76,28 +80,9 @@
       </p>
 
       <div class="home-hero-actions" aria-label="Homepage actions">
-        <a href="/products" class="home-button home-button-primary">
-          <span>Explore Investments</span>
-          <i
-            data-lucide="arrow-up-right"
-            class="ui-icon ui-icon-sm"
-            aria-hidden="true"
-          ></i>
+        <a href="/products" class="home-button home-button-invert">
+          <span>Explore investments</span>
         </a>
-
-        <a href="/contact" class="home-button home-button-ghost">
-          <span>Speak with an Advisor</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="home-hero-foot">
-      <div class="home-hero-trust" aria-label="STI trust highlights">
-        <span>SEC Regulated</span>
-        <span aria-hidden="true">|</span>
-        <span>Professional Fund Managers</span>
-        <span aria-hidden="true">|</span>
-        <span>Incorporated 2008</span>
       </div>
     </div>
   </div>
@@ -585,12 +570,7 @@
       </p>
 
       <a href="/contact" class="home-button home-button-primary">
-        <span>Start a Conversation</span>
-        <i
-          data-lucide="arrow-up-right"
-          class="ui-icon ui-icon-sm"
-          aria-hidden="true"
-        ></i>
+       <span>Speak with an Advisor</span>
       </a>
     </div>
 
@@ -706,14 +686,9 @@
 
       <a
         href="/resources/downloads"
-        class="home-button home-button-primary"
+        class="home-button home-button-invert"
       >
         <span>View Daily Market Digest</span>
-        <i
-          data-lucide="arrow-up-right"
-          class="ui-icon ui-icon-sm"
-          aria-hidden="true"
-        ></i>
       </a>
     </div>
   </div>
@@ -860,26 +835,15 @@
       the conversation.
     </p>
 
-    <a href="/contact" class="home-button home-button-primary">
+    <a href="/contact" class="home-button home-button-invert">
       <span>Speak with an Advisor</span>
-      <i
-        data-lucide="arrow-up-right"
-        class="ui-icon ui-icon-sm"
-        aria-hidden="true"
-      ></i>
     </a>
   </div>
 </section>
 
-<!-- Lucide icon library -->
-<script
-  src="/vendor/lucide/lucide.min.js"
-  defer
-></script>
-
 <!-- Homepage interactions: reveals, counters and icon initialisation -->
 <script
-  src="/js/homepage.js?v=homepage-revamp-3"
+  src="/js/homepage.js?v=homepage-revamp-5"
   defer
 ></script>
 

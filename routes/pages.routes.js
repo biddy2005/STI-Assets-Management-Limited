@@ -171,16 +171,176 @@ router.get(
   '/products',
 
   asyncHandler(async (req, res) => {
-    const rateGuide =
-      await prisma.rateGuide.findUnique({
+    /*
+     * Rates are stored as structured rows rather than an
+     * uploaded image, so the published table and the
+     * calculator can never disagree.
+     */
+    const productRates =
+      await prisma.productRate.findMany({
         where: {
-          id: 1
-        }
+          isActive: true
+        },
+ 
+        orderBy: [
+          { product: 'asc' },
+          { minAmount: 'asc' },
+          { tenorMaxDays: 'asc' }
+        ]
       });
-    const rateGuideImageUrl =
-      rateGuide?.imageUrl ||
-      'https://stiassetmgt.com/wp-content/uploads/2026/02/Screenshot-2026-02-20-095509-1024x363.png';
-
+ 
+ 
+    /*
+     * Product labels and currency live here rather than in the
+     * database: they are presentation, and duplicating them in
+     * every rate row would invite them to drift.
+     */
+    const RATE_PRODUCTS = [
+      {
+        key: 'FIXED_INCOME_NOTE',
+        label: 'STIAM Fixed Income Note',
+        currency: 'Naira'
+      },
+      {
+        key: 'MONEY_MARKET_NOTE',
+        label: 'STIAM Money Market Note',
+        currency: 'Naira'
+      },
+      {
+        key: 'FIXED_INCOME_DOLLAR_NOTE',
+        label: 'STIAM Fixed Income Dollar Note',
+        currency: 'US dollar'
+      }
+    ];
+ 
+ 
+    /**
+     * Render an amount bound the way the printed guide does.
+     *
+     * Truncates rather than rounds. These are band boundaries,
+     * and rounding 4,999,999 up to "5m" would overstate the
+     * ceiling and overlap the band above it.
+     */
+    const formatAmount = (value, currency) => {
+      const symbol =
+        currency === 'US dollar'
+          ? '$'
+          : '\u20A6';
+ 
+      const trim = (text) =>
+        text
+          .replace(/\.00$/, '')
+          .replace(/(\.\d)0$/, '$1');
+ 
+      if (value >= 1000000) {
+        const millions =
+          Math.floor(value / 10000) / 100;
+ 
+        return `${symbol}${trim(millions.toFixed(2))}m`;
+      }
+ 
+      if (value >= 1000) {
+        return `${symbol}${Math.floor(value / 1000)}k`;
+      }
+ 
+      return `${symbol}${value}`;
+    };
+ 
+ 
+    const rateTables =
+      RATE_PRODUCTS
+        .map((product) => {
+          const rows =
+            productRates.filter(
+              (rate) => rate.product === product.key
+            );
+ 
+          if (!rows.length) {
+            return null;
+          }
+ 
+ 
+          /*
+           * Tenor columns are derived from the data rather than
+           * hardcoded, so adding a tenor band in the admin
+           * appears here without a code change.
+           */
+          const tenorDays =
+            [...new Set(
+              rows.map((rate) => rate.tenorMaxDays)
+            )].sort((a, b) => a - b);
+ 
+ 
+          const amountBands =
+            [...new Set(
+              rows.map((rate) => Number(rate.minAmount))
+            )].sort((a, b) => a - b);
+ 
+ 
+          /*
+           * Index by amount and tenor so each cell is a direct
+           * lookup rather than a scan of the whole set.
+           */
+          const lookup = {};
+ 
+          rows.forEach((rate) => {
+            lookup[
+              `${Number(rate.minAmount)}_${rate.tenorMaxDays}`
+            ] = Number(rate.ratePercent);
+          });
+ 
+ 
+          return {
+            key: product.key,
+            label: product.label,
+            currency: product.currency,
+ 
+            tenors: tenorDays.map((days) => ({
+              days,
+              label: `${days}D`
+            })),
+ 
+            rows: amountBands.map((minAmount) => {
+              const sample =
+                rows.find(
+                  (rate) =>
+                    Number(rate.minAmount) === minAmount
+                );
+ 
+              const maxAmount =
+                sample.maxAmount === null
+                  ? null
+                  : Number(sample.maxAmount);
+ 
+              const label =
+                maxAmount === null
+                  ? `${formatAmount(minAmount, product.currency)} & above`
+                  : `${formatAmount(minAmount, product.currency)} \u2013 ${formatAmount(maxAmount, product.currency)}`;
+ 
+              return {
+                label,
+ 
+                cells: tenorDays.map(
+                  (days) =>
+                    lookup[`${minAmount}_${days}`] ?? null
+                )
+              };
+            })
+          };
+        })
+        .filter(Boolean);
+ 
+ 
+    const ratesUpdatedAt =
+      productRates.length
+        ? productRates.reduce(
+            (latest, rate) =>
+              rate.updatedAt > latest
+                ? rate.updatedAt
+                : latest,
+            productRates[0].updatedAt
+          )
+        : null;
 
     return res.render(
       'products',
@@ -194,7 +354,12 @@ router.get(
         canonicalPath:
           '/products',
 
-        rateGuideImageUrl
+        rateTables,
+
+        ratesUpdatedAt:
+          ratesUpdatedAt
+            ? getOrdinalDate(ratesUpdatedAt)
+            : null
       }
     );
   })
@@ -643,6 +808,29 @@ router.get('/contact', (req, res) =>
     req.query.success === '1'
 }
 )
+);
+
+router.get(
+  '/subscribe',
+  asyncHandler(async (req, res) => {
+    res.render('subscribe', {
+      activePath: '/subscribe'
+    });
+  })
+);
+
+router.get(
+  '/subscribe/received',
+  asyncHandler(async (req, res) => {
+    res.render('subscribe-received', {
+      reference:
+        typeof req.query.ref === 'string'
+          ? req.query.ref.slice(0, 32)
+          : null,
+
+      activePath: '/subscribe'
+    });
+  })
 );
 
 module.exports = router;

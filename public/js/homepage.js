@@ -171,6 +171,123 @@
 
     observer.observe(proofSection);
   }
+    function initialiseHeroVideo() {
+    const media = document.querySelector('[data-hero-media]');
+
+    if (!media) return;
+
+    /*
+      Mobile keeps the still image. Data is expensive on
+      Nigerian mobile networks and the still crop already
+      works at that aspect ratio.
+    */
+    if (reducedMotionQuery.matches) return;
+
+    /*
+      Phones get a smaller encode. Mobile data is expensive in
+      Nigeria, so the desktop file is never sent to a phone.
+    */
+    const isDesktop =
+      window.matchMedia('(min-width: 1024px)').matches;
+
+    /*
+      Respect Data Saver and slow connections where the
+      browser exposes them.
+    */
+    const connection =
+      navigator.connection ||
+      navigator.mozConnection ||
+      navigator.webkitConnection;
+
+    if (connection) {
+      if (connection.saveData) return;
+
+      if (
+        ['slow-2g', '2g'].includes(connection.effectiveType)
+      ) {
+        return;
+      }
+    }
+
+    const webm = isDesktop
+      ? media.dataset.videoWebm
+      : media.dataset.videoWebmMobile || media.dataset.videoWebm;
+
+    const mp4 = isDesktop
+      ? media.dataset.videoMp4
+      : media.dataset.videoMp4Mobile || media.dataset.videoMp4;
+
+    if (!webm && !mp4) return;
+
+    const video = document.createElement('video');
+
+    video.className = 'home-hero-video';
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.autoplay = true;
+
+    /*
+      Without playsinline, iOS Safari takes the video
+      fullscreen the moment playback starts.
+    */
+    video.setAttribute('playsinline', '');
+    video.setAttribute('muted', '');
+    video.setAttribute('aria-hidden', 'true');
+    video.setAttribute('tabindex', '-1');
+
+    const poster = media.querySelector('img');
+
+    if (poster) {
+      video.poster = poster.currentSrc || poster.src;
+    }
+
+    [
+      { src: webm, type: 'video/webm' },
+      { src: mp4, type: 'video/mp4' }
+    ].forEach(({ src, type }) => {
+      if (!src) return;
+
+      const source = document.createElement('source');
+      source.src = src;
+      source.type = type;
+      video.appendChild(source);
+    });
+
+    /*
+      Only fade in once enough is buffered to loop without
+      stalling. A stuttering hero is worse than a still one.
+    */
+    video.addEventListener(
+      'canplaythrough',
+      () => {
+        video.classList.add('is-ready');
+      },
+      { once: true }
+    );
+
+    video.addEventListener(
+      'error',
+      () => {
+        video.remove();
+      },
+      { once: true }
+    );
+
+    media.appendChild(video);
+
+    const attempt = video.play();
+
+    if (attempt && typeof attempt.catch === 'function') {
+      /*
+        Autoplay blocked. Remove the element rather than
+        leaving a frozen first frame over the still.
+      */
+      attempt.catch(() => {
+        video.remove();
+      });
+    }
+  }
 
   function initialiseHomepage() {
     /*
@@ -179,6 +296,7 @@
     */
     initialiseReveals();
     initialiseCounters();
+    initialiseHeroVideo();
 
     try {
       initialiseLucideIcons();
@@ -186,6 +304,8 @@
       console.warn('Lucide icon initialisation skipped:', error);
     }
   }
+
+  
 
   if (document.readyState === 'loading') {
     document.addEventListener(

@@ -1,0 +1,59 @@
+<%- include('partials/header', {
+  pageCss: '/css/pages/subscribe.css',
+  pageTitle: 'Application received | STI Assets Management Limited',
+  pageDescription: 'Your subscription application has been received by STI Assets Management Limited.'
+}) %>
+
+<main id="main-content" class="sub-page">
+  <section class="sub-hero">
+    <div class="sub-shell">
+      <p class="sub-eyebrow">Application received</p>
+      <h1 class="sub-hero-title">Thank you. We have your application.</h1>
+      <p class="sub-hero-lead">
+        Our client services team reviews new subscriptions within one business
+        day. If anything is missing from your KYC documents, we will contact you
+        on the phone number and email address you provided.
+      </p>
+    </div>
+  </section>
+
+  <div class="sub-shell">
+    <div class="sub-section">
+      <h2 class="sub-section-title">Your reference</h2>
+      <p class="sub-section-note">
+        Quote this number if you contact us about this application.
+      </p>
+
+      <p style="
+        margin: 0 0 26px;
+        font-family: var(--font-mono, ui-monospace, monospace);
+        font-size: 1.6rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--color-primary);
+      "><%= typeof reference !== 'undefined' && reference ? reference : 'Not available' %></p>
+
+      <h3 class="sub-subheading">What happens next</h3>
+
+      <ol style="margin: 0 0 26px; padding-left: 20px; color: var(--color-text-muted); line-height: 1.7;">
+        <li>We verify your identification and address documents.</li>
+        <li>We confirm your bank details against the name on your application.</li>
+        <li>You receive funding instructions by email once your account is opened.</li>
+      </ol>
+
+      <p class="sub-secure-note">
+        Never send your BVN, NIN or account details to anyone claiming to
+        represent STI Assets Management over social media or messaging apps. We
+        will only ever contact you from an address ending in
+        <strong>@stiassetmgt.com</strong>. If you are unsure, call
+        <strong>09165439544</strong>.
+      </p>
+
+      <div class="sub-actions">
+        <a href="/" class="sub-submit" style="text-decoration: none;">Return to homepage</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer', { hideFooterCta: true }) %>

@@ -5,83 +5,6 @@
 
 
 /* ============================================================
-   DOWNLOADS HERO
-============================================================ */
-
-.downloads-page-hero {
-  --hero-bg-image:
-    url(
-      "/heropic.png"
-    );
-}
-
-.downloads-page-hero
-  .inner-page-hero-inner {
-  max-width: 850px;
-}
-
-.downloads-page-hero p {
-  max-width: 760px;
-}
-
-/* ============================================================
-   DOWNLOADS HERO ENTRANCE
-============================================================ */
-
-.downloads-page-hero
-  .hero-eyebrow {
-  animation:
-    downloads-hero-enter 620ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    80ms both;
-}
-
-.downloads-page-hero h1 {
-  animation:
-    downloads-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    160ms both;
-}
-
-.downloads-page-hero p {
-  animation:
-    downloads-hero-enter 680ms
-    cubic-bezier(0.22, 1, 0.36, 1)
-    240ms both;
-}
-
-@keyframes downloads-hero-enter {
-  from {
-    opacity: 0;
-
-    transform:
-      translate3d(0, 18px, 0);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translate3d(0, 0, 0);
-  }
-}
-
-/* ============================================================
-   DOWNLOADS HERO REDUCED MOTION
-============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  .downloads-page-hero
-    .hero-eyebrow,
-
-  .downloads-page-hero h1,
-
-  .downloads-page-hero p {
-    animation: none;
-  }
-}
-
-/* ============================================================
    WEEKLY DIGEST SECTION
 ============================================================ */
 
@@ -89,22 +12,12 @@
   width: 100%;
   max-width: none;
 
-  padding:
-    clamp(72px, 8vw, 104px)
-    20px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #f8fafc 0%,
-      #ffffff 100%
-    );
+  padding: var(--page-section-space) 0;
+  background: var(--page-surface);
 }
 
 .downloads-shell {
-  width: 100%;
-  max-width: var(--max-width);
-
+  width: min(calc(100% - 48px), var(--page-shell));
   margin: 0 auto;
 }
 
@@ -141,13 +54,13 @@
   background: #ffffff;
 
   border:
-    1px solid rgba(3, 54, 105, 0.09);
+    1px solid var(--page-line);
 
-  border-radius: 20px;
+  border-radius: var(--page-radius);
 
   box-shadow:
-    0 12px 32px
-    rgba(3, 54, 105, 0.05);
+    0 2px 2px rgba(3, 54, 105, 0.04),
+    0 8px 16px -4px rgba(3, 54, 105, 0.06);
 
   overflow: hidden;
 
@@ -188,8 +101,9 @@
 
   border-radius: 999px;
 
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
   line-height: 1.2;
 
   letter-spacing: 0.08em;
@@ -220,12 +134,12 @@
   width: 46px;
   height: 46px;
 
-  color: var(--color-accent);
+  color: var(--page-navy);
 
   background:
-    rgba(246, 134, 52, 0.09);
+    rgba(3, 54, 105, 0.06);
 
-  border-radius: 14px;
+  border-radius: var(--page-radius);
 
   flex: 0 0 auto;
 }
@@ -247,7 +161,7 @@
   color: var(--color-primary);
 
   font-size: 0.98rem;
-  font-weight: 750;
+  font-weight: 600;
   line-height: 1.45;
 
   overflow-wrap: anywhere;
@@ -282,17 +196,16 @@
 
   color: #ffffff;
 
-  background:
-    var(--color-accent);
+  background: var(--page-navy);
 
   border:
     1px solid
-    var(--color-accent);
+    var(--page-navy);
 
-  border-radius: 12px;
+  border-radius: var(--page-radius);
 
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 600;
   line-height: 1.3;
 
   text-decoration: none;
@@ -320,28 +233,24 @@
 
 @media (hover: hover) {
   .downloads-card.is-available:hover {
-    transform:
-      translateY(-4px);
+    transform: translateY(-4px);
 
     border-color:
-      rgba(246, 134, 52, 0.28);
+      rgba(3, 54, 105, 0.18);
 
     box-shadow:
-      0 18px 44px
-      rgba(3, 54, 105, 0.09);
+      0 2px 2px rgba(3, 54, 105, 0.05),
+      0 8px 16px -4px rgba(3, 54, 105, 0.08),
+      0 24px 32px -8px rgba(3, 54, 105, 0.06);
   }
 
-  .downloads-btn:hover {
-    background: #e97827;
-
-    border-color: #e97827;
-
-    box-shadow:
-      0 9px 20px
-      rgba(246, 134, 52, 0.2);
+  .downloads-btn:not(.downloads-btn-disabled):hover {
+    background: #04477f;
+    border-color: #04477f;
+    box-shadow: none;
   }
 
-  .downloads-btn:hover
+  .downloads-btn:not(.downloads-btn-disabled):hover
     .ui-icon {
     translate: 3px 0;
   }
@@ -352,7 +261,7 @@
 ============================================================ */
 
 .downloads-card.is-unavailable {
-  background: #f8fafc;
+  background: var(--page-surface-warm);
 
   border-color:
     rgba(3, 54, 105, 0.065);
@@ -436,7 +345,7 @@
 
     padding: 20px;
 
-    border-radius: 17px;
+    border-radius: var(--page-radius);
   }
 
   .downloads-card-header {
@@ -458,29 +367,6 @@
 /* ============================================================
    MOBILE
 ============================================================ */
-
-@media (max-width: 559px) {
-  .downloads-section {
-    padding:
-      64px 16px;
-  }
-
-  .downloads-card {
-    min-height: 0;
-
-    padding: 20px;
-
-    border-radius: 17px;
-  }
-
-  .downloads-card-header {
-    margin-bottom: 24px;
-  }
-
-  .downloads-card-content {
-    margin-bottom: 24px;
-  }
-}
 
 
 @media (max-width: 360px) {
