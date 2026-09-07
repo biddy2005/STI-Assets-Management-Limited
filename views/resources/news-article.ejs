@@ -1,5 +1,5 @@
 <%- include('../partials/header', {
-  pageCss: '/css/pages/news-article.css?v=2'
+  pageCss: '/css/pages/news-article.css?v=4'
 }) %>
 
 <!-- ============================================================
@@ -9,7 +9,7 @@
 
   <div class="page-hero-media" aria-hidden="true">
     <img
-      src="/faqs-hero.webp"
+      src="<%= article.coverImage || '/news-hero.webp' %>"
       alt=""
       fetchpriority="high"
       decoding="async"
@@ -55,23 +55,6 @@
 <section class="news-article-section">
 
   <div class="news-article-shell">
-
-    <% if (article.coverImage) { %>
-
-      <figure class="news-article-cover">
-
-        <img
-          class="news-article-cover-img"
-          src="<%= article.coverImage %>"
-          alt="<%= article.title %>"
-          loading="eager"
-          decoding="async"
-        >
-
-      </figure>
-
-    <% } %>
-
 
     <article class="news-article-content">
 

@@ -72,6 +72,15 @@
   line-height: 1.86;
 
   overflow-wrap: anywhere;
+
+  /*
+   * The admin editor is a plain textarea, so the body arrives
+   * as text with real newlines. pre-line preserves those line
+   * breaks while still collapsing runs of spaces and wrapping
+   * normally, which is what the author intended when they
+   * pressed Enter.
+   */
+  white-space: pre-line;
 }
 /* ============================================================
    ARTICLE TYPOGRAPHY
@@ -907,3 +916,29 @@ body.news-lightbox-open {
   }
 
 }
+
+/*
+ * The cover image is the article's subject rather than
+ * texture, so the overlay is lighter here than on pages where
+ * the hero image is purely decorative. Still dark enough on
+ * the left to hold the headline.
+ */
+.page-hero-overlay {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2, 32, 62, 0.88) 0%,
+      rgba(3, 54, 105, 0.62) 45%,
+      rgba(3, 54, 105, 0.28) 100%
+    );
+}
+
+  /*
+   * Swipe is invisible until discovered, so it is named once
+   * beneath the counter rather than left for people to guess.
+   */
+  .news-lightbox-counter::after {
+    content: " · swipe";
+    opacity: 0.7;
+    font-weight: 400;
+  }

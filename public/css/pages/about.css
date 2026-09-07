@@ -16,3 +16,7 @@
 .page-card-ink .page-text-link {
   margin-top: auto;
 }
+
+.page-split .page-media img {
+  object-position: center 22%;
+}

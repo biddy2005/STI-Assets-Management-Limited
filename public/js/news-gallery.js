@@ -238,6 +238,92 @@
   );
 
 
+  /*
+   * Touch navigation.
+   *
+   * Arrow buttons are small targets on a phone, and swiping is
+   * what people try first in an image viewer. Tracked manually
+   * rather than with a library: two coordinates and a
+   * threshold is the whole requirement.
+   */
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchTracking = false;
+
+  /*
+   * A swipe must travel this far horizontally to count, and
+   * stay within this much vertical drift. Without the vertical
+   * check, an ordinary scroll gesture would flip the image.
+   */
+  const SWIPE_THRESHOLD = 55;
+  const SWIPE_MAX_DRIFT = 70;
+
+  lightbox.addEventListener(
+    'touchstart',
+    (event) => {
+      if (
+        lightbox.hidden ||
+        event.touches.length !== 1
+      ) {
+        touchTracking = false;
+        return;
+      }
+
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+      touchTracking = true;
+    },
+    { passive: true }
+  );
+
+  lightbox.addEventListener(
+    'touchend',
+    (event) => {
+      if (
+        !touchTracking ||
+        lightbox.hidden ||
+        !event.changedTouches.length
+      ) {
+        return;
+      }
+
+      touchTracking = false;
+
+      const deltaX =
+        event.changedTouches[0].clientX - touchStartX;
+
+      const deltaY =
+        event.changedTouches[0].clientY - touchStartY;
+
+      /*
+       * A mostly-vertical gesture is a scroll attempt, not a
+       * swipe, so it is ignored.
+       */
+      if (Math.abs(deltaY) > SWIPE_MAX_DRIFT) {
+        return;
+      }
+
+      if (deltaX <= -SWIPE_THRESHOLD) {
+        nextImage();
+        return;
+      }
+
+      if (deltaX >= SWIPE_THRESHOLD) {
+        previousImage();
+      }
+    },
+    { passive: true }
+  );
+
+  lightbox.addEventListener(
+    'touchcancel',
+    () => {
+      touchTracking = false;
+    },
+    { passive: true }
+  );
+
+
   document.addEventListener(
     'keydown',
     (event) => {
