@@ -517,27 +517,66 @@
    =========================================================== */
 
 @media (max-width: 1023px) {
+  /*
+   * Stacking turns a comparison into three separate lists, so
+   * the columns stay side by side and scroll horizontally
+   * instead. Swiping across three products is what makes this
+   * section worth having.
+   */
   .product-compare {
-    grid-template-columns: minmax(0, 1fr);
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    /*
+     * Negative margin lets the row bleed to the viewport edge
+     * so the third column is visibly cut off, which signals
+     * there is more to scroll.
+     */
+    margin-inline: calc(var(--page-shell-gutter, 16px) * -1);
+    padding-inline: var(--page-shell-gutter, 16px);
+  }
+
+  .product-compare::-webkit-scrollbar {
+    display: none;
   }
 
   .product-compare-col {
-    padding: 26px 0;
+    flex: 0 0 auto;
+    width: 62vw;
+    max-width: 260px;
+    scroll-snap-align: start;
+    padding: 24px 20px 24px 0;
+    margin-right: 20px;
+    border-right: 1px solid var(--page-line);
+    border-bottom: 0;
+  }
+
+  .product-compare-col:last-child {
     margin-right: 0;
+    padding-right: 0;
     border-right: 0;
-    border-bottom: 1px solid var(--page-line);
   }
 }
 
 @media (max-width: 767px) {
+  /*
+   * Label above value doubles the row height. In a narrow
+   * column the values are short enough to stay inline.
+   */
   .product-compare-specs > div {
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 3px;
+    padding: 9px 0;
   }
 
   .product-compare-specs dd {
     text-align: left;
+    font-size: 0.9rem;
   }
 
   .product-cta-actions .page-button {
@@ -745,4 +784,18 @@
   .rate-calc-actions .page-button {
     width: 100%;
   }
+}
+
+.product-compare-hint {
+  display: none;
+  margin: 12px 0 0;
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1023px) {
+  .product-compare-hint { display: block; }
 }
