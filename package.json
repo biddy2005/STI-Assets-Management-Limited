@@ -43,7 +43,7 @@
     "express-session": "^1.18.0",
     "helmet": "^8.1.0",
     "lucide": "^1.27.0",
-    "multer": "^2.0.1",
+    "multer": "^2.4.0",
     "pg": "^8.22.0",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",

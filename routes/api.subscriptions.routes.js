@@ -155,7 +155,9 @@ const upload =
 
       files: 3,
 
-      fields: 60
+      fields: 60,
+
+      fieldArrayIndexLimit: 20
     },
 
     fileFilter: (

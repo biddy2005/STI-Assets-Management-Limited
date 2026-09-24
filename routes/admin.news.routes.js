@@ -625,7 +625,9 @@ const uploadCoverImage =
         5 * 1024 * 1024,
 
       files:
-        1
+        1,
+
+      fieldArrayIndexLimit: 20
     },
 
     fileFilter:
@@ -649,7 +651,9 @@ const uploadGalleryImages =
         5 * 1024 * 1024,
 
       files:
-        10
+        10,
+
+      fieldArrayIndexLimit: 20,
     },
 
     fileFilter:

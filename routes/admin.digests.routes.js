@@ -205,20 +205,13 @@ const uploadDigest =
 
     storage:
       multer.memoryStorage(),
-
     limits: {
-
-      /*
-       * Maximum digest size: 10 MB.
-       */
       fileSize:
         10 * 1024 * 1024,
 
-      /*
-       * Only one digest file is accepted.
-       */
       files:
-        1
+        1,
+      fieldArrayIndexLimit: 20
     },
 
     fileFilter: (

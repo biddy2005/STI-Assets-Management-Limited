@@ -354,7 +354,7 @@ button {
 }
 
 .primary-nav .dropdown {
-  display: none;
+  display: block;
   position: absolute;
   top: 100%;
   left: 0;
@@ -365,10 +365,33 @@ button {
   box-shadow: 0 12px 30px rgba(3, 54, 105, 0.1);
   padding: 8px 0;
   margin-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition:
+    opacity 180ms ease 250ms,
+    transform 180ms ease 250ms,
+    visibility 0s linear 430ms;
+}
+.primary-nav .dropdown::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -14px;
+  height: 14px;
 }
 .primary-nav .has-dropdown:hover .dropdown,
 .primary-nav .has-dropdown:focus-within .dropdown {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    visibility 0s;
 }
 .primary-nav .dropdown li { padding: 0; }
 .primary-nav .dropdown a {

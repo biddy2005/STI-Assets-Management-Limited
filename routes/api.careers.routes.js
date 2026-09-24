@@ -176,7 +176,9 @@ const upload =
       /*
        * Only one résumé may be uploaded per request.
        */
-      files: 1
+      files: 1,
+
+      fieldArrayIndexLimit: 20
     },
 
     fileFilter: (
