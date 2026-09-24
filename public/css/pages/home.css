@@ -319,7 +319,7 @@
    * height, hence the generous minimum.
    */
   padding-top: clamp(130px, 16vh, 180px);
-  padding-bottom: 34px;
+  padding-bottom: clamp(56px, 6vw, 88px);
 }
 
 .home-hero-copy {
@@ -417,25 +417,32 @@
 ============================================================ */
 
 .home-proof {
-  background: #f7f9fb;
+  --proof-gap: clamp(24px, 4vw, 56px);
+  background: #ffffff;
+  border-bottom: 1px solid var(--home-line);
 }
 
 .home-proof-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--proof-gap);
+  padding-block: clamp(36px, 4vw, 52px);
 }
 
 .home-proof-item {
+  position: relative;
   min-width: 0;
-  padding: 42px clamp(18px, 3vw, 42px);
 }
 
-.home-proof-item:first-child {
-  padding-left: 0;
-}
-
-.home-proof-item:last-child {
-  padding-right: 0;
+/* Divider sits in the middle of the gap, so text still starts evenly */
+.home-proof-item + .home-proof-item::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: calc(var(--proof-gap) / -2);
+  width: 1px;
+  background: var(--home-line);
 }
 
 .home-proof-value {
@@ -452,9 +459,9 @@
   display: block;
   margin-top: 10px;
   color: var(--home-muted);
-  font-size: 0.78rem;
-  font-weight: 650;
-  line-height: 1.45;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 /* ============================================================
@@ -1353,14 +1360,12 @@
 
   .home-proof-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 32px;
   }
 
-  .home-proof-item {
-    padding: 32px 26px;
-  }
-
-  .home-proof-item:first-child {
-    padding-left: 0;
+  /* Stats 1 and 3 start each row, so they don't need a divider */
+  .home-proof-item:nth-child(odd)::before {
+    display: none;
   }
 
   .home-investment-row {
@@ -1547,31 +1552,17 @@
     display: none;
   }
 
+  .home-proof {
+    --proof-gap: 20px;
+  }
+
   .home-proof-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .home-proof-item,
-  .home-proof-item:first-child {
-    padding: 26px 16px;
-  }
-
-  .home-proof-item:nth-child(odd) {
-    padding-left: 0;
-  }
-
-  .home-proof-item:nth-child(even) {
-    padding-right: 0;
+    row-gap: 28px;
+    padding-block: 32px;
   }
 
   .home-proof-value {
     font-size: clamp(1.75rem, 8vw, 2.55rem);
-  }
-
-  .home-proof-label {
-    max-width: 150px;
-    font-size: 0.8rem;
-    line-height: 1.4;
   }
 
   .home-investment-row {
@@ -1774,15 +1765,6 @@
     width: 100%;
   }
 
-  /*
-   * A single full-bleed white pill outweighs the headline on a
-   * dark hero. Constrain it so the action stays obvious without
-   * dominating.
-   */
-  .home-hero-actions {
-    max-width: 320px;
-  }
-
   :root {
     --home-section-space: 40px;
   }
@@ -1859,78 +1841,6 @@
     scroll-behavior: auto;
   }
 }
-/* ===========================================================
-   STICKY STACKED INVESTMENT CARDS
-   -----------------------------------------------------------
-   Each row sticks below the header as it scrolls, and the next
-   row rides up over it. The previous card's title stays
-   visible, so the stack reads as a deck rather than the cards
-   simply disappearing.
-
-   Pure CSS: sticky positioning does all of it.
-   =========================================================== */
-
-@media (min-width: 1024px) {
-
-  /*
-   * The list must not be a flex or grid container with its own
-   * overflow, or sticky children have nothing to stick within.
-   */
-  .home-investment-list {
-    display: block;
-  }
-
-  .home-investment-row {
-    position: sticky;
-
-    /*
-     * 110px clears the 90px sticky header. Each subsequent card
-     * stops 64px lower, which is what leaves the previous
-     * card's title strip on show.
-     */
-    top: 110px;
-
-    margin-bottom: 0;
-
-    /*
-     * An opaque background is essential. Without it the card
-     * beneath shows through as they overlap.
-     */
-    background: #ffffff;
-    border: 1px solid var(--home-line);
-    border-radius: var(--home-radius);
-    overflow: hidden;
-
-    /*
-     * A shadow on the leading edge sells the stacking. Without
-     * it the cards look like they are merging rather than
-     * sliding over one another.
-     */
-    box-shadow: 0 -8px 24px rgba(3, 54, 105, 0.06);
-  }
-
-  .home-investment-row:nth-child(2) { top: 174px; }
-  .home-investment-row:nth-child(3) { top: 238px; }
-
-  /*
-   * Each card needs a full viewport of scroll beneath it, or
-   * there is no distance over which the next one can travel.
-   */
-  .home-investment-row:not(:last-child) {
-    margin-bottom: 40px;
-  }
-
-  /*
-   * Tail space so the final card can settle before the section
-   * ends and the whole stack scrolls away together.
-   */
-  .home-investment-list::after {
-    content: "";
-    display: block;
-    height: 30vh;
-  }
-}
-
 
 /*
  * Mobile stacking needs the cards to fit inside the viewport,
