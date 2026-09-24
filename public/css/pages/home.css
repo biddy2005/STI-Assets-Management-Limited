@@ -1841,6 +1841,16 @@
     scroll-behavior: auto;
   }
 }
+/* ===========================================================
+   STICKY STACKED INVESTMENT CARDS
+   -----------------------------------------------------------
+   Each row sticks below the header as it scrolls, and the next
+   row rides up over it. The previous card's title stays
+   visible, so the stack reads as a deck rather than the cards
+   simply disappearing.
+
+   Pure CSS: sticky positioning does all of it.
+   =========================================================== */
 
 /*
  * Mobile stacking needs the cards to fit inside the viewport,
