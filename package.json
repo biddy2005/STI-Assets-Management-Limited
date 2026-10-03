@@ -37,7 +37,7 @@
     "connect-pg-simple": "^10.0.0",
     "csrf-sync": "^4.2.1",
     "dotenv": "^16.4.5",
-    "ejs": "^3.1.10",
+    "ejs": "^6.0.1",
     "express": "^4.19.2",
     "express-rate-limit": "^8.6.2",
     "express-session": "^1.18.0",
